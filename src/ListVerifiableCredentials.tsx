@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { ethers } from 'ethers';
 import ReactJson from 'react-json-view';
+import { useTranslation } from 'react-i18next';
+import './i18n';
 // import { MetaMaskInpageProvider } from "@metamask/providers";
 
 const contractAddress = '0x282eBa8b3D8E1164C5B70604C9C22011E8Ff6C82';
@@ -134,6 +136,7 @@ const contractABI = [
 ];
 
 function ListVerifiableCredentials() {
+  const { t } = useTranslation();
   const [data, setData] = useState(
     {
       userAddress: "",
@@ -203,7 +206,7 @@ function ListVerifiableCredentials() {
 
   return (
     <div>
-      <h2>Credenciales verificables disponibles on-chain</h2>
+      <h2>{t('vc')}</h2>
       {error ? (
         <p style={{ color: 'red' }}>{error}</p>
       ) : done && data ? (

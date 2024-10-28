@@ -1,6 +1,8 @@
 // Import libraries
 import React, { useState } from "react";
 import { Button, Text } from "rimble-ui";
+import { useTranslation } from 'react-i18next';
+import './i18n';
 
 // Import styles
 import "./App.css";
@@ -41,6 +43,7 @@ const verifyProof = async (_verificationkey: string, publicSignals: any, proof: 
 };
 
 function App() {
+	const { t } = useTranslation();
 	const [proof, setProof] = useState(null);
 	const [signals, setSignals] = useState(null);
 	const [done, setDone] = useState(null);
@@ -111,10 +114,10 @@ function App() {
 		<div className="cardWhiteProfile">
 			<h1>ZK Firma Digital</h1>
 			<h4>
-			    Por favor increse su credential.json
+			    {t('input')}
 			</h4>
 			<div>
-				{done && <Text> {isValid ? "😸 Usuario logueado correctamente": <p style={{ color: "red" }}>😿 Credencial no válida</p>}</Text>}
+				{done && <Text> {isValid ? t('logged-in'): <p style={{ color: "red" }}>{t('wrong-credential')}</p>}</Text>}
 				{done && isValid && <ListVerifiableCredentials />}
 			</div>
 			<div>
@@ -124,7 +127,7 @@ function App() {
 			<div>
 				{/* Display error message if any */}
 				{error.length > 0 && <p style={{ color: "red" }}>{error}</p>}
-				<Button.Outline onClick={runProofs}>Comprobar Credenciales ZK</Button.Outline>
+				<Button.Outline onClick={runProofs}>{t('button')}</Button.Outline>
 			</div>
 		</div>
 	);
