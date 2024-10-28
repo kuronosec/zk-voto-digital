@@ -1,13 +1,17 @@
 // Import libraries
 import React, { useState } from "react";
 import { Button, Text } from "rimble-ui";
+import { useTranslation } from 'react-i18next';
+import './i18n';
 
 // Import styles
 import "./App.css";
+import ListVerifiableCredentials from './ListVerifiableCredentials';
 
 // Import library used to verify zk proofs (zk-snarks)
 // Install: npm install snarkjs
 const snarkjs = require("snarkjs");
+const endpointUrl = process.env.REACT_APP_ENDPOINT_URL || "http://localhost:8000/vkey.json";
 
 // From CA Issuers
 // URI:http://fdi.sinpe.fi.cr/repositorio/CA%20SINPE%20-%20PERSONA%20FISICA%20v2(2).crt
@@ -39,6 +43,7 @@ const verifyProof = async (_verificationkey: string, publicSignals: any, proof: 
 };
 
 function App() {
+	const { t } = useTranslation();
 	const [proof, setProof] = useState(null);
 	const [signals, setSignals] = useState(null);
 	const [done, setDone] = useState(null);
@@ -46,7 +51,7 @@ function App() {
 	const [error, setError] = useState("");
 
 	// Retrieve verification key from server
-	let verificationKeyFile = "http://app.sakundi.io:8000/vkey.json";
+	let verificationKeyFile = endpointUrl;
 
 	const runProofs = () => {
 		try {
@@ -109,11 +114,12 @@ function App() {
 		<div className="cardWhiteProfile">
 			<h1>ZK Firma Digital</h1>
 			<h4>
-			    Por favor increse su credential.json
+			    {t('input')}
 			</h4>
-			<h5>
-				{done && <Text> {isValid ? "😸 Usuario logueado correctamente" : <p style={{ color: "red" }}>😿 Credenciales no válidas</p>}</Text>}
-			</h5>
+			<div>
+				{done && <Text> {isValid ? t('logged-in'): <p style={{ color: "red" }}>{t('wrong-credential')}</p>}</Text>}
+				{done && isValid && <ListVerifiableCredentials />}
+			</div>
 			<div>
 				{/* Input for uploading two files */}
 				<input type="file" accept=".json" multiple onChange={handleFileUpload}/>
@@ -121,7 +127,7 @@ function App() {
 			<div>
 				{/* Display error message if any */}
 				{error.length > 0 && <p style={{ color: "red" }}>{error}</p>}
-				<Button.Outline onClick={runProofs}>Comprobar Credenciales ZK</Button.Outline>
+				<Button.Outline onClick={runProofs}>{t('button')}</Button.Outline>
 			</div>
 		</div>
 	);
