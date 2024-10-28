@@ -4,10 +4,12 @@ import { Button, Text } from "rimble-ui";
 
 // Import styles
 import "./App.css";
+import ListVerifiableCredentials from './ListVerifiableCredentials';
 
 // Import library used to verify zk proofs (zk-snarks)
 // Install: npm install snarkjs
 const snarkjs = require("snarkjs");
+const endpointUrl = process.env.REACT_APP_ENDPOINT_URL || "http://localhost:8000/vkey.json";
 
 // From CA Issuers
 // URI:http://fdi.sinpe.fi.cr/repositorio/CA%20SINPE%20-%20PERSONA%20FISICA%20v2(2).crt
@@ -46,7 +48,7 @@ function App() {
 	const [error, setError] = useState("");
 
 	// Retrieve verification key from server
-	let verificationKeyFile = "http://app.sakundi.io:8000/vkey.json";
+	let verificationKeyFile = endpointUrl;
 
 	const runProofs = () => {
 		try {
@@ -111,9 +113,10 @@ function App() {
 			<h4>
 			    Por favor increse su credential.json
 			</h4>
-			<h5>
-				{done && <Text> {isValid ? "😸 Usuario logueado correctamente" : <p style={{ color: "red" }}>😿 Credenciales no válidas</p>}</Text>}
-			</h5>
+			<div>
+				{done && <Text> {isValid ? "😸 Usuario logueado correctamente": <p style={{ color: "red" }}>😿 Credencial no válida</p>}</Text>}
+				{done && isValid && <ListVerifiableCredentials />}
+			</div>
 			<div>
 				{/* Input for uploading two files */}
 				<input type="file" accept=".json" multiple onChange={handleFileUpload}/>
