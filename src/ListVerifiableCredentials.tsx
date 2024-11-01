@@ -139,14 +139,13 @@ function ListVerifiableCredentials() {
   const { t } = useTranslation();
   const [data, setData] = useState(
     {
-      userAddress: "",
+      userBlockchainAddress: "",
       credentialData: {
         credentialId: "",
         context: "",
         type: "",
         issuanceDate: "",
-      },
-      publicInputs: ""
+      }
     }
   );
   const [error, setError] = useState("");
@@ -173,6 +172,8 @@ function ListVerifiableCredentials() {
           0
         );
 
+        console.log(credential);
+
         // Display the result
         // Destructure the result
         const credentialData = credential[0];  // INonMerklizedIssuer.CredentialData struct
@@ -181,14 +182,13 @@ function ListVerifiableCredentials() {
 
         // Format the result as JSON
         const jsonResult = {
-          userAddress: userId,
+          userBlockchainAddress: userId,
           credentialData: {
             credentialId: credentialData.id.toString(),
             context: credentialData.context[0].toString(),
             type: credentialData._type.toString(),
             issuanceDate: credentialData.issuanceDate.toString(),
-          },
-          publicInputs: uintArray.map((num) => num.toString())
+          }
         };
 
         // Set the formatted JSON data to the state
