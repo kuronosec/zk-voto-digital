@@ -3,9 +3,13 @@ import { ethers } from 'ethers';
 import ReactJson from 'react-json-view';
 import { useTranslation } from 'react-i18next';
 import './i18n';
-// import { MetaMaskInpageProvider } from "@metamask/providers";
+import { Buffer } from 'buffer';
 
-const contractAddress = '0x282eBa8b3D8E1164C5B70604C9C22011E8Ff6C82';
+const issuerContractAddress = '0xAa7e4806f594090b67cb319A864261543B883b87';
+// I am still not sure how to calculate the DIDs
+const issuerDID = 'did:iden3:polygon:amoy:x6x5sor7zpyGKuMcMvhoBFtHjMG9NaoeCg7xLb9mH';
+const userIdDID = 'did:iden3:polygon:amoy:x6x5sor7zpyX7xMmkJUMASKk2karkjVcG4iUiAh4c';
+
 const contractABI = [
   {
     "inputs": [
@@ -135,17 +139,27 @@ const contractABI = [
   }
 ];
 
+function formatTimestamp(timestamp: string): string {
+  // Convert the timestamp string to a number and then to milliseconds
+  const date = new Date(parseInt(timestamp, 10) * 1000);
+
+  // Format the date to a readable format, e.g., "YYYY-MM-DD HH:mm:ss"
+  return date.toLocaleString('en-US', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit'
+  });
+}
+
 function ListVerifiableCredentials() {
   const { t } = useTranslation();
   const [data, setData] = useState(
     {
-      userBlockchainAddress: "",
-      credentialData: {
-        credentialId: "",
-        context: "",
-        type: "",
-        issuanceDate: "",
-      }
+      type: "",
+      issuanceDate: "",
+      IssuerDID: "",
+      RecipientDID: "",
+      context: ""
     }
   );
   const [error, setError] = useState("");
@@ -164,7 +178,7 @@ function ListVerifiableCredentials() {
         const userId = await signer.getAddress();
 
         // Connect to the contract
-        const contract = new ethers.Contract(contractAddress, contractABI, signer);
+        const contract = new ethers.Contract(issuerContractAddress, contractABI, signer);
 
         // Call the getCredential function
         const credential = await contract.getCredential(
@@ -182,13 +196,11 @@ function ListVerifiableCredentials() {
 
         // Format the result as JSON
         const jsonResult = {
-          userBlockchainAddress: userId,
-          credentialData: {
-            credentialId: credentialData.id.toString(),
-            context: credentialData.context[0].toString(),
-            type: credentialData._type.toString(),
-            issuanceDate: credentialData.issuanceDate.toString(),
-          }
+          type: credentialData._type.toString(),
+          issuanceDate: formatTimestamp(credentialData.issuanceDate.toString()),
+          IssuerDID: issuerDID,
+          RecipientDID: userIdDID,
+          context: credentialData.context[0].toString()
         };
 
         // Set the formatted JSON data to the state
