@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { ethers } from 'ethers';
-import ReactJson from 'react-json-view';
 import { useTranslation } from 'react-i18next';
 import './i18n';
-import { Buffer } from 'buffer';
 
 const issuerContractAddress = '0xAa7e4806f594090b67cb319A864261543B883b87';
 // I am still not sure how to calculate the DIDs
@@ -139,6 +137,20 @@ const contractABI = [
   }
 ];
 
+const displayMethod = {
+  "title": "ZK Firma Digital",
+  "description": "Proof of Identity through Firma Digital",
+  "issuerName": "ZK Firma Digital",
+  "titleTextColor": "#c55509",
+  "descriptionTextColor": "#ee7108",
+  "issuerTextColor": "#06750c",
+  "backgroundColor": "#ffffff",
+  "logo": {
+    "uri": "https://raw.githubusercontent.com/kuronosec/zk-firma-digital/main/assets/logo.png",
+    "alt": "ZK Firma Digital Logo"
+  }
+};
+
 function formatTimestamp(timestamp: string): string {
   // Convert the timestamp string to a number and then to milliseconds
   const date = new Date(parseInt(timestamp, 10) * 1000);
@@ -155,6 +167,10 @@ function ListVerifiableCredentials() {
   const { t } = useTranslation();
   const [data, setData] = useState(
     {
+      title: "",
+      description: "",
+      issuerName: "",
+      address: "",
       type: "",
       issuanceDate: "",
       IssuerDID: "",
@@ -162,6 +178,38 @@ function ListVerifiableCredentials() {
       context: ""
     }
   );
+
+  const certificateStyle: React.CSSProperties = {
+    backgroundColor: displayMethod.backgroundColor,
+    padding: '20px',
+    borderRadius: '10px',
+    textAlign: 'left',
+    fontFamily: 'Arial, sans-serif',
+    maxWidth: '600px',
+    margin: '0 auto',
+    boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
+  };
+
+  const titleStyle: React.CSSProperties = {
+    color: displayMethod.titleTextColor,
+    fontSize: '24px',
+    fontWeight: 'bold',
+    marginBottom: '10px'
+  };
+
+  const descriptionStyle: React.CSSProperties = {
+    color: displayMethod.descriptionTextColor,
+    fontSize: '14px',
+    marginBottom: '10px'
+  };
+
+  const issuerStyle: React.CSSProperties = {
+    color: displayMethod.issuerTextColor,
+    fontSize: '16px',
+    fontStyle: 'italic',
+    marginBottom: '10px'
+  };
+
   const [error, setError] = useState("");
   const [done, setDone] = useState(false);
 
@@ -196,6 +244,10 @@ function ListVerifiableCredentials() {
 
         // Format the result as JSON
         const jsonResult = {
+          title: displayMethod.title,
+          description: displayMethod.description,
+          issuerName: displayMethod.issuerName,
+          address: userId,
           type: credentialData._type.toString(),
           issuanceDate: formatTimestamp(credentialData.issuanceDate.toString()),
           IssuerDID: issuerDID,
@@ -222,7 +274,22 @@ function ListVerifiableCredentials() {
       {error ? (
         <p style={{ color: 'red' }}>{error}</p>
       ) : done && data ? (
-        <pre><ReactJson src={data} theme="monokai" collapsed={false} /></pre>
+        <div style={certificateStyle}>
+          <img src={displayMethod.logo.uri} alt={displayMethod.logo.alt} style={{ width: '150px', borderRadius: '50%', marginBottom: '10px' }} />
+          <div style={issuerStyle}>{displayMethod.description}</div>
+          <div >Issuer:</div>
+          <div style={issuerStyle}>{displayMethod.issuerName}</div>
+          <div >User Address:</div>
+          <div style={descriptionStyle}>{data.address}</div>
+          <div >Type:</div>
+          <div style={descriptionStyle}>{data.type}</div>
+          <div >Issuance Date:</div>
+          <div style={descriptionStyle}>{data.issuanceDate}</div>
+          <div >Issuer DID:</div>
+          <div style={descriptionStyle}>{data.IssuerDID}</div>
+          <div >Recipient DID:</div>
+          <div style={descriptionStyle}>{data.RecipientDID}</div>
+        </div>
       ) : (
         <p>Loading...</p>
       )}
