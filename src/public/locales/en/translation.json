@@ -3,5 +3,5 @@
   "logged-in": "😸 User logged-in",
   "wrong-credential": "😿 Not a valid credential",
   "button": "Check Verifiable Credential",
-  "vc": "Verifiable credentials for the user on-chain"
+  "vc": "User On-chain Verifiable credentials"
 }
