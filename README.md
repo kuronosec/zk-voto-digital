@@ -1,4 +1,4 @@
-# ZK Firma Digital Web
+# Zero-Knowledge Voto Digital
 
 This is a minimal project to get react (typescript) and snarkjs up and running. 
 
