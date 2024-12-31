@@ -12,7 +12,7 @@
 
   The Costa Rican government offers an advanced digital identity system (Firma Digital) that allows residents or entities to sign documents with a digital identity validated by the central bank as CA and authenticate themselves on various public or private websites and services. However, there is a significant privacy concern related to sensitive data in Costa Rica. A small amount of identity information, such as a national ID number or car plate number, can lead to extensive data collection. Private companies can use this kind of data to harvest citizen data, for instance, by calling and offering them products or services without any previous request or permission. This fact is exceptionally relevant now that big corporations harvest indiscriminate user data to train AI models. Even worse, criminals are collecting this same data to perform identity theft and fraud, sometimes even making fraudulent calls from the jails.
 
-  Our project aims to address these privacy issues by developing a zero-knowledge proof infrastructure using Polygon blockchain technology and ZK Circom circuits. This solution will enable citizens to verify their identity and provide specific information without revealing actual personal details. By minimizing the distribution of sensitive data across various institutions and companies, we can significantly reduce the risk of data theft. Additionally, this system can authenticate users for diverse services, ensuring they are real individuals and not bots, without requiring sensitive information such as email addresses or phone numbers.
+  Our project aims to address these privacy issues by developing a zero-knowledge proof infrastructure using Polygon blockchain technology and ZK Circom circuits. This solution enables citizens to verify their identity and provide specific information without revealing actual personal details. By minimizing the distribution of sensitive data across various institutions and companies, we can significantly reduce the risk of data theft. Additionally, this system can authenticate users for diverse services, ensuring they are real individuals and not bots, without requiring sensitive information such as email addresses or phone numbers.
 
 **Core Components and Architecture:**
 
@@ -30,7 +30,7 @@
 - **Allow users to anonymously participate in voting proposals**.
 - **Integration with Polygon Blockchain**.
 
-**Technology Stack:** The project will employ a diverse and robust technology stack to achieve its objectives. Key technologies include:
+**Technology Stack:** The project employs a diverse and robust technology stack to achieve its objectives. Key technologies include:
   - **Javascript**: For developing front-end interfaces and certain back-end functionalities.
   - **Python**: For data extraction, validation, and interaction with the Firma Digital certificate system.
   - **Circom (ZK Proofs)**: To enable privacy-preserving identity verification and voting.
