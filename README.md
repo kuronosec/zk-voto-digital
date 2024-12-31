@@ -66,6 +66,7 @@ There is still no system like this in the Circom ecosystem. In addition, we want
   - **Verifiable Credential Signature**: Enable users to sign voting data formatted as VC (JSON).
   - **Signature Validation**: Validate the signed voting data and citizen’s signature to confirm authenticity and eligibility.
   - **Circom vote privacy**: add circuits to validate the user ability to emit votes in a proposal and then allow them to vote in an anonymous way.
+    - Validate type of certificate: resident, citizen, organization.
 
 ### Milestone 2 — Integration with Polygon Blockchain 
 
