@@ -6,7 +6,7 @@
 
   The project aims to develop a zero-knowledge proof infrastructure solution for enhancing Costa Rica's digital identity system. Our goal is to strengthen citizen privacy by minimizing data collection, enabling individuals to access a wide range of valuable services without disclosing sensitive information. For this we plan to use Circom and the Polygon Blockchain network.
 
-  We already have developed an initial Proof-of-concept you can find here: [zk-firma-digital](https://github.com/kuronosec/zk-firma-digital) . The project is Open Source under the Apache-2.0 license. As a next step for our project, and proposal for this grant, we want to show the capabilities of our approach by allowing Costa Rican citizens to participate in voting proposals in an anonymous way while keeping the ability to authenticate their identities and therefore proving that they are enabled to vote, all by using blockchain technologies.
+  We already have developed an initial Proof-of-concept you can find here: [zk-firma-digital](https://github.com/kuronosec/zk-firma-digital) . The project is Open Source under the Apache-2.0 license. As a next step for our project we want to show the capabilities of our approach by allowing Costa Rican citizens to participate in voting proposals in an anonymous way while keeping the ability to authenticate their identities and therefore proving that they are enabled to vote, all by using blockchain technologies.
 
 -  **Core Idea:**
 
