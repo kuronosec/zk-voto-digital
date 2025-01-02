@@ -1,7 +1,0 @@
-{
-  "input": "Por favor increse su credential.json",
-  "logged-in": "😸 Usuario logueado correctamente",
-  "wrong-credential": "😿 Credencial no válida",
-  "button": "Comprobar credencial verificable",
-  "vc": "Credenciales verificables disponibles on-chain"
-}

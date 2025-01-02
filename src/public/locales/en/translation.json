@@ -1,7 +1,0 @@
-{
-  "input": "Please upload your credential.json",
-  "logged-in": "😸 User logged-in",
-  "wrong-credential": "😿 Not a valid credential",
-  "button": "Check Verifiable Credential",
-  "vc": "User On-chain Verifiable credentials"
-}
