@@ -110,4 +110,14 @@ yarn start
 
 The circuit and related files are located in the folder `src/zkproof`. 
 
+## See it working
+When you generate a Zk credential from your Firma Digital, which is a JSON file, you can test it by authenticating in this PoC website:
+
+* http://app.sakundi.io:8080/
+
+You can find the source code here: https://github.com/kuronosec/zk-firma-web
+
+Also you can find an example of the built verifiable credential here: https://github.com/kuronosec/zk-firma-digital/blob/main/src/examples/residence-credential.json
+
+
 
