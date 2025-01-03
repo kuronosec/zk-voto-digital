@@ -5,7 +5,13 @@
 body {
     background: #F4F4F4;
     font-family: 'Gotham', sans-serif;
-    overflow: hidden;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: auto;
 }
 
 .container-SignUp {
@@ -1110,4 +1116,8 @@ body {
   .fontPlans h1{
     font-size: 5.5rem;
   }
+}
+
+.min-h-screen {
+  min-height: 100vh;
 }

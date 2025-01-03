@@ -1,0 +1,64 @@
+/* Hero Section */
+.hero-section {
+    background: linear-gradient(to bottom, #5b21b6, #4c1d95); /* bg-gradient-to-b from-purple-800 to-indigo-900 */
+    color: white; /* text-white */
+    padding: 80px 0; /* py-20 */
+  }
+  
+  .hero-container {
+    max-width: 1280px; /* container */
+    margin: 0 auto; /* mx-auto */
+    padding: 0 24px; /* px-6 */
+  }
+  
+  .hero-content {
+    max-width: 768px; /* max-w-3xl */
+    margin: 0 auto; /* mx-auto */
+    text-align: center; /* text-center */
+  }
+  
+  .hero-title {
+    font-size: 3rem; /* text-5xl */
+    font-weight: 700; /* font-bold */
+    margin-bottom: 24px; /* mb-6 */
+  }
+  
+  .hero-description {
+    font-size: 1.25rem; /* text-xl */
+    margin-bottom: 32px; /* mb-8 */
+    color: #e9d5ff; /* text-purple-100 */
+  }
+  
+  .hero-buttons {
+    display: flex; /* flex */
+    justify-content: center; /* justify-center */
+    gap: 16px; /* space-x-4 */
+  }
+  
+  .hero-button-primary {
+    background-color: white; /* bg-white */
+    color: #4c1d95; /* text-purple-900 */
+    padding: 12px 32px; /* px-8 py-3 */
+    border-radius: 8px; /* rounded-lg */
+    font-weight: 600; /* font-semibold */
+    transition: background-color 0.3s; /* transition-colors */
+  }
+  
+  .hero-button-primary:hover {
+    background-color: #f3e8ff; /* hover:bg-purple-100 */
+  }
+  
+  .hero-button-secondary {
+    border: 2px solid white; /* border-2 border-white */
+    padding: 12px 32px; /* px-8 py-3 */
+    border-radius: 8px; /* rounded-lg */
+    font-weight: 600; /* font-semibold */
+    background-color: transparent; /* default background */
+    transition: background-color 0.3s; /* transition-colors */
+    color: white
+  }
+  
+  .hero-button-secondary:hover {
+    background-color: rgba(255, 255, 255, 0.1); /* hover:bg-white/10 */
+  }
+  
