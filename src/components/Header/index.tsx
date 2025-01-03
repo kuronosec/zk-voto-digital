@@ -11,7 +11,7 @@ export const Header = () => {
         <div className="nav-links md">
           <a href="#features">Features</a>
           <a href="#how-it-works">How it Works</a>
-          <a href="#example">Example</a>
+          <a href="#example">Try it</a>
           {/* <a href="#benefits">Benefits</a> */}
         </div>
         {/* <WalletConnect /> */}

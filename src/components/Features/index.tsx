@@ -3,12 +3,20 @@ import './styles.css';
 export const Features = () => {
   const features = [
     {
-      title: "Zero-Knowledge Proofs",
-      description: "Sign documents while maintaining complete privacy of sensitive information"
-    },
-    {
       title: "Secure Verification",
       description: "Cryptographically secure verification without revealing private data"
+    },
+    {
+      title: "Proof of Humanity",
+      description: "Show that you are not a bot, something critical in the AI era"
+    },
+    {
+      title: "Verify Age",
+      description: "Prove that you are older than 18 years without sending your sensitive identity"
+    },
+    {
+      title: "Vote Anonymously and Safely",
+      description: "Participate in voting campaigns in an anonymous way while demostrating your participation rights"
     },
     {
       title: "Easy Integration",
@@ -17,14 +25,6 @@ export const Features = () => {
     {
       title: "Instant Verification",
       description: "Real-time verification of signatures and documents"
-    },
-    {
-      title: "Global Compliance",
-      description: "Meets international digital signature standards and regulations"
-    },
-    {
-      title: "Multiple Formats",
-      description: "Support for various document formats and signature types"
     }
   ];
 

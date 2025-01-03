@@ -43,7 +43,7 @@ export const ZkSign = () => {
   return (
     <div className="card-white-profile" id="example">
       <div className="container">
-      <h1 className="card-title">Example</h1>
+      <h1 className="card-title">Identity Verification</h1>
       <h4 className="card-subtitle">{t("input")}</h4>
 
       <div className="validation-status">

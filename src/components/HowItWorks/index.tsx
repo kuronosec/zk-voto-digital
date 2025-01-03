@@ -4,23 +4,23 @@ export const HowItWorks = () => {
   const steps = [
     {
       number: "01",
-      title: "Upload Document",
-      description: "Upload the document you want to sign securely to our platform",
+      title: "Smart Card Verification",
+      description: "Verify your identity locally in your device without sending any sensitive information",
     },
     {
       number: "02",
       title: "Generate Proof",
-      description: "Our system generates a zero-knowledge proof of your signature",
+      description: "Our system generates a zero-knowledge proof of your identity",
     },
     {
       number: "03",
-      title: "Sign Document",
-      description: "Digitally sign the document while maintaining privacy",
+      title: "Send ZK Proof",
+      description: "Provide a proof of your identity while maintaining privacy",
     },
     {
       number: "04",
-      title: "Verify Signature",
-      description: "Anyone can verify the signature without accessing private data",
+      title: "Third Party Verification",
+      description: "Anyone can verify the identity proof without accessing your private data",
     },
   ];
 

@@ -6,11 +6,13 @@ export const Hero = () => {
       <div className="hero-container">
         <div className="hero-content">
           <h1 className="hero-title">
-            Secure Digital Signatures with Zero-Knowledge Proofs
+            Zero-knowledge proofs for government-provided user identity
           </h1>
           <p className="hero-description">
-            Sign documents securely while maintaining privacy using zero-knowledge proofs.
-            The future of digital signatures is here.
+            ZK Firma Digital strengthens citizen privacy by minimizing data collection,
+            enabling individuals to access a wide range of valuable services
+            without disclosing sensitive information while proving their
+            identity in an anonymous fashion
           </p>
           <div className="hero-buttons">
             <button className="hero-button-primary">Get Started</button>

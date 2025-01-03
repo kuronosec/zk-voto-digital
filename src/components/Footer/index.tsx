@@ -10,7 +10,7 @@ export const Footer = () => {
               <span className="footer-title">ZK Firma Digital</span>
             </div>
             <p className="footer-text">
-              Secure digital signatures with zero-knowledge proofs
+              Secure digital identities with zero-knowledge proofs
             </p>
           </div>
           <div>
@@ -37,7 +37,7 @@ export const Footer = () => {
           </div>
         </div>
         <div className="footer-bottom">
-          <p>&copy; {new Date().getFullYear()} ZK Firma Digital. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} Sakundi. All rights reserved.</p>
         </div>
       </div>
     </footer>
