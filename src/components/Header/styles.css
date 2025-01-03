@@ -1,0 +1,42 @@
+/* styles.css */
+.header {
+    background: linear-gradient(to right, #5b21b6, #4338ca); /* from-purple-800 to-indigo-900 */
+    color: white;
+  }
+  
+  .nav-container {
+    max-width: 1280px; /* Tailwind's container default */
+    margin: 0 auto;
+    padding: 16px 24px; /* px-6 py-4 */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 8px; /* space-x-2 */
+    font-size: 1.25rem; /* text-xl */
+    font-weight: bold;
+  }
+  
+  .nav-links {
+    display: none; /* hidden */
+  }
+  
+  .nav-links.md {
+    display: flex; /* md:flex */
+    gap: 32px; /* space-x-8 */
+  }
+  
+  .nav-links a {
+    color: white;
+    transition: color 0.3s;
+    text-decoration: none;
+  }
+  
+  .nav-links a:hover {
+    color: #d8b4fe; /* hover:text-purple-200 */
+  }
+  

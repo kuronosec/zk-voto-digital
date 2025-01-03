@@ -1,0 +1,2 @@
+export const productionPublicKeyHash = '15100764808137121660160871414130376377652473835020058565951744372715764457760';
+export const endpointUrl = process.env.REACT_APP_ENDPOINT_URL || "http://localhost:8000/vkey.json";
