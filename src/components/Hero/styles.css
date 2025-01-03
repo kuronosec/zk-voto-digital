@@ -55,6 +55,7 @@
     font-weight: 600; /* font-semibold */
     background-color: transparent; /* default background */
     transition: background-color 0.3s; /* transition-colors */
+    color: white
   }
   
   .hero-button-secondary:hover {
