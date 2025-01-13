@@ -10,7 +10,7 @@ import { writeContract } from "@wagmi/core";
 import { wagmiConfig } from "../config";
 
 export default function VotePage() {
-  const { isTestMode, setVoted } = useState(null);
+  const { isTestMode, setVoted } = useState<boolean>(false);
   const { isConnected, address } = useAccount();
   const [rating, setRating] = useState<string>();
   const [isLoading, setIsLoading] = useState<boolean>(false);
