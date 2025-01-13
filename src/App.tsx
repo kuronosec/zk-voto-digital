@@ -1,23 +1,23 @@
-import { Features } from "./components/Features";
-import { Footer } from "./components/Footer";
-import { Header } from "./components/Header";
-import { Hero } from "./components/Hero";
-import { HowItWorks } from "./components/HowItWorks";
-import { ZkSign } from "./components/ZkSign";
+// App.tsx
+import React from "react";
+import './index.css';
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import HomePage from "./pages/HomePage";
+// import VotePage from "./pages/VotePage";
+// <Route path="/vote" element={<VotePage />} />
 
-function App() {
-  return (
-    <div className="min-h-screen">
-      <Header />
-      <main>
-        <Hero />
-        <Features />
-        <HowItWorks />
-        <ZkSign />
-      </main>
-      <Footer />
-    </div>
-  );
-}
+const App: React.FC = () => {
+    return (
+        <Router>
+            <nav>
+                <Link to="/">Home</Link> | <Link to="/about">About</Link> | <Link to="/contact">Contact</Link>
+            </nav>
+
+            <Routes>
+                <Route path="/" element={<HomePage />} />
+            </Routes>
+        </Router>
+    );
+};
 
 export default App;
