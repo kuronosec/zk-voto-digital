@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useTranslation } from 'react-i18next';
 import '../i18n';
+import { Button } from "rimble-ui";
 // import "./style.css";
 
 import { verifyProof } from '../utils/verifyProof';
@@ -45,6 +46,9 @@ export const VoteValidation = () => {
 
       <div className="validation-status">
         <ListVerifiableCredentials />
+      </div>
+      <div className="button-wrapper">
+        <Button.Outline onClick={runProofs}>{t("button")}</Button.Outline>
       </div>
       </div>
     </div>

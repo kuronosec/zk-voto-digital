@@ -13,6 +13,7 @@
     "@types/node": "^12.0.0",
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
+    "axios": "^1.7.9",
     "connect-busboy": "^1.0.0",
     "cors": "^2.8.5",
     "ethers": "5",
@@ -20,6 +21,7 @@
     "ffjavascript": "^0.2.35",
     "i18next": "^23.16.4",
     "multer": "^1.4.5-lts.1",
+    "query-string": "6",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-i18next": "11.8.5",
@@ -35,8 +37,8 @@
     "web-vitals": "^1.0.1"
   },
   "scripts": {
-    "start": "PORT=8080 react-scripts start",
-    "start:windows": "cross-env PORT=8080 react-scripts start",
+    "start": "PORT=3000 react-scripts start",
+    "start:windows": "cross-env PORT=3000 react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
