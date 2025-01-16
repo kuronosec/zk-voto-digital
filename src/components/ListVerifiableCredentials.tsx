@@ -3,9 +3,23 @@ import { useTranslation } from 'react-i18next';
 import { useCredentialData } from '../hooks/useCredentialData';
 import { CredentialDisplay } from './CredentialDisplay';
 
-function ListVerifiableCredentials() {
+interface VCAvailableProps {
+  onVCAvailable: (available: boolean) => void;
+  onError: (error: string) => void;
+}
+
+const ListVerifiableCredentials: React.FC<VCAvailableProps> = ({ onVCAvailable, onError }) => {
   const { t } = useTranslation();
   const { data, error, done } = useCredentialData();
+  if (!data) {
+    onVCAvailable(false);
+  } else {
+    onVCAvailable(true);
+  }
+
+  if (error) {
+    onError(error);
+  }
 
   return (
     <div>

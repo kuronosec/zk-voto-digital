@@ -7,6 +7,7 @@ import { Button } from "rimble-ui";
 import { verifyProof } from '../utils/verifyProof';
 import { endpointUrl } from '../constants';
 import ListVerifiableCredentials from '../components/ListVerifiableCredentials';
+import RequestFirma from "../components/ZkSign/RequestFirma";
 
 export const VoteValidation = () => {
   const { t } = useTranslation();
@@ -14,42 +15,31 @@ export const VoteValidation = () => {
   const [signals, setSignals] = useState(null);
   const [done, setDone] = useState<string | null>(null);
   const [isValid, setIsValid] = useState(true);
+  const [isVCAvailable, setIsVCAvailable] = useState(false);
   const [error, setError] = useState("");
 
-  const handleFileUpload = (newProof: any, newSignals: any) => {
+  const handleVCFetch = (newProof: any, newSignals: any) => {
     setProof(newProof);
     setSignals(newSignals);
   };
 
-  const runProofs = async () => {
-    try {
-      const _isValid = await verifyProof(endpointUrl, signals, proof);
-      setIsValid(_isValid);
-      setDone(proof);
-      
-      if (_isValid) {
-        console.log("Valid credentials");
-      } else {
-        console.log("Invalid credentials");
-        setDone("error");
-      }
-    } catch (error) {
-      setIsValid(false);
-      console.log('Error in validation: ' + error);
-    }
+  const handleVCAvailable = (available: boolean) => {
+    setIsVCAvailable(available);
   };
 
   return (
     <div className="card-white-profile" id="example">
       <div className="container">
-      <h1 className="card-title">Identity Verification</h1>
+      <h1 className="card-title">Voting System - Citizen Identity Validation</h1>
 
       <div className="validation-status">
-        <ListVerifiableCredentials />
+        <ListVerifiableCredentials onVCAvailable={handleVCAvailable} onError={setError}/>
       </div>
-      <div className="button-wrapper">
-        <Button.Outline onClick={runProofs}>{t("button")}</Button.Outline>
+      {!isVCAvailable && <div className="validation-status">
+        <RequestFirma onVCFetch={handleVCFetch} onError={setError}/>
       </div>
+      }
+      {error && <p className="error-message">{error}</p>}
       </div>
     </div>
   );

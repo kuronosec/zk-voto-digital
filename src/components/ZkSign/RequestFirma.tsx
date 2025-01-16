@@ -10,6 +10,11 @@ const USER_ID = process.env.REACT_APP_USER_ID || "hello@user.com";
 const REDIRECT_URI = process.env.REACT_APP_REDIRECT_URI || "http://localhost:3000/callback";
 const AUTH_SERVER_URL = process.env.REACT_APP_AUTH_SERVER_URL || "https://app.sakundi.io";
 
+interface VCFetchProps {
+  onVCFetch: (proof: any, signals: any) => void;
+  onError: (error: string) => void;
+}
+
 // Helper function to parse JWT
 function parseJwt(token: string): Record<string, any> | null {
   try {
@@ -23,6 +28,7 @@ function parseJwt(token: string): Record<string, any> | null {
         })
         .join("")
     );
+    console.log(JSON.parse(jsonPayload));
     return JSON.parse(jsonPayload);
   } catch (error) {
     console.error("Invalid token:", error);
@@ -30,7 +36,7 @@ function parseJwt(token: string): Record<string, any> | null {
   }
 }
 
-const RequestFirma: React.FC = () => {
+const RequestFirma: React.FC<VCFetchProps> = ({ onVCFetch, onError }) => {
   const [searchParams] = useSearchParams();
   const [authUrl, setAuthUrl] = useState<string>("");
   const [tokenData, setTokenData] = useState<Record<string, any> | null>(null);
@@ -38,15 +44,19 @@ const RequestFirma: React.FC = () => {
 
   // Step 1: Generate the authorization URL
   useEffect(() => {
-    const url = `${AUTH_SERVER_URL}/authorize?` + queryString.stringify({
-      grant_type: "code",
-      client_id: CLIENT_ID,
-      user_id: USER_ID,
-      redirect_uri: REDIRECT_URI,
-      scope: "zk-firma-digital",
-      state: Math.random() * 10000, // Random value to protect against CSRF
-    });
-    setAuthUrl(url);
+    const code = searchParams.get("code");
+
+    if (!code && !tokenData) {
+      const url = `${AUTH_SERVER_URL}/authorize?` + queryString.stringify({
+        grant_type: "code",
+        client_id: CLIENT_ID,
+        user_id: USER_ID,
+        redirect_uri: REDIRECT_URI,
+        scope: "zk-firma-digital",
+        state: Math.random() * 10000, // Random value to protect against CSRF
+      });
+      setAuthUrl(url);
+    }
   }, []);
 
   // Step 2: Handle the callback and exchange the code for an access token
@@ -73,7 +83,26 @@ const RequestFirma: React.FC = () => {
           );
 
           const { access_token } = response.data;
+          const { verifiable_credential } = response.data
           setTokenData(parseJwt(access_token));
+          try {
+            const verifiable_credential_json = JSON.parse(verifiable_credential);
+            if (verifiable_credential_json) {
+              console.log(verifiable_credential_json);
+              if (verifiable_credential_json.proof) {
+                onVCFetch(
+                  verifiable_credential_json.proof.signatureValue.proof,
+                  verifiable_credential_json.proof.signatureValue.public
+                );
+              } else {
+                console.log('Invalid veriable credential');
+                onError('Invalid veriable credential');
+              }
+            }
+          } catch (error) {
+            console.log("Error parsing JSON file: " + error);
+            onError(error instanceof Error ? error.message : 'Error parsing JSON file');
+          }
         } catch (err) {
           console.error("Error exchanging authorization code:", err);
           setError("Failed to exchange authorization code for access token");
