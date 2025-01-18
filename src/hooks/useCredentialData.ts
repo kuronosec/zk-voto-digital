@@ -30,7 +30,7 @@ export function useCredentialData() {
         const userId = await signer.getAddress();
         const contract = new ethers.Contract(issuerContractAddress, contractABI, signer);
 
-        const credential = await contract.getCredential(userId, 0);
+        const credential = await contract.getCredential(userId, 1);
         const credentialData = credential[0];
 
         const jsonResult = {

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import axios from "axios";
 import queryString from "query-string";
+import { issueCredential } from '../../hooks/issueCredential';
 
 // Secrets
 const CLIENT_ID = process.env.REACT_APP_CLIENT_ID || "hello@example.com";
@@ -41,7 +42,8 @@ const RequestFirma: React.FC<VCFetchProps> = ({ onVCFetch, onError }) => {
   const [authUrl, setAuthUrl] = useState<string>("");
   const [tokenData, setTokenData] = useState<Record<string, any> | null>(null);
   const [error, setError] = useState<string | null>(null);
-
+  
+  var verifiable_credential_json: any = null;
   // Step 1: Generate the authorization URL
   useEffect(() => {
     const code = searchParams.get("code");
@@ -86,7 +88,7 @@ const RequestFirma: React.FC<VCFetchProps> = ({ onVCFetch, onError }) => {
           const { verifiable_credential } = response.data
           setTokenData(parseJwt(access_token));
           try {
-            const verifiable_credential_json = JSON.parse(verifiable_credential);
+            verifiable_credential_json = JSON.parse(verifiable_credential);
             if (verifiable_credential_json) {
               console.log(verifiable_credential_json);
               if (verifiable_credential_json.proof) {
@@ -115,12 +117,22 @@ const RequestFirma: React.FC<VCFetchProps> = ({ onVCFetch, onError }) => {
 
   // Step 3: Display the UI
   if (tokenData) {
-    return (
-      <div>
-        <h1>Access Token Received!</h1>
-        <pre>{JSON.stringify(tokenData, null, 2)}</pre>
-      </div>
-    );
+    const { result, error, done } = issueCredential(verifiable_credential_json);
+    if (done) {
+      return (
+        <div>
+          <h1>Credential created succesfully!</h1>
+          <pre>{JSON.stringify(result, null, 2)}</pre>
+        </div>
+      );
+    } else if (error) {
+      return (
+        <div>
+          <h1>There was an error on the credential creation!</h1>
+          <pre>{JSON.stringify(error, null, 2)}</pre>
+        </div>
+      );
+    }
   }
 
   if (error) {
@@ -129,9 +141,28 @@ const RequestFirma: React.FC<VCFetchProps> = ({ onVCFetch, onError }) => {
 
   return (
     <div>
-      <h1>Authenticate with Your Digital Signature</h1>
+      <h1>Create a new Proof of Identity to be able to cast a vote</h1>
       <p>
-        <a href={authUrl}>Click here to begin the authentication process</a>
+        <button
+          onClick={() => {
+            if (authUrl) {
+              window.location.href = authUrl;
+            } else {
+              console.error("Authorization URL is not defined.");
+            }
+          }}
+          style={{
+            padding: "10px 20px",
+            fontSize: "16px",
+            cursor: "pointer",
+            backgroundColor: "#007BFF",
+            color: "#FFF",
+            border: "none",
+            borderRadius: "5px",
+          }}
+        >
+          Authenticate
+        </button>
       </p>
     </div>
   );
