@@ -39,7 +39,7 @@
   "scripts": {
     "start": "NODE_OPTIONS=--openssl-legacy-provider PORT=3000 react-scripts start",
     "start:windows": "cross-env NODE_OPTIONS=--openssl-legacy-provider PORT=3000 react-scripts start",
-    "build": "react-scripts build",
+    "build": "NODE_OPTIONS=--openssl-legacy-provider react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },

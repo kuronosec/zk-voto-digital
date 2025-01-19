@@ -46,7 +46,7 @@ export function issueCredential(verifiableCredential: any) {
       await window.ethereum.request({ method: 'eth_requestAccounts' });
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const signer = provider.getSigner();
-      const userId = await signer.getAddress();
+      const userId = '0x179E0B398A2FE8b600dfF23dA141956Be52Dc98D';//await signer.getAddress();
       const contract = new ethers.Contract(issuerContractAddress, contractABI, signer);
 
       const nullifierSeed = verifiableCredential.proof.signatureValue.public[3];

@@ -1,46 +1,57 @@
-import { useState } from "react";
-import { useTranslation } from 'react-i18next';
 import '../i18n';
-import { Button } from "rimble-ui";
+import { getCredentialData } from '../hooks/getCredentialData';
+import { CredentialDisplay } from '../components/CredentialDisplay';
+import { useNavigate } from "react-router-dom";
+import { useTranslation } from 'react-i18next';
+import { useState, useEffect } from 'react';
 // import "./style.css";
 
-import { verifyProof } from '../utils/verifyProof';
-import { endpointUrl } from '../constants';
-import ListVerifiableCredentials from '../components/ListVerifiableCredentials';
-import RequestFirma from "../components/ZkSign/RequestFirma";
+const VoteValidation: React.FC = () => {
+  const { t } = useTranslation()
+  const [data, setData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [done, setDone] = useState(true);
 
-export const VoteValidation = () => {
-  const { t } = useTranslation();
-  const [proof, setProof] = useState(null);
-  const [signals, setSignals] = useState(null);
-  const [done, setDone] = useState<string | null>(null);
-  const [isValid, setIsValid] = useState(true);
-  const [isVCAvailable, setIsVCAvailable] = useState(false);
-  const [error, setError] = useState("");
-
-  const handleVCFetch = (newProof: any, newSignals: any) => {
-    setProof(newProof);
-    setSignals(newSignals);
+  const navigate = useNavigate();
+  const fetchData = async () => {
+    try {
+      const { data, error, done } = await getCredentialData();
+      setData(data);
+      setError(error);
+      setDone(done);
+      setLoading(false);
+    } catch (err) {
+        setError(err instanceof Error ? err.message : "An error occurred");
+    } finally {
+        setLoading(false);
+    }
   };
+  
+  useEffect(() => {
+    fetchData();
+  }, []);
 
-  const handleVCAvailable = (available: boolean) => {
-    setIsVCAvailable(available);
-  };
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error}</p>;
+  if (!loading || !data) navigate("/request-firma");
 
   return (
     <div className="card-white-profile" id="example">
       <div className="container">
-      <h1 className="card-title">Voting System - Citizen Identity Validation</h1>
-
-      <div className="validation-status">
-        <ListVerifiableCredentials onVCAvailable={handleVCAvailable} onError={setError}/>
-      </div>
-      {!isVCAvailable && <div className="validation-status">
-        <RequestFirma onVCFetch={handleVCFetch} onError={setError}/>
-      </div>
-      }
+      <h1 className="card-title">Voting System - Citizen Identity Validation</h1>  
+      <h2>{t('vc')}</h2>
+      {error ? (
+        <p style={{ color: 'red' }}>{error}</p>
+      ) : done && data ? (
+        <CredentialDisplay data={data} />
+      ) : (
+        <p>Loading...</p>
+      )}
       {error && <p className="error-message">{error}</p>}
       </div>
     </div>
   );
 }
+
+export default VoteValidation;
