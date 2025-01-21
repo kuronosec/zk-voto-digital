@@ -128,5 +128,43 @@ export const contractABI = [
     ],
     "stateMutability": "view",
     "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_userId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "nullifierSeed",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "nullifier",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "signal",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256[1]",
+        "name": "revealArray",
+        "type": "uint256[1]"
+      },
+      {
+        "internalType": "uint256[8]",
+        "name": "groth16Proof",
+        "type": "uint256[8]"
+      }
+    ],
+    "name": "issueCredential",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
   }
 ];

@@ -1,10 +1,11 @@
 import '../i18n';
+import { Header } from "../components/Header";
 import { getCredentialData } from '../hooks/getCredentialData';
 import { CredentialDisplay } from '../components/CredentialDisplay';
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from 'react-i18next';
 import { useState, useEffect } from 'react';
-// import "./style.css";
+import './styles.css';
 
 const VoteValidation: React.FC = () => {
   const { t } = useTranslation()
@@ -20,7 +21,6 @@ const VoteValidation: React.FC = () => {
       setData(data);
       setError(error);
       setDone(done);
-      setLoading(false);
     } catch (err) {
         setError(err instanceof Error ? err.message : "An error occurred");
     } finally {
@@ -32,15 +32,18 @@ const VoteValidation: React.FC = () => {
     fetchData();
   }, []);
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error}</p>;
-  if (!loading || !data) navigate("/request-firma");
+  useEffect(() => {
+    if (!loading && !data) {
+        navigate("/request-firma");
+    }
+  }, [loading, data, navigate]); // Only runs when loading, data, or navigate changes
 
   return (
-    <div className="card-white-profile" id="example">
+    <div>
+      <Header />
       <div className="container">
       <h1 className="card-title">Voting System - Citizen Identity Validation</h1>  
-      <h2>{t('vc')}</h2>
+      <h2 className="card-subtitle">{t('vc')}</h2>
       {error ? (
         <p style={{ color: 'red' }}>{error}</p>
       ) : done && data ? (
@@ -48,7 +51,6 @@ const VoteValidation: React.FC = () => {
       ) : (
         <p>Loading...</p>
       )}
-      {error && <p className="error-message">{error}</p>}
       </div>
     </div>
   );

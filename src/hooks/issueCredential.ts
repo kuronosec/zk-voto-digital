@@ -1,4 +1,3 @@
-import { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
 import { issuerContractAddress, contractABI } from '../constants/contract';
 import { Groth16Proof } from 'snarkjs'
@@ -36,7 +35,8 @@ function packGroth16Proof(
   ]
 }
 
-export function issueCredential(verifiableCredential: any) {
+export const issueCredential = async (verifiableCredential: any):
+  Promise<{ result: any; error: string | null; done: boolean }> => {
   var result = "";
   var error = "";
   var done = false;
@@ -46,18 +46,24 @@ export function issueCredential(verifiableCredential: any) {
       await window.ethereum.request({ method: 'eth_requestAccounts' });
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const signer = provider.getSigner();
-      const userId = '0x179E0B398A2FE8b600dfF23dA141956Be52Dc98D';//await signer.getAddress();
+      const userId = await signer.getAddress();
       const contract = new ethers.Contract(issuerContractAddress, contractABI, signer);
 
       const nullifierSeed = verifiableCredential.proof.signatureValue.public[3];
       const nullifier = verifiableCredential.proof.signatureValue.public[1];
       // Signal used when generating proof
-      const signal = process.env.ETHEREUM_ADDRESS || '1';
+      const signal = userId;
       // For the moment this is assumed always the case that age > 18
       const revealArray = [verifiableCredential.proof.signatureValue.public[2]];
       // Get proof from credential
       const proof = verifiableCredential.proof.signatureValue.proof;
 
+      console.log("userId", userId);
+      console.log("nullifierSeed", nullifierSeed);
+      console.log("nullifier", nullifier);
+      console.log("signal", signal);
+      console.log("revealArray", revealArray);
+      console.log("proof", proof);
       const result_transaction = await contract.issueCredential(
         userId,
         nullifierSeed,
@@ -77,5 +83,9 @@ export function issueCredential(verifiableCredential: any) {
 
   pushData();
 
-  return { result, error, done };
+  return new Promise((resolve) => {
+    setTimeout(() => {
+        resolve({ result: result, error: error, done: done });
+    }, 2000);
+  });
 }

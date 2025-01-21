@@ -4,12 +4,14 @@ import axios from "axios";
 import queryString from "query-string";
 import { issueCredential } from '../hooks/issueCredential';
 import { useNavigate } from "react-router-dom";
+import { Header } from "../components/Header";
+import './styles.css';
 
 // Secrets
 const CLIENT_ID = process.env.REACT_APP_CLIENT_ID || "hello@example.com";
 const CLIENT_SECRET = process.env.REACT_APP_CLIENT_SECRET || "password";
 const USER_ID = process.env.REACT_APP_USER_ID || "hello@user.com";
-const REDIRECT_URI = process.env.REACT_APP_REDIRECT_URI || "http://localhost:3000/callback";
+const REDIRECT_URI = process.env.REACT_APP_REDIRECT_URI || "http://localhost:3000/request-firma";
 const AUTH_SERVER_URL = process.env.REACT_APP_AUTH_SERVER_URL || "https://app.sakundi.io";
 
 // Helper function to parse JWT
@@ -25,7 +27,6 @@ function parseJwt(token: string): Record<string, any> | null {
         })
         .join("")
     );
-    console.log(JSON.parse(jsonPayload));
     return JSON.parse(jsonPayload);
   } catch (error) {
     console.error("Invalid token:", error);
@@ -37,10 +38,13 @@ const RequestFirma: React.FC = () => {
   const [searchParams] = useSearchParams();
   const [authUrl, setAuthUrl] = useState<string>("");
   const [tokenData, setTokenData] = useState<Record<string, any> | null>(null);
+  const [result, setResult] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
+  const [done, setDone] = useState(false);
+  const [verifiableCredential, setVerifiableCredential] =
+    useState<Record<string, any> | null>(null);
   const navigate = useNavigate();
   
-  var verifiable_credential_json: any = null;
   // Step 1: Generate the authorization URL
   useEffect(() => {
     const code = searchParams.get("code");
@@ -85,14 +89,9 @@ const RequestFirma: React.FC = () => {
           const { verifiable_credential } = response.data
           setTokenData(parseJwt(access_token));
           try {
-            verifiable_credential_json = JSON.parse(verifiable_credential);
-            if (verifiable_credential_json) {
-              if (!verifiable_credential_json) {
-                console.log('Invalid verifiable credential');
-              }
-            }
+            setVerifiableCredential(JSON.parse(verifiable_credential));
           } catch (error) {
-            console.log("Error parsing JSON file: " + error);
+            console.error("Invalid verifiable credential: " + error);
           }
         } catch (err) {
           console.error("Error exchanging authorization code:", err);
@@ -104,29 +103,41 @@ const RequestFirma: React.FC = () => {
     }
   }, [searchParams]);
 
-  // Step 3: Display the UI
-  if (tokenData) {
-    const { result, error, done } = issueCredential(verifiable_credential_json);
+  // Step 3: Create credentials on-chain
+  const pushData = async () => {
+      try {
+        const { result, error, done } =
+          await issueCredential(verifiableCredential);
+        setResult(result);
+        setError(error);
+        console.log("result:", result);
+        console.log("error:", error);
+        if (done) {
+          setDone(done);
+        }
+      } catch (err) {
+          setError(err instanceof Error ? err.message : "An error occurred");
+      }
+  };
+    
+  useEffect(() => {
+      if (tokenData && verifiableCredential) {
+        pushData();
+      }
+    }, [tokenData, verifiableCredential]);
+
+  useEffect(() => {
     if (done) {
-      navigate("/request-firma");
-    } else if (error) {
-      return (
-        <div>
-          <h1>There was an error on the credential creation!</h1>
-          <pre>{JSON.stringify(error, null, 2)}</pre>
-        </div>
-      );
+      navigate("/vote");
     }
-  }
-
-  if (error) {
-    return <div>Error: {error}</div>;
-  }
-
+  }, [done]); // Only runs when loading, data, or navigate changes
+  
+  // Step 3: Display the UI
   return (
     <div>
-      <h1>Create a new Proof of Identity to be able to cast a vote</h1>
-      <p>
+      <Header />
+      <h1 className="card-title">Create a new Proof of Identity to be able to cast a vote</h1>
+      <p className="card-subtitle">
         <button
           onClick={() => {
             if (authUrl) {
@@ -143,11 +154,17 @@ const RequestFirma: React.FC = () => {
             color: "#FFF",
             border: "none",
             borderRadius: "5px",
+            alignItems: "center"
           }}
         >
           Authenticate
         </button>
       </p>
+      {error ? (
+        <p style={{ color: 'red' }}>{error}</p>
+      ): (
+        <p className="card-subtitle">Please use your Firma Digital card to authenticate and vote</p>
+      )}
     </div>
   );
 };

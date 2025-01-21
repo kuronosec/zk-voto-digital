@@ -1,19 +1,22 @@
 import { ethers } from 'ethers';
-import { issuerContractAddress, contractABI } from '../constants/contract';
+import { issuerContractAddress, contractABI, issuerDID, userIdDID } from '../constants/contract';
+import { formatTimestamp } from '../utils/formatters';
 
 type BigNumberish = string | bigint;
 
-export function getCredentialData() {
-  var data = null;
+export const getCredentialData = async ():
+  Promise<{ data: any; error: string | null; done: boolean }> => {
+  var data = {};
   var error = "";
   var done = false;
+  console.log("fetchData started");
 
   const fetchData = async () => {
     try {
       await window.ethereum.request({ method: 'eth_requestAccounts' });
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const signer = provider.getSigner();
-      const userId = '0x179E0B398A2FE8b600dfF23dA141956Be52Dc98D';// await signer.getAddress();
+      const userId = await signer.getAddress();
       const contract = new ethers.Contract(issuerContractAddress, contractABI, signer);
 
       // Get list of credentials
@@ -22,13 +25,29 @@ export function getCredentialData() {
       );
       if (credentialIds.length === 0) {
         console.log("credentialIds is empty.");
-        // setError("No credential yet available for user.");
+        error = 'No credential yet available for user.';
       } else {
-        console.log("credentialIds:", credentialIds);
         const formattedIds = credentialIds.map((id) => id.toString());
         console.log("User Credential IDs:", formattedIds);
         const credential = await contract.getCredential(userId, formattedIds[0]);
-        data = credential[0];
+
+        // Destructure the result to display
+        const credentialData = credential[0];  // INonMerklizedIssuer.CredentialData struct
+        // const uintArray = credential[1];       // uint256[8] array
+        // const subjectFields = credential[2];   // INonMerklizedIssuer.SubjectField[] array
+
+        // Format the result as JSON
+        const jsonResult = {
+          address: userId,
+          type: credentialData._type.toString(),
+          issuanceDate: formatTimestamp(credentialData.issuanceDate.toString()),
+          IssuerDID: issuerDID,
+          RecipientDID: userIdDID,
+          context: credentialData.context[0].toString()
+        };
+
+        data = jsonResult;
+        console.log("data:", data);
         done = true;
       }
     } catch (err) {
@@ -38,5 +57,9 @@ export function getCredentialData() {
 
   fetchData();
 
-  return { data, error, done };
+  return new Promise((resolve) => {
+    setTimeout(() => {
+        resolve({ data: data, error: error, done: done });
+    }, 2000);
+  });
 }
