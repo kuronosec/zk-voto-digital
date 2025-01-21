@@ -23,13 +23,6 @@ export const CredentialDisplay: React.FC<CredentialDisplayProps> = ({ data }) =>
     boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
   };
 
-  const titleStyle: React.CSSProperties = {
-    color: displayMethod.titleTextColor,
-    fontSize: '24px',
-    fontWeight: 'bold',
-    marginBottom: '10px'
-  };
-
   const descriptionStyle: React.CSSProperties = {
     color: displayMethod.descriptionTextColor,
     fontSize: '14px',

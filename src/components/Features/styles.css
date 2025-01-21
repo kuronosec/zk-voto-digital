@@ -50,6 +50,12 @@
     font-weight: 600; /* font-semibold */
     margin-bottom: 8px; /* mb-2 */
   }
+
+  .feature-card-subtitle {
+    font-size: 1.25rem; /* text-xl */
+    font-weight: 500; /* font-semibold */
+    margin-bottom: 8px; /* mb-2 */
+  }
   
   .feature-card-description {
     color: #4b5563; /* text-gray-600 */
