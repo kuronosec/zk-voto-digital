@@ -5,15 +5,17 @@ import { formatTimestamp } from '../utils/formatters';
 type BigNumberish = string | bigint;
 
 export const getCredentialData = async ():
-  Promise<{ data: any; error: string | null; done: boolean }> => {
+  Promise<{ _data: any; _error: string | null }> => {
   var data = {};
   var error = "";
-  var done = false;
-  console.log("fetchData started");
 
   const fetchData = async () => {
     try {
-      await window.ethereum.request({ method: 'eth_requestAccounts' });
+      const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+      if (accounts.length === 0) {
+        // Prompt the user to connect MetaMask if no accounts are authorized
+        await window.ethereum.request({ method: 'eth_requestAccounts' });
+      }
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const signer = provider.getSigner();
       const userId = await signer.getAddress();
@@ -25,6 +27,7 @@ export const getCredentialData = async ():
       );
       if (credentialIds.length === 0) {
         console.log("credentialIds is empty.");
+        data = {};
         error = 'No credential yet available for user.';
       } else {
         const formattedIds = credentialIds.map((id) => id.toString());
@@ -48,10 +51,15 @@ export const getCredentialData = async ():
 
         data = jsonResult;
         console.log("data:", data);
-        done = true;
       }
     } catch (err) {
-      console.error(err);
+      if (err.code === 4001) {
+        console.error("User rejected the request.");
+        error = "User rejected the request.";
+      } else {
+        console.error("Error:", err);
+        error = "Wallet no yet available."
+      }
     };
   }
 
@@ -59,7 +67,7 @@ export const getCredentialData = async ():
 
   return new Promise((resolve) => {
     setTimeout(() => {
-        resolve({ data: data, error: error, done: done });
+        resolve({ _data: data, _error: error });
     }, 2000);
   });
 }

@@ -12,19 +12,28 @@ const VoteValidation: React.FC = () => {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [done, setDone] = useState(true);
+  const [done, setDone] = useState(false);
 
   const navigate = useNavigate();
   const fetchData = async () => {
     try {
-      const { data, error, done } = await getCredentialData();
-      setData(data);
-      setError(error);
-      setDone(done);
+      const { _data, _error } = await getCredentialData();
+      if ( _error === "No credential yet available for user.") {
+        setDone(false);
+        setData(null);
+      } else if ( _error === "Wallet no yet available." ) {
+        setDone(false);
+        setData(null);
+      } else {
+        setDone(true);
+        setData(_data);
+      }
+      setError(_error);
+      setLoading(false);
     } catch (err) {
-        setError(err instanceof Error ? err.message : "An error occurred");
+      setError(err instanceof Error ? err.message : "An error occurred");
     } finally {
-        setLoading(false);
+      setLoading(false);
     }
   };
   
@@ -33,10 +42,10 @@ const VoteValidation: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (!loading && !data) {
+    if (!loading && error === "No credential yet available for user.") {
         navigate("/request-firma");
     }
-  }, [loading, data, navigate]); // Only runs when loading, data, or navigate changes
+  }, [loading, error, navigate]);
 
   return (
     <div>
@@ -46,10 +55,10 @@ const VoteValidation: React.FC = () => {
       <h2 className="card-subtitle">{t('vc')}</h2>
       {error ? (
         <p style={{ color: 'red' }}>{error}</p>
-      ) : done && data ? (
+      ) : !loading && done && Object.keys(data).length > 0 ? (
         <CredentialDisplay data={data} />
       ) : (
-        <p>Loading...</p>
+        <p>Please login with Metamask...</p>
       )}
       </div>
     </div>

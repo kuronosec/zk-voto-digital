@@ -157,7 +157,7 @@ const RequestFirma: React.FC = () => {
             alignItems: "center"
           }}
         >
-          Authenticate
+          Go to authentication website
         </button>
       </p>
       {error ? (

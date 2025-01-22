@@ -1,5 +1,15 @@
 import { ethers } from "ethers";
-import votingAbi from "./public/ZKFirmaDigitalVote.json";
+import votingAbi from "../public/ZKFirmaDigitalVote.json";
+
+const checkMetaMaskStatus = async () => {
+  const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+  if (accounts.length === 0) {
+      console.log("MetaMask is locked or no accounts are connected.");
+      return false;
+  }
+  console.log("MetaMask is unlocked and accounts are connected.");
+  return true;
+};
 
 const providerUrl = process.env.NEXT_PUBLIC_RPC_URL;
 

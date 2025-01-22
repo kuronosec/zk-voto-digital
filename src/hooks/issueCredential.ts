@@ -43,7 +43,11 @@ export const issueCredential = async (verifiableCredential: any):
 
   const pushData = async () => {
     try {
-      await window.ethereum.request({ method: 'eth_requestAccounts' });
+      const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+      if (accounts.length === 0) {
+        // Prompt the user to connect MetaMask if no accounts are authorized
+        await window.ethereum.request({ method: 'eth_requestAccounts' });
+      }
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const signer = provider.getSigner();
       const userId = await signer.getAddress();
@@ -75,9 +79,15 @@ export const issueCredential = async (verifiableCredential: any):
       result = result_transaction;
       done = true;
     } catch (err) {
-      done = false;
-      console.error(err);
-      error = "Failed to write data to the contract";
+      if (err.code === 4001) {
+        console.error("User rejected the request.");
+        error = "User rejected the request.";
+      } else {
+        console.error("Error:", err);
+        done = false;
+        console.error(err);
+        error = "Failed to write data to the contract";
+      }
     }
   };
 
