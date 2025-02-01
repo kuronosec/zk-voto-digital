@@ -1,5 +1,5 @@
 import { ethers } from 'ethers';
-import { issuerContractAddress, issuerContractABI } from '../constants/issuerContract';
+import { voteContractAddress, voteContractABI } from '../constants/voteContract';
 import { Groth16Proof } from 'snarkjs'
 
 type BigNumberish = string | bigint
@@ -35,8 +35,73 @@ function packGroth16Proof(
   ]
 }
 
-export const issueCredential = async (verifiableCredential: any):
-  Promise<{ result: any; error: string | null; done: boolean }> => {
+export const getVoteData = async ():
+  Promise<{ _data: any; _error: string | null }> => {
+  var data = {};
+  var error = "";
+
+  const fetchData = async () => {
+    try {
+      const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+      if (accounts.length === 0) {
+        // Prompt the user to connect MetaMask if no accounts are authorized
+        await window.ethereum.request({ method: 'eth_requestAccounts' });
+      }
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const signer = provider.getSigner();
+      const userId = await signer.getAddress();
+      const contract = new ethers.Contract(voteContractAddress, voteContractABI, signer);
+
+      type Proposal = {
+        description: string;
+        voteCount: number;
+      };
+      
+      // Initialize the array
+      let proposals: Proposal[] = [];
+
+      // Get information about voting process
+      const votingQuestion:String = await contract.votingQuestion();
+      const length = await contract.getProposalCount(); // Get the total number of proposals
+      
+      for (let i = 0; i < length; i++) {
+        proposals.push(await contract.proposals(i)); // Fetch each proposal by index
+      }
+      if (length === 0) {
+        console.log("proposals is empty.");
+        data = {};
+        error = 'No proposals yet available for user.';
+      } else {
+        // Format the result as JSON
+        const jsonResult = {
+          votingQuestion: votingQuestion,
+          proposals: proposals
+        };
+
+        data = jsonResult;
+      }
+    } catch (err) {
+      if (err.code === 4001) {
+        console.error("User rejected the request.");
+        error = "User rejected the request.";
+      } else {
+        console.error("Error:", err);
+        error = "Wallet no yet available."
+      }
+    };
+  }
+
+  fetchData();
+
+  return new Promise((resolve) => {
+    setTimeout(() => {
+        resolve({ _data: data, _error: error });
+    }, 2000);
+  });
+}
+
+export const castVote = async (verifiableCredential: any, selectedProposalIndex: number):
+  Promise<{ _result: any; _error: string | null; _done: boolean }> => {
   var result = "";
   var error = "";
   var done = false;
@@ -51,8 +116,9 @@ export const issueCredential = async (verifiableCredential: any):
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const signer = provider.getSigner();
       const userId = await signer.getAddress();
-      const contract = new ethers.Contract(issuerContractAddress, issuerContractABI, signer);
+      const voteContract = new ethers.Contract(voteContractAddress, voteContractABI, signer);
 
+      // const nullifierSeed = voteContract.voteScope();
       const nullifierSeed = verifiableCredential.proof.signatureValue.public[3];
       const nullifier = verifiableCredential.proof.signatureValue.public[1];
       // Signal used when generating proof
@@ -68,8 +134,8 @@ export const issueCredential = async (verifiableCredential: any):
       console.log("signal", signal);
       console.log("revealArray", revealArray);
       console.log("proof", proof);
-      const result_transaction = await contract.issueCredential(
-        userId,
+      const result_transaction = await voteContract.voteForProposal(
+        selectedProposalIndex,
         nullifierSeed,
         nullifier,
         signal,
@@ -95,7 +161,7 @@ export const issueCredential = async (verifiableCredential: any):
 
   return new Promise((resolve) => {
     setTimeout(() => {
-        resolve({ result: result, error: error, done: done });
+        resolve({ _result: result, _error: error, _done: done });
     }, 2000);
   });
 }
