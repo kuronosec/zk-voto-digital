@@ -52,11 +52,16 @@ export const issueCredential = async (verifiableCredential: any):
       const signer = provider.getSigner();
       const userId = await signer.getAddress();
       const contract = new ethers.Contract(issuerContractAddress, issuerContractABI, signer);
-
+      // The order of the public data in the credential is the following
+      // 0 - PublicKeyHash (Goverment public key hash)
+      // 1 - Nullifier
+      // 2 - Reveal Age above 18
+      // 3 - NullifierSeed
+      // 4 - SignalHash
       const nullifierSeed = verifiableCredential.proof.signatureValue.public[3];
       const nullifier = verifiableCredential.proof.signatureValue.public[1];
       // Signal used when generating proof
-      const signal = userId;
+      const signal = BigInt(userId).toString();
       // For the moment this is assumed always the case that age > 18
       const revealArray = [verifiableCredential.proof.signatureValue.public[2]];
       // Get proof from credential

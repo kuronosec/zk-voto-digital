@@ -1,4 +1,4 @@
-export const issuerContractAddress = '0xFDd8844ec46A0ee5CE8FbCD921A630fc138Ac660';
+export const issuerContractAddress = '0xC5dE998637c1e4F4fD18f20B6680171b39055295';
 export const issuerDID = 'did:iden3:polygon:amoy:x6x5sor7zpyex2PhwnukXns7PEfmBh4jANnX2P8Jv';
 export const userIdDID = 'did:iden3:privado:main:2ShraEMAiEibLUQGSQdsX49X7m6y83m7uJgMRfYyBt';
 

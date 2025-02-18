@@ -76,7 +76,7 @@ export const getCredentialData = async ():
 export const getVoteScope = async ():
   Promise<{ _voteScope: number; _error: string | null }> => {
   var error = "";
-  var voteScope:number = 0;
+  var voteScope:number | null = 0;
 
   const fetchData = async () => {
     try {
@@ -91,7 +91,7 @@ export const getVoteScope = async ():
 
       // Get information about voting process
       voteScope = await voteContract.voteScope();
-      if (voteScope === null) {
+      if (voteScope === null || voteScope === 0) {
         console.log("voteScope is empty.");
         error = 'No election yet available for user.';
       }
