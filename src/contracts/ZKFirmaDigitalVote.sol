@@ -1,15 +1,12 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.19;
 
-import '../interfaces/IZKFirmaDigitalCredentialIssuer.sol';
+import '../interfaces/IZKFirmaDigital.sol';
 import '../interfaces/IZKFirmaDigitalVote.sol';
 
 contract ZKFirmaDigitalVote is IZKFirmaDigitalVote {
     string public votingQuestion;
-    address public ZKFirmaDigitalCredentialIssuerAddr;
-    // A random number to use as nullifier seed.
-    // We need a different number for each vote contract to avoid double voting
-    uint64 public voteScope;
+    address public ZKFirmaDigitalVerifierAddr;
 
     // List of proposals
     Proposal[] public proposals;
@@ -21,15 +18,13 @@ contract ZKFirmaDigitalVote is IZKFirmaDigitalVote {
     constructor(
         string memory _votingQuestion,
         string[] memory proposalDescriptions,
-        address _credentialIssuerAddr,
-        uint64 _voteScope
+        address _verifierAddr
     ) {
-        ZKFirmaDigitalCredentialIssuerAddr = _credentialIssuerAddr;
+        ZKFirmaDigitalVerifierAddr = _verifierAddr;
         votingQuestion = _votingQuestion;
         for (uint256 i = 0; i < proposalDescriptions.length; i++) {
             proposals.push(Proposal(proposalDescriptions[i], 0));
         }
-        voteScope = _voteScope;
     }
 
     /// @dev Convert an address to uint256, used to check against signal.
@@ -62,39 +57,32 @@ contract ZKFirmaDigitalVote is IZKFirmaDigitalVote {
         uint[1] calldata revealArray, 
         uint[8] calldata groth16Proof
     ) public {
-        uint256 userId = addressToUint256(msg.sender);
         require(
             proposalIndex < proposals.length,
             '[ZKFirmaDigitalVote]: Invalid proposal index'
         );
         require(
-            userId == signal,
+            addressToUint256(msg.sender) == signal,
             '[ZKFirmaDigitalVote]: Wrong user signal sent.'
-        );
-        require(
-            voteScope == nullifierSeed,
-            '[ZKFirmaDigitalVote]: Wrong nullifierSeed, you must generate proof with the right seed.'
         );
         require(
             isLessThan3HoursAgo(0),
             '[ZKFirmaDigitalVote]: Proof must be generated with ZK Firma Digital data signed less than 3 hours ago.'
         );
-        // Check that user hasn't already voted
         require(
-            !hasVoted[nullifier],
-            '[ZKFirmaDigitalVote]: User has already voted'
-        );
-
-        // Issue credential for this voting campaign
-        IZKFirmaDigitalCredentialIssuer(
-            ZKFirmaDigitalCredentialIssuerAddr
-            ).issueCredential(
-                userId,
-                nullifierSeed,
+            IZKFirmaDigital(ZKFirmaDigitalVerifierAddr).verifyZKFirmaDigitalProof(
+                nullifierSeed, // nullifier seed
                 nullifier,
                 signal,
                 revealArray,
                 groth16Proof
+            ),
+            '[ZKFirmaDigitalVote]: The proof sent is not valid.'
+        );
+        // Check that user hasn't already voted
+        require(
+            !hasVoted[nullifier],
+            '[ZKFirmaDigitalVote]: User has already voted'
         );
 
         proposals[proposalIndex].voteCount++;

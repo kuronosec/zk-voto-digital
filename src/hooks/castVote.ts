@@ -144,7 +144,7 @@ export const castVote = async (verifiableCredential: any, selectedProposalIndex:
         nullifier,
         signal,
         revealArray,
-        packGroth16Proof(proof),
+        packGroth16Proof(proof)
       );
       result = result_transaction;
       done = true;
