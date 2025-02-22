@@ -1,7 +1,7 @@
 import '../i18n';
 import { Header } from "../components/Header";
 import { getCredentialData } from '../hooks/getCredentialData';
-import { CredentialDisplay } from '../components/CredentialDisplay';
+import { VoteOptionsDisplay } from '../components/VoteOptionsDisplay';
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from 'react-i18next';
 import { useState, useEffect } from 'react';
@@ -51,12 +51,12 @@ const VoteValidation: React.FC = () => {
     <div>
       <Header />
       <div className="container">
-      <h1 className="card-title">Voting System - Citizen Identity Validation</h1>  
+      <h1 className="card-title">Voting System - Zero Knowledge Firma Digital</h1>
       <h2 className="card-subtitle">{t('vc')}</h2>
       {error ? (
         <p style={{ color: 'red' }}>{error}</p>
       ) : !loading && done && Object.keys(data).length > 0 ? (
-        <CredentialDisplay data={data} />
+        <VoteOptionsDisplay voteData={data} />
       ) : (
         <p>Please login with Metamask...</p>
       )}

@@ -1,5 +1,6 @@
 import { ethers } from 'ethers';
-import { issuerContractAddress, contractABI, issuerDID, userIdDID } from '../constants/contract';
+import { issuerContractAddress, issuerContractABI, issuerDID, userIdDID } from '../constants/issuerContract';
+import { voteContractAddress, voteContractABI } from '../constants/voteContract';
 import { formatTimestamp } from '../utils/formatters';
 
 type BigNumberish = string | bigint;
@@ -19,20 +20,21 @@ export const getCredentialData = async ():
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const signer = provider.getSigner();
       const userId = await signer.getAddress();
-      const contract = new ethers.Contract(issuerContractAddress, contractABI, signer);
+      const issueContract = new ethers.Contract(issuerContractAddress, issuerContractABI, signer);
+      const voteContract = new ethers.Contract(voteContractAddress, voteContractABI, signer);
 
       // Get list of credentials
-      const credentialIds: BigNumberish[] = await contract.getUserCredentialIds(
+      const credentialIds: BigNumberish[] = await issueContract.getUserCredentialIds(
         userId
       );
+
       if (credentialIds.length === 0) {
         console.log("credentialIds is empty.");
         data = {};
         error = 'No credential yet available for user.';
       } else {
         const formattedIds = credentialIds.map((id) => id.toString());
-        console.log("User Credential IDs:", formattedIds);
-        const credential = await contract.getCredential(userId, formattedIds[0]);
+        const credential = await issueContract.getCredential(userId, formattedIds[0]);
 
         // Destructure the result to display
         const credentialData = credential[0];  // INonMerklizedIssuer.CredentialData struct
@@ -50,7 +52,6 @@ export const getCredentialData = async ():
         };
 
         data = jsonResult;
-        console.log("data:", data);
       }
     } catch (err) {
       if (err.code === 4001) {
@@ -67,7 +68,49 @@ export const getCredentialData = async ():
 
   return new Promise((resolve) => {
     setTimeout(() => {
-        resolve({ _data: data, _error: error });
+        resolve({ _data: data, _error: error});
+    }, 2000);
+  });
+}
+
+export const getVoteScope = async ():
+  Promise<{ _voteScope: number; _error: string | null }> => {
+  var error = "";
+  var voteScope:number | null = 0;
+
+  const fetchData = async () => {
+    try {
+      const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+      if (accounts.length === 0) {
+        // Prompt the user to connect MetaMask if no accounts are authorized
+        await window.ethereum.request({ method: 'eth_requestAccounts' });
+      }
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const signer = provider.getSigner();
+      const voteContract = new ethers.Contract(voteContractAddress, voteContractABI, signer);
+
+      // Get information about voting process
+      voteScope = await voteContract.voteScope();
+      if (voteScope === null || voteScope === 0) {
+        console.log("voteScope is empty.");
+        error = 'No election yet available for user.';
+      }
+    } catch (err) {
+      if (err.code === 4001) {
+        console.error("User rejected the request.");
+        error = "User rejected the request.";
+      } else {
+        console.error("Error:", err);
+        error = "Wallet no yet available."
+      }
+    };
+  }
+
+  fetchData();
+
+  return new Promise((resolve) => {
+    setTimeout(() => {
+        resolve({ _voteScope: voteScope, _error: error});
     }, 2000);
   });
 }

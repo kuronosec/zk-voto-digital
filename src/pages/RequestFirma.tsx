@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import axios from "axios";
 import queryString from "query-string";
-import { issueCredential } from '../hooks/issueCredential';
 import { useNavigate } from "react-router-dom";
 import { Header } from "../components/Header";
+import { useVote } from "./VoteContext";
 import './styles.css';
 
 // Secrets
@@ -38,29 +38,27 @@ const RequestFirma: React.FC = () => {
   const [searchParams] = useSearchParams();
   const [authUrl, setAuthUrl] = useState<string>("");
   const [tokenData, setTokenData] = useState<Record<string, any> | null>(null);
-  const [result, setResult] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
-  const [done, setDone] = useState(false);
-  const [verifiableCredential, setVerifiableCredential] =
-    useState<Record<string, any> | null>(null);
+  const { verifiableCredential, setVerifiableCredential, voteScope } = useVote();
   const navigate = useNavigate();
   
   // Step 1: Generate the authorization URL
   useEffect(() => {
     const code = searchParams.get("code");
 
-    if (!code && !tokenData) {
+    if (!code && !tokenData && voteScope !== null) {
       const url = `${AUTH_SERVER_URL}/authorize?` + queryString.stringify({
         grant_type: "code",
         client_id: CLIENT_ID,
         user_id: USER_ID,
         redirect_uri: REDIRECT_URI,
         scope: "zk-firma-digital",
-        state: Math.random() * 10000, // Random value to protect against CSRF
+        state: Math.random() * 10000, // Random value to protect against CSRF,
+        nullifier_seed: voteScope
       });
       setAuthUrl(url);
     }
-  }, []);
+  }, [voteScope]);
 
   // Step 2: Handle the callback and exchange the code for an access token
   useEffect(() => {
@@ -103,34 +101,11 @@ const RequestFirma: React.FC = () => {
     }
   }, [searchParams]);
 
-  // Step 3: Create credentials on-chain
-  const pushData = async () => {
-      try {
-        const { result, error, done } =
-          await issueCredential(verifiableCredential);
-        setResult(result);
-        setError(error);
-        console.log("result:", result);
-        console.log("error:", error);
-        if (done) {
-          setDone(done);
-        }
-      } catch (err) {
-          setError(err instanceof Error ? err.message : "An error occurred");
-      }
-  };
-    
   useEffect(() => {
-      if (tokenData && verifiableCredential) {
-        pushData();
-      }
-    }, [tokenData, verifiableCredential]);
-
-  useEffect(() => {
-    if (done) {
+    if (verifiableCredential !== null ) {
       navigate("/vote");
     }
-  }, [done]); // Only runs when loading, data, or navigate changes
+  }, [verifiableCredential]); // Only runs when loading, data, or navigate changes
   
   // Step 3: Display the UI
   return (
