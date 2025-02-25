@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { createProposal } from "../../hooks/CreateProposal";
+import '../../pages/styles.css';
 
 function QuestionForm() {
   // State for the question text
@@ -23,7 +24,7 @@ function QuestionForm() {
   };
 
   // Add a new empty option field
-  const addoptionField = () => {
+  const addOptionField = () => {
     setOptions([...options, ""]);
   };
 
@@ -49,9 +50,11 @@ function QuestionForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <div className="flex justify-center items-center min-h-screen">
+    <form onSubmit={handleSubmit} className="bg-white p-6 rounded shadow w-full max-w-md">
       <div>
         <label>Question:</label>
+        <br></br>
         <input
           type="text"
           value={question}
@@ -76,7 +79,7 @@ function QuestionForm() {
             )}
           </div>
         ))}
-        <button type="button" onClick={addoptionField}>
+        <button type="button" onClick={addOptionField}>
           Add option
         </button>
       {error ? (
@@ -89,6 +92,7 @@ function QuestionForm() {
       </div>
       <button type="submit">Submit</button>
     </form>
+    </div>
   );
 }
 
