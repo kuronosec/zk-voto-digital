@@ -71,7 +71,7 @@ export const VoteOptionsDisplay: React.FC<VoteOptionsDisplayProps> = ({ voteData
 
   return (
     <div>
-      {voteData ? (
+      {voteData && voteData.votingQuestion && voteData.proposals ? (
         <div>
           <h2>{voteData.votingQuestion}</h2>
           <form style={issuerStyle}>
