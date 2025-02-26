@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { ethers } from 'ethers';
 import { useSearchParams } from "react-router-dom";
 import axios from "axios";
 import queryString from "query-string";
@@ -10,7 +11,6 @@ import './styles.css';
 // Secrets
 const CLIENT_ID = process.env.REACT_APP_CLIENT_ID || "hello@example.com";
 const CLIENT_SECRET = process.env.REACT_APP_CLIENT_SECRET || "password";
-const USER_ID = process.env.REACT_APP_USER_ID || "hello@user.com";
 const REDIRECT_URI = process.env.REACT_APP_REDIRECT_URI || "http://localhost:3000/request-firma";
 const AUTH_SERVER_URL = process.env.REACT_APP_AUTH_SERVER_URL || "https://app.sakundi.io";
 
@@ -41,23 +41,43 @@ const RequestFirma: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const { verifiableCredential, setVerifiableCredential, voteScope } = useVote();
   const navigate = useNavigate();
+
+  const getUser = async () => {
+    const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+    if (accounts.length === 0) {
+      // Prompt the user to connect MetaMask if no accounts are authorized
+      await window.ethereum.request({ method: 'eth_requestAccounts' });
+    }
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = provider.getSigner();
+    const userId = await signer.getAddress();
+
+    return userId;
+  };
   
   // Step 1: Generate the authorization URL
   useEffect(() => {
-    const code = searchParams.get("code");
+    const fetchUserAndSetUrl = async () => {
+      const code = searchParams.get("code");
 
-    if (!code && !tokenData && voteScope !== null) {
-      const url = `${AUTH_SERVER_URL}/authorize?` + queryString.stringify({
-        grant_type: "code",
-        client_id: CLIENT_ID,
-        user_id: USER_ID,
-        redirect_uri: REDIRECT_URI,
-        scope: "zk-firma-digital",
-        state: Math.random() * 10000, // Random value to protect against CSRF,
-        nullifier_seed: voteScope
-      });
-      setAuthUrl(url);
-    }
+      const userId = await getUser();
+      console.log("RequestFirma userId: ", userId);
+
+      if (!code && !tokenData && voteScope !== null) {
+        const url = `${AUTH_SERVER_URL}/authorize?` + queryString.stringify({
+          grant_type: "code",
+          client_id: CLIENT_ID,
+          user_id: userId,
+          redirect_uri: REDIRECT_URI,
+          scope: "zk-firma-digital",
+          state: Math.random() * 10000, // Random value to protect against CSRF,
+          nullifier_seed: voteScope
+        });
+        setAuthUrl(url);
+      }
+    };
+
+    fetchUserAndSetUrl();
   }, [voteScope]);
 
   // Step 2: Handle the callback and exchange the code for an access token
