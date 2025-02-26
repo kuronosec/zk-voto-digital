@@ -133,6 +133,7 @@ const RequestFirma: React.FC = () => {
       <Header />
       <h1 className="card-title">Create a new Proof of Identity to be able to cast a vote</h1>
       <p className="card-subtitle">
+        { authUrl ? (
         <button
           onClick={() => {
             if (authUrl) {
@@ -152,8 +153,10 @@ const RequestFirma: React.FC = () => {
             alignItems: "center"
           }}
         >
-          Go to authentication website
+          Authenticate
         </button>
+      ):
+      (<p className="card-subtitle">You will be able to proceed in a second...</p>)}
       </p>
       {error ? (
         <p style={{ color: 'red' }}>{error}</p>
