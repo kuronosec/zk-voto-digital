@@ -66,13 +66,7 @@ export const issueCredential = async (verifiableCredential: any):
       const revealArray = [verifiableCredential.proof.signatureValue.public[2]];
       // Get proof from credential
       const proof = verifiableCredential.proof.signatureValue.proof;
-
-      console.log("userId", userId);
-      console.log("nullifierSeed", nullifierSeed);
-      console.log("nullifier", nullifier);
-      console.log("signal", signal);
-      console.log("revealArray", revealArray);
-      console.log("proof", proof);
+      // Call create credential method
       const result_transaction = await contract.issueCredential(
         userId,
         nullifierSeed,
