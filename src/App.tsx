@@ -6,6 +6,7 @@ import { VoteProvider } from "./pages/VoteContext";
 import HomePage from "./pages/HomePage";
 import VoteValidation from "./pages/VoteValidation";
 import Vote from "./pages/Vote";
+import AdminGUI from "./pages/AdminGUI";
 import RequestFirma from "./pages/RequestFirma";
 
 const App: React.FC = () => {
@@ -17,6 +18,7 @@ const App: React.FC = () => {
                     <Route path="/vote-validation" element={<VoteValidation />} />
                     <Route path="/request-firma" element={<RequestFirma />} />
                     <Route path="/vote" element={<Vote />} />
+                    <Route path="/create-proposal" element={<AdminGUI />} />
                 </Routes>
             </Router>
         </VoteProvider>

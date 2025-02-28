@@ -13,6 +13,7 @@ export const Header = () => {
           <a href="#how-it-works">How it Works</a>
           <a href="#example">Try it</a>
           <a href="/vote">Digital Vote</a>
+          <a href="/create-proposal">Create Proposal</a>
           {/* <a href="#benefits">Benefits</a> */}
         </div>
         {/* <WalletConnect /> */}
