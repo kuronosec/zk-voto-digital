@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { createProposal } from "../../hooks/CreateProposal";
-import '../../pages/styles.css';
+import './style.css';
 
 function QuestionForm() {
   // State for the question text
@@ -50,8 +50,8 @@ function QuestionForm() {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen">
-    <form onSubmit={handleSubmit} className="bg-white p-6 rounded shadow w-full max-w-md">
+    <div className="container">
+    <form onSubmit={handleSubmit} className="form">
       <div>
         <label>Question:</label>
         <br></br>
@@ -60,6 +60,7 @@ function QuestionForm() {
           value={question}
           onChange={handleQuestionChange}
           placeholder="Enter your question here"
+          className="input"
         />
       </div>
       <div>
@@ -71,15 +72,16 @@ function QuestionForm() {
               value={option}
               onChange={(e) => handleoptionChange(index, e)}
               placeholder={`option ${index + 1}`}
+              className="input"
             />
             {options.length > 1 && (
-              <button type="button" onClick={() => removeoptionField(index)}>
+              <button type="button" onClick={() => removeoptionField(index)} className="button add-button">
                 Remove
               </button>
             )}
           </div>
         ))}
-        <button type="button" onClick={addOptionField}>
+        <button type="button" onClick={addOptionField} className="button add-button">
           Add option
         </button>
       {error ? (
@@ -90,7 +92,7 @@ function QuestionForm() {
         <p></p>
       )}
       </div>
-      <button type="submit">Submit</button>
+      <button type="submit" className="button submit-button">Submit</button>
     </form>
     </div>
   );
