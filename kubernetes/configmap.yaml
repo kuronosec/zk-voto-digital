@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: web-voto-config
+data:
+  REACT_APP_CLIENT_ID: 'andres.gomez@sakundi.io'
+  REACT_APP_CLIENT_SECRET: 'hola1mundo'
+  REACT_APP_REDIRECT_URI: 'http://localhost:3000/request-firma'
+  REACT_APP_AUTH_SERVER_URL: 'https://app.sakundi.io'
