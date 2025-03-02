@@ -1,0 +1,7 @@
+services:
+  web:
+    image: zk-voto-digital
+    restart: always
+    build: ../
+    ports:
+      - 3000:3000
