@@ -1,0 +1,31 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: http-web-voto
+spec:
+  entryPoints:
+    - web
+  routes:
+  - kind: Rule
+    match: Host(`voto.sakundi.io`)
+    services:
+    - kind: Service
+      name: web-voto-service
+      port: 3000
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: https-web-voto
+spec:
+  entryPoints:
+    - websecure
+  routes:
+  - kind: Rule
+    match: Host(`voto.sakundi.io`)
+    services:
+    - kind: Service
+      name: web-voto-service
+      port: 3000
+  tls:
+    certResolver: myresolver
