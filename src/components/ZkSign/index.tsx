@@ -8,6 +8,7 @@ import { FileUploader } from '../FileUploader/FileUploader';
 import { ValidationStatus } from '../ValidationStatus';
 import { verifyProof } from '../../utils/verifyProof';
 import { endpointUrl } from '../../constants';
+import { Header } from "../Header";
 
 export const ZkSign = () => {
   const { t } = useTranslation();
@@ -41,8 +42,10 @@ export const ZkSign = () => {
   };
 
   return (
+    <div>
+    <Header />
     <div className="card-white-profile" id="example">
-      <div className="container">
+      <div>
       <h1 className="card-title">Identity Verification</h1>
       <h4 className="card-subtitle">{t("input")}</h4>
 
@@ -60,6 +63,7 @@ export const ZkSign = () => {
         <Button.Outline onClick={runProofs}>{t("button")}</Button.Outline>
       </div>
       </div>
+    </div>
     </div>
   );
 }

@@ -1,82 +1,82 @@
-/* Footer General Styling */
+/* Footer container */
 .footer {
-    background-color: #1a202c; /* bg-gray-900 */
-    color: #ffffff; /* text-white */
-    padding: 10px 0;
-  }
-  
-  .container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 10px;
-  }
-  
-  .footer-grid {
-    display: grid;
-    grid-template-columns: repeat(1, 1fr);
-    gap: 32px;
-  }
-  
-  @media (min-width: 768px) {
-    .footer-grid {
-      grid-template-columns: repeat(4, 1fr);
-    }
-  }
-  
-  /* Brand Section */
-  .footer-brand {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 16px;
-  }
-  
-  .footer-title {
-    font-size: 1.125rem;
-    font-weight: bold;
-  }
-  
-  .footer-text {
-    color: #a0aec0; /* text-gray-400 */
-  }
-  
-  /* Section Heading */
-  .footer-heading {
-    font-size: 1.125rem;
-    font-weight: 600;
-    margin-bottom: 16px;
-  }
-  
-  /* Links Styling */
-  .footer-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-  }
-  
-  .footer-link {
-    display: block;
-    color: #a0aec0; /* text-gray-400 */
-    text-decoration: none;
-    transition: color 0.2s;
-  }
-  
-  .footer-link:hover {
-    color: #ffffff; /* text-white */
-  }
-  
-  /* Icons Section */
-  .footer-icons {
-    display: flex;
-    gap: 16px;
-  }
-  
-  /* Bottom Section */
-  .footer-bottom {
-    border-top: 1px solid #2d3748; /* border-gray-800 */
-    margin-top: 32px;
-    padding-top: 32px;
-    text-align: center;
-    color: #a0aec0; /* text-gray-400 */
-  }
-  
+  background-color: #222; /* Dark background */
+  color: #ddd;            /* Light text color */
+  padding: 40px 0;
+  font-family: 'Roboto', sans-serif;
+  font-size: 14px;
+}
+
+/* Main container to center content */
+.footer .container {
+  width: 90%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Grid layout for footer sections */
+.footer-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+/* Each grid item should grow/shrink and have a minimum width */
+.footer-grid > div {
+  flex: 1 1 200px;
+}
+
+/* Branding styles */
+.footer-brand .footer-title {
+  font-size: 24px;
+  font-weight: bold;
+  color: #fff;
+  margin-bottom: 10px;
+}
+
+.footer-text {
+  color: #aaa;
+  line-height: 1.6;
+}
+
+/* Headings for sections */
+.footer-heading {
+  font-size: 18px;
+  color: #fff;
+  margin-bottom: 10px;
+}
+
+/* List styles */
+.footer-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* Link styles */
+.footer-link {
+  color: #aaa;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.footer-link:hover {
+  color: #fff;
+}
+
+/* Icon container (if you add social icons later) */
+.footer-icons {
+  display: flex;
+  gap: 10px;
+}
+
+/* Bottom footer area with top border and centered text */
+.footer-bottom {
+  margin-top: 20px;
+  border-top: 1px solid #444;
+  padding-top: 20px;
+  text-align: center;
+  color: #aaa;
+  font-size: 13px;
+}

@@ -1,5 +1,6 @@
 import '../i18n';
 import { Header } from "../components/Header";
+import { Footer } from "../components/Footer";
 import { getVoteData } from '../hooks/castVote';
 import { getVoteScope } from '../hooks/getCredentialData';
 import { VoteOptionsDisplay } from '../components/VoteOptionsDisplay';
@@ -91,6 +92,7 @@ const Vote: React.FC = () => {
         <p>Please login with Metamask...</p>
       )}
       </div>
+      <Footer />
     </div>
   );
 }

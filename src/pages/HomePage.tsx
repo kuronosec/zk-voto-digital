@@ -3,7 +3,6 @@ import { Footer } from "../components/Footer";
 import { Header } from "../components/Header";
 import { Hero } from "../components/Hero";
 import { HowItWorks } from "../components/HowItWorks";
-import { ZkSign } from "../components/ZkSign";
 
 function HomePage() {
   return (
@@ -13,7 +12,6 @@ function HomePage() {
         <Hero />
         <Features />
         <HowItWorks />
-        <ZkSign />
       </main>
       <Footer />
     </div>
