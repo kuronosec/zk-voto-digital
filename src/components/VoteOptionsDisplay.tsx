@@ -18,32 +18,14 @@ interface VoteOptionsDisplayProps {
 }
 
 export const VoteOptionsDisplay: React.FC<VoteOptionsDisplayProps> = ({ voteData }) => {
-  const { verifiableCredential, voteScope } = useVote();
+  const { verifiableCredential } = useVote();
   const [selectedProposalIndex, setSelectedProposalIndex] = useState<number | null>(null);
-  const [data, setData] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState(false);
 
   // Handle selection (exclusive choice)
   const handleCheckboxChange = (index: number) => {
     setSelectedProposalIndex(index);
-  };
-
-  const certificateStyle: React.CSSProperties = {
-    backgroundColor: displayMethod.backgroundColor,
-    padding: '20px',
-    borderRadius: '10px',
-    textAlign: 'left',
-    fontFamily: 'Arial, sans-serif',
-    maxWidth: '600px',
-    margin: '0 auto',
-    boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
-  };
-
-  const descriptionStyle: React.CSSProperties = {
-    color: displayMethod.descriptionTextColor,
-    fontSize: '14px',
-    marginBottom: '10px'
   };
 
   const issuerStyle: React.CSSProperties = {

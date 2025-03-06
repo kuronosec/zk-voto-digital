@@ -21,7 +21,6 @@ export const getCredentialData = async ():
       const signer = provider.getSigner();
       const userId = await signer.getAddress();
       const issueContract = new ethers.Contract(issuerContractAddress, issuerContractABI, signer);
-      const voteContract = new ethers.Contract(voteContractAddress, voteContractABI, signer);
 
       // Get list of credentials
       const credentialIds: BigNumberish[] = await issueContract.getUserCredentialIds(

@@ -1,5 +1,6 @@
 import '../i18n';
 import { Header } from "../components/Header";
+import { Footer } from "../components/Footer";
 import QuestionForm from '../components/Voting/QuestionForm';
 import { useTranslation } from 'react-i18next';
 import './styles.css';
@@ -14,6 +15,7 @@ const AdminGUI: React.FC = () => {
       <h1 className="card-title">Voting System - Create a custom proposal</h1>
       <QuestionForm/>
       </div>
+      <Footer />
     </div>
   );
 }

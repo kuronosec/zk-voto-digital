@@ -5,6 +5,7 @@ import axios from "axios";
 import queryString from "query-string";
 import { useNavigate } from "react-router-dom";
 import { Header } from "../components/Header";
+import { Footer } from "../components/Footer";
 import { useVote } from "./VoteContext";
 import './styles.css';
 
@@ -163,6 +164,7 @@ const RequestFirma: React.FC = () => {
       ): (
         <p className="card-subtitle">Please use your Firma Digital card to authenticate and vote</p>
       )}
+    <Footer />
     </div>
   );
 };
