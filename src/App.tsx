@@ -8,6 +8,7 @@ import VoteValidation from "./pages/VoteValidation";
 import Vote from "./pages/Vote";
 import AdminGUI from "./pages/AdminGUI";
 import RequestFirma from "./pages/RequestFirma";
+import Results from "./pages/Results";
 
 const App: React.FC = () => {
     return (
@@ -19,6 +20,7 @@ const App: React.FC = () => {
                     <Route path="/request-firma" element={<RequestFirma />} />
                     <Route path="/vote" element={<Vote />} />
                     <Route path="/create-proposal" element={<AdminGUI />} />
+                    <Route path="/results" element={<Results />} />
                 </Routes>
             </Router>
         </VoteProvider>

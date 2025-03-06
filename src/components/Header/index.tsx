@@ -5,7 +5,6 @@ export const Header = () => {
     <header className="header">
       <nav className="nav-container">
         <div className="brand">
-          {/* <FileSignature className="w-8 h-8" /> */}
           <span>ZK Firma Digital</span>
         </div>
         <div className="nav-links md">
@@ -14,7 +13,7 @@ export const Header = () => {
           <a href="#example">Try it</a>
           <a href="/vote">Digital Vote</a>
           <a href="/create-proposal">Create Proposal</a>
-          {/* <a href="#benefits">Benefits</a> */}
+          <a href="/results">See Voting Results</a>
         </div>
         {/* <WalletConnect /> */}
       </nav>
