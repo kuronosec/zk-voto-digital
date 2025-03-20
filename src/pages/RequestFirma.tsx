@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { ethers } from 'ethers';
 import { useSearchParams } from "react-router-dom";
 import axios from "axios";
 import queryString from "query-string";
@@ -7,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { Header } from "../components/Header";
 import { Footer } from "../components/Footer";
 import { useVote } from "./VoteContext";
+import { useWallet } from "../contexts/WalletContext";
 import './styles.css';
 
 // Secrets
@@ -36,57 +36,96 @@ function parseJwt(token: string): Record<string, any> | null {
 }
 
 const RequestFirma: React.FC = () => {
+  console.log('🔄 RequestFirma component rendered');
+  
   const [searchParams] = useSearchParams();
   const [authUrl, setAuthUrl] = useState<string>("");
   const [tokenData, setTokenData] = useState<Record<string, any> | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const { verifiableCredential, setVerifiableCredential, voteScope } = useVote();
+  const { isConnected, account, connect, error: walletError } = useWallet();
   const navigate = useNavigate();
 
-  const getUser = async () => {
-    const accounts = await window.ethereum.request({ method: 'eth_accounts' });
-    if (accounts.length === 0) {
-      // Prompt the user to connect MetaMask if no accounts are authorized
-      await window.ethereum.request({ method: 'eth_requestAccounts' });
-    }
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const signer = provider.getSigner();
-    const userId = await signer.getAddress();
+  console.log('📊 Current state:', {
+    authUrl: !!authUrl,
+    tokenData: !!tokenData,
+    error,
+    isLoading,
+    voteScope,
+    isConnected,
+    account
+  });
 
-    return userId;
-  };
-  
-  // Step 1: Generate the authorization URL
+  // Generate the authorization URL
   useEffect(() => {
-    const fetchUserAndSetUrl = async () => {
-      const code = searchParams.get("code");
+    let mounted = true;
+    
+    const generateAuthUrl = async () => {
+      // Solo generar la URL si estamos conectados y tenemos la cuenta
+      if (!isConnected || !account) {
+        console.log('❌ Wallet not connected or no account');
+        return;
+      }
 
-      const userId = await getUser();
-      console.log("RequestFirma userId: ", userId);
+      // Verificar que tenemos el voteScope
+      if (!voteScope) {
+        console.log('❌ No voteScope available');
+        return;
+      }
 
-      if (!code && !tokenData && voteScope !== null) {
+      console.log('✅ Generating authorization URL with:', {
+        account,
+        voteScope
+      });
+
+      if (mounted) setIsLoading(true);
+      
+      try {
         const url = `${AUTH_SERVER_URL}/authorize?` + queryString.stringify({
           grant_type: "code",
           client_id: CLIENT_ID,
-          user_id: userId,
+          user_id: account,
           redirect_uri: REDIRECT_URI,
           scope: "zk-firma-digital",
-          state: Math.random() * 10000, // Random value to protect against CSRF,
+          state: Math.random() * 10000,
           nullifier_seed: voteScope
         });
-        setAuthUrl(url);
+        console.log('✅ Authorization URL generated:', url);
+        if (mounted) setAuthUrl(url);
+      } catch (error) {
+        console.error('❌ Error generating authorization URL:', error);
+        if (mounted) {
+          setError("Failed to generate authorization URL");
+          setAuthUrl("");
+        }
+      } finally {
+        if (mounted) setIsLoading(false);
       }
     };
 
-    fetchUserAndSetUrl();
-  }, [voteScope]);
-
-  // Step 2: Handle the callback and exchange the code for an access token
-  useEffect(() => {
+    // Solo intentar generar la URL si no hay código en los parámetros
     const code = searchParams.get("code");
+    if (!code && !tokenData) {
+      generateAuthUrl();
+    }
+
+    return () => {
+      mounted = false;
+    };
+  }, [isConnected, account, voteScope]);
+
+  // Handle the callback and exchange the code for an access token
+  useEffect(() => {
+    let mounted = true;
+    const code = searchParams.get("code");
+    console.log('🔄 Token exchange effect running, code present:', !!code);
 
     if (code) {
       const exchangeToken = async () => {
+        console.log('🔄 Exchanging token...');
+        if (mounted) setIsLoading(true);
+        
         try {
           const response = await axios.post(
             `${AUTH_SERVER_URL}/token`,
@@ -104,67 +143,123 @@ const RequestFirma: React.FC = () => {
             }
           );
 
-          const { access_token } = response.data;
-          const { verifiable_credential } = response.data
+          if (!mounted) return;
+
+          console.log('✅ Token exchange successful');
+          const { access_token, verifiable_credential } = response.data;
           setTokenData(parseJwt(access_token));
           try {
             setVerifiableCredential(JSON.parse(verifiable_credential));
+            console.log('✅ Verifiable credential set');
           } catch (error) {
-            console.error("Invalid verifiable credential: " + error);
+            console.error('❌ Invalid verifiable credential:', error);
+            setError("Invalid verifiable credential received");
           }
         } catch (err) {
-          console.error("Error exchanging authorization code:", err);
-          setError("Failed to exchange authorization code for access token");
+          console.error('❌ Error exchanging authorization code:', err);
+          if (mounted) {
+            setError("Failed to exchange authorization code for access token");
+          }
+        } finally {
+          if (mounted) setIsLoading(false);
         }
       };
 
       exchangeToken();
     }
-  }, [searchParams]);
+
+    return () => {
+      mounted = false;
+    };
+  }, [searchParams, setVerifiableCredential]);
 
   useEffect(() => {
-    if (verifiableCredential !== null ) {
+    console.log('🔄 Navigation effect running, verifiableCredential present:', !!verifiableCredential);
+    if (verifiableCredential !== null) {
       navigate("/vote");
     }
-  }, [verifiableCredential]); // Only runs when loading, data, or navigate changes
+  }, [verifiableCredential, navigate]);
+
+  // Handle wallet errors
+  useEffect(() => {
+    console.log('🔄 Wallet error effect running, error:', walletError);
+    if (walletError) {
+      setError(walletError);
+    }
+  }, [walletError]);
   
-  // Step 3: Display the UI
   return (
-    <div>
+    <div style={{
+      minHeight: "100vh",
+      display: "flex",
+      flexDirection: "column"
+    }}>
       <Header />
-      <h1 className="card-title">Create a new Proof of Identity to be able to cast a vote</h1>
-      <p className="card-subtitle">
-        { authUrl ? (
-        <button
-          onClick={() => {
-            if (authUrl) {
-              window.location.href = authUrl;
-            } else {
-              console.error("Authorization URL is not defined.");
-            }
-          }}
-          style={{
-            padding: "10px 20px",
-            fontSize: "16px",
-            cursor: "pointer",
-            backgroundColor: "#007BFF",
-            color: "#FFF",
-            border: "none",
-            borderRadius: "5px",
-            alignItems: "center"
-          }}
-        >
-          Authenticate
-        </button>
-      ):
-      (<p className="card-subtitle">You will be able to proceed in a second...</p>)}
-      </p>
-      {error ? (
-        <p style={{ color: 'red' }}>{error}</p>
-      ): (
-        <p className="card-subtitle">Please use your Firma Digital card to authenticate and vote</p>
-      )}
-    <Footer />
+      <main style={{
+        flex: "1 0 auto",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        padding: "1rem"
+      }}>
+        <h1 className="card-title">Create a new Proof of Identity to be able to cast a vote</h1>
+        <div className="card-subtitle" style={{ 
+          display: "flex", 
+          flexDirection: "column", 
+          alignItems: "center",
+          justifyContent: "center",
+          flex: 1,
+          width: "100%",
+          maxWidth: "600px",
+        }}>
+          {isLoading ? (
+            <p>Loading...</p>
+          ) : !isConnected ? (
+            <button
+              onClick={connect}
+              style={{
+                padding: "10px 20px",
+                fontSize: "16px",
+                cursor: "pointer",
+                backgroundColor: "#007BFF",
+                color: "#FFF",
+                border: "none",
+                borderRadius: "5px",
+                alignItems: "center"
+              }}
+            >
+              Connect Wallet
+            </button>
+          ) : authUrl ? (
+            <button
+              onClick={() => {
+                window.open(authUrl, '_blank', 'noopener,noreferrer');
+              }}
+              style={{
+                padding: "10px 20px",
+                fontSize: "16px",
+                cursor: "pointer",
+                backgroundColor: "#007BFF",
+                color: "#FFF",
+                border: "none",
+                borderRadius: "5px",
+                alignItems: "center"
+              }}
+            >
+              Authenticate
+            </button>
+          ) : (
+            <p>Generating authentication URL...</p>
+          )}
+        </div>
+        {error && (
+          <p style={{ color: 'red', textAlign: 'center' }}>{error}</p>
+        )}
+        {!error && (
+          <p className="card-subtitle" style={{ textAlign: 'center' }}>Please use your Firma Digital card to authenticate and vote</p>
+        )}
+      </main>
+      <Footer />
     </div>
   );
 };

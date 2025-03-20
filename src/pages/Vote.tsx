@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from 'react-i18next';
 import { useState, useEffect } from 'react';
 import { useVote } from "./VoteContext";
+import { useWallet } from "../contexts/WalletContext";
 import './styles.css';
 
 const Vote: React.FC = () => {
@@ -17,22 +18,27 @@ const Vote: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [canVote, setCanVote] = useState(false);
   const { verifiableCredential, setVoteScope, voteScope } = useVote();
-
+  const { isConnected } = useWallet();
   const navigate = useNavigate();
+
+  // Verificar conexión de wallet y redireccionar si es necesario
+  useEffect(() => {
+    if (!isConnected) {
+      navigate("/request-firma");
+      return;
+    }
+  }, [isConnected, navigate]);
 
   // Get vote data
   const fetchVoteScope = async () => {
     try {
       const { _voteScope, _error } = await getVoteScope();
-      if ( _error === "No election yet available for user.") {
-        setVoteScope(0);
-      } else if ( _error === "Wallet no yet available." ) {
-        setVoteScope(0);
+      if (_error === "No election yet available for user." || _error === "Wallet no yet available.") {
+        setVoteScope("0"); // Cambiado a string para evitar el error de tipo
       } else {
-        setVoteScope(_voteScope);
+        setVoteScope(_voteScope.toString()); // Convertir a string
       }
       setError(_error);
-      setLoading(false);
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");
     } finally {
@@ -42,20 +48,17 @@ const Vote: React.FC = () => {
 
   // If no VC available, create one
   useEffect(() => {
-    if (verifiableCredential === null && voteScope === null) {
+    if (!isConnected || (verifiableCredential === null && voteScope === null)) {
       fetchVoteScope();
       navigate("/request-firma");
     }
-  }, []);
+  }, [isConnected, verifiableCredential, voteScope, navigate]);
 
   // Get vote data
   const fetchVoteData = async () => {
     try {
       const { _data, _error } = await getVoteData();
-      if ( _error === "No proposals yet available for user.") {
-        setCanVote(false);
-        setVoteData(null);
-      } else if ( _error === "Wallet no yet available." ) {
+      if (_error === "No proposals yet available for user." || _error === "Wallet no yet available.") {
         setCanVote(false);
         setVoteData(null);
       } else {
@@ -63,7 +66,6 @@ const Vote: React.FC = () => {
         setVoteData(_data);
       }
       setError(_error);
-      setLoading(false);
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");
     } finally {
@@ -72,10 +74,10 @@ const Vote: React.FC = () => {
   };
   
   useEffect(() => {
-    if (verifiableCredential !== null) {
+    if (isConnected && verifiableCredential !== null) {
       fetchVoteData();
     }
-  }, [verifiableCredential]);
+  }, [isConnected, verifiableCredential]);
 
   // 4. Show voting form when available
   return (
@@ -89,7 +91,7 @@ const Vote: React.FC = () => {
       ) : !loading && canVote && voteData ? (
         <VoteOptionsDisplay voteData={voteData} />
       ) : (
-        <p>Please login with Metamask...</p>
+        <p>Redirecting to wallet connection...</p>
       )}
       </div>
       <Footer />
