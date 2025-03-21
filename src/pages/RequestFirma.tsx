@@ -233,7 +233,7 @@ const RequestFirma: React.FC = () => {
           ) : authUrl ? (
             <button
               onClick={() => {
-                window.open(authUrl, '_blank', 'noopener,noreferrer');
+                window.location.href = authUrl;
               }}
               style={{
                 padding: "10px 20px",
