@@ -2,12 +2,10 @@ import '../i18n';
 import { Header } from "../components/Header";
 import { Footer } from "../components/Footer";
 import QuestionForm from '../components/Voting/QuestionForm';
-import { useTranslation } from 'react-i18next';
 import { useWallet } from "../contexts/WalletContext";
 import './styles.css';
 
 const AdminGUI: React.FC = () => {
-  const { t } = useTranslation();
   const { isConnected, connect, error: walletError } = useWallet();
 
   return (

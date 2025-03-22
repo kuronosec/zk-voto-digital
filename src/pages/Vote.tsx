@@ -34,9 +34,9 @@ const Vote: React.FC = () => {
     try {
       const { _voteScope, _error } = await getVoteScope();
       if (_error === "No election yet available for user." || _error === "Wallet no yet available.") {
-        setVoteScope("0"); // Cambiado a string para evitar el error de tipo
+        setVoteScope(null);
       } else {
-        setVoteScope(_voteScope.toString()); // Convertir a string
+        setVoteScope(_voteScope);
       }
       setError(_error);
     } catch (err) {
@@ -52,6 +52,7 @@ const Vote: React.FC = () => {
       fetchVoteScope();
       navigate("/request-firma");
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isConnected, verifiableCredential, voteScope, navigate]);
 
   // Get vote data

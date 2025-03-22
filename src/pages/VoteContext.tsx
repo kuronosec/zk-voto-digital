@@ -1,27 +1,24 @@
 import React, { createContext, useContext, useState } from 'react';
 
 interface VoteContextType {
-  verifiableCredential: any | null;
-  setVerifiableCredential: (credential: any) => void;
-  voteScope: string | null;
-  setVoteScope: (scope: string | null) => void;
-}
+  verifiableCredential: Record<string, any> | null;
+  setVerifiableCredential: (vc: Record<string, any> | null) => void;
+  voteScope: number | null;
+  setVoteScope: (index: number | null) => void;
+};
 
 const VoteContext = createContext<VoteContextType | null>(null);
 
 export const VoteProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [verifiableCredential, setVerifiableCredential] = useState<any | null>(null);
-  // Inicializar voteScope con un valor aleatorio por defecto
-  const [voteScope] = useState<string>(() => {
-    return Math.random().toString(36).substring(2, 15);
-  });
+  const [verifiableCredential, setVerifiableCredential] = useState<Record<string, any> | null>(null);
+  const [voteScope, setVoteScope] = useState<number | null>(null);
 
   const value = {
     verifiableCredential,
     setVerifiableCredential,
     voteScope,
-    setVoteScope: () => {} // No permitimos cambiar el voteScope una vez establecido
-  };
+    setVoteScope
+};
 
   return (
     <VoteContext.Provider value={value}>

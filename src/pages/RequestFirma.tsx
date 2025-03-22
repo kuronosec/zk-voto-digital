@@ -113,6 +113,7 @@ const RequestFirma: React.FC = () => {
     return () => {
       mounted = false;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isConnected, account, voteScope]);
 
   // Handle the callback and exchange the code for an access token
