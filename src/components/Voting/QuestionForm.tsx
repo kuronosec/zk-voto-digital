@@ -50,7 +50,7 @@ function QuestionForm() {
   };
 
   return (
-    <div className="container">
+    <div className="container" style={{ height: "50vh", }}>
     <form onSubmit={handleSubmit} className="form">
       <div>
         <label>Question:</label>

@@ -5,7 +5,9 @@ export const Header = () => {
     <header className="header">
       <nav className="nav-container">
         <div className="brand">
-          <span>ZK Firma Digital</span>
+          <a href="/">
+            <span>ZK Firma Digital</span>
+          </a>
         </div>
         <div className="nav-links md">
           <a href="/#features">Features</a>

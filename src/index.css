@@ -2,6 +2,10 @@
   --logo-sakundi: url("public/img/SakundiLogo.png");
 }
 
+* {
+  scroll-behavior: smooth;
+}
+
 body {
     background: #F4F4F4;
     font-family: 'Gotham', sans-serif;
