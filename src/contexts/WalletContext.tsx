@@ -13,7 +13,7 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const wallet = useWalletConnection();
   
   return (
-    <WalletContext.Provider value={wallet}>
+    <WalletContext.Provider value={{ ...wallet, updateWalletState: wallet.checkWalletState }}>
       {children}
     </WalletContext.Provider>
   );

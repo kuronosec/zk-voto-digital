@@ -77,8 +77,8 @@ export const issueCredential = async (verifiableCredential: any):
       );
       result = result_transaction;
       done = true;
-    } catch (err) {
-      if (err.code === 4001) {
+    } catch (err: unknown) {
+      if ((err as any).code === 4001) {
         console.error("User rejected the request.");
         error = "User rejected the request.";
       } else {
