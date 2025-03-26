@@ -1,5 +1,6 @@
 // App.tsx
 import React from "react";
+import "./i18n";
 import './index.css';
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { VoteProvider } from "./pages/VoteContext";

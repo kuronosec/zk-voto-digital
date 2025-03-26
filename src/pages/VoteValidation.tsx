@@ -5,7 +5,7 @@ import { VoteOptionsDisplay } from '../components/VoteOptionsDisplay';
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from 'react-i18next';
 import { useState, useEffect } from 'react';
-import './styles.css';
+
 
 const VoteValidation: React.FC = () => {
   const { t } = useTranslation()
@@ -50,15 +50,15 @@ const VoteValidation: React.FC = () => {
   return (
     <div>
       <Header />
-      <div className="container">
-      <h1 className="card-title">Voting System - Zero Knowledge Firma Digital</h1>
-      <h2 className="card-subtitle">{t('vc')}</h2>
+      <div>
+      <h1>{t('voting.title')}</h1>
+      <h2>{t('vc')}</h2>
       {error ? (
         <p style={{ color: 'red' }}>{error}</p>
       ) : !loading && done && Object.keys(data).length > 0 ? (
         <VoteOptionsDisplay voteData={data} />
       ) : (
-        <p>Please login with Metamask...</p>
+        <p>{t('validation.login')}</p>
       )}
       </div>
     </div>

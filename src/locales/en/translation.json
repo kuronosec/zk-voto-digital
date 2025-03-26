@@ -1,0 +1,180 @@
+{
+    "common": {
+      "home": "Home",
+      "howItWorks": "How it Works",
+      "digitalVote": "Digital Vote",
+      "createProposal": "Create Proposal",
+      "seeResults": "See Voting Results",
+      "connectWallet": "Connect Wallet",
+      "loading": "Loading...",
+      "error": "An error occurred",
+      "invalidFileFormat": "Invalid file format",
+      "uploadFile": "Upload File",
+      "identityVerification": "Identity Verification",
+      "voteSuccess": "Vote was sent successfully!",
+      "voteResults": "Vote Results",
+      "proposal": "Proposal",
+      "votes": "Votes",
+      "metamaskLogin": "Please login with Metamask to access the voting system.",
+      "metamaskLoginShort": "Please login with Metamask..."
+    },
+    "voting": {
+      "title": "Voting System - Citizen Identity Validation",
+      "question": "Vote on the following proposal:",
+      "submit": "Submit Vote",
+      "success": "Your vote has been successfully recorded",
+      "error": "Error submitting your vote"
+    },
+    "validation": {
+      "title": "Voting System - Zero Knowledge Firma Digital",
+      "login": "Please login with Metamask..."
+    },
+    "admin": {
+      "title": "Voting System - Create a custom proposal",
+      "question": "Enter your question",
+      "options": "Enter voting options",
+      "submit": "Create Proposal"
+    },
+    "results": {
+      "title": "Vote Results",
+      "totalVotes": "Total Votes",
+      "proposal": "Proposal",
+      "votes": "Votes"
+    },
+    "requestFirma": {
+      "title": "Create a new Proof of Identity to be able to cast a vote",
+      "authenticate": "Authenticate",
+      "processing": "You will be able to proceed in a second...",
+      "instruction": "Please use your Firma Digital card to authenticate and vote"
+    },
+    "vc": "Verifiable Credential",
+    "hero": {
+    "title": "Secure Anonymous Voting with Blockchain & Zero-Knowledge Proofs",
+    "subtitle": "Preserve your privacy while proving your identity with Costa Rica's Firma Digital",
+    "description": "Participate in democratic processes without revealing personal information. Verify your identity, cast anonymous votes, and contribute to a more transparent future.",
+    "tryButton": "Try It Now"
+  },
+  "features": {
+    "title": "Key Features",
+    "items": [
+      {
+        "title": "Secure Verification",
+        "description": "Cryptographically secure verification without revealing private data",
+        "icon": "🔒"
+      },
+      {
+        "title": "Proof of Humanity",
+        "description": "Show that you are not a bot, something critical in the AI era",
+        "icon": "👤"
+      },
+      {
+        "title": "Verify Age",
+        "description": "Prove that you are older than 18 years without sending your sensitive identity",
+        "icon": "📅"
+      },
+      {
+        "title": "Vote Anonymously and Safely",
+        "description": "Participate in voting campaigns in an anonymous way while demonstrating your participation rights",
+        "icon": "🗳️"
+      },
+      {
+        "title": "Easy Integration",
+        "description": "Simple API integration with existing systems and workflows",
+        "icon": "🔌"
+      },
+      {
+        "title": "Instant Verification",
+        "description": "Real-time verification of signatures and documents",
+        "icon": "⚡"
+      }
+    ]
+  },
+  "howItWorks": {
+    "title": "How It Works",
+    "steps": [
+      {
+        "number": "01",
+        "title": "Smart Card Verification",
+        "description": "Verify your identity locally in your device without sending any sensitive information"
+      },
+      {
+        "number": "02",
+        "title": "Generate Proof",
+        "description": "Our system generates a zero-knowledge proof of your identity"
+      },
+      {
+        "number": "03",
+        "title": "Send ZK Proof",
+        "description": "Provide a proof of your identity while maintaining privacy"
+      },
+      {
+        "number": "04",
+        "title": "Third Party Verification",
+        "description": "Anyone can verify the identity proof without accessing your private data"
+      }
+    ]
+  },
+  "footer": {
+  "title": "ZK-Voto-Digital",
+  "description": "Secure anonymous voting with blockchain technology and zero-knowledge proofs",
+  "github": "View on GitHub",
+  "links": {
+    "home": "Home",
+    "howItWorks": "How It Works",
+    "tryIt": "Try It",
+    "vote": "Vote"
+  },
+  "copyright": "© {year} ZK-Voto-Digital. Open source under the Apache-2.0 license."
+  },
+  "questionForm": {
+  "intro": "Create a new voting proposal by entering your question and adding the options voters can choose from.",
+  "question": {
+    "label": "Question:",
+    "placeholder": "Enter your question here",
+    "help": "Be clear and specific with your question to get the best results."
+  },
+  "options": {
+    "title": "Voting System - Create a custom proposal",
+    "label": "Possible options:",
+    "placeholder": "Option {number}",
+    "add": "Add Option",
+    "remove": "Remove"
+  },
+  "submit": {
+    "button": "Create Proposal",
+    "submitting": "Submitting..."
+  },
+  "messages": {
+    "success": "Voting proposal was sent successfully!",
+    "error": "An error occurred"
+  }
+},
+"requestFirmaFile": {
+    "title": "Create a new Proof of Identity",
+    "authBox": {
+      "title": "Authentication Required",
+      "description": "Please use your Firma Digital card to authenticate and vote. Your identity will be verified without revealing any personal information."
+    },
+    "button": "Authenticate with Firma Digital",
+    "loading": "Preparing authentication...",
+    "error": {
+      "token": "Failed to exchange authorization code for access token"
+    },
+    "zkpInfo": {
+      "title": "What is Zero-Knowledge Proof?",
+      "description1": "Zero-Knowledge Proof technology allows you to prove certain facts about your identity without revealing any sensitive personal information.",
+      "description2": "For example, you can prove you are of legal voting age without revealing your exact birthdate, or prove you are a citizen without sharing your ID number."
+    }
+  },
+    "credential": {
+      "title": "Enter Your Credential",
+      "description": "Upload your credential file to verify your identity using Zero-Knowledge Proofs. Your personal information remains private while your identity is verified.",
+      "requirements": {
+        "title": "File Requirements:",
+        "item1": "Upload a Verifiable Credential JSON file",
+        "item2": "The file must contain a zero-knowledge proof generated with your Costa Rican Firma Digital",
+        "item3": "The credential must include both cryptographic proof and public signals for verification",
+        "item4": "If you don't have a credential file, you can generate one through the authentication process"
+      }
+    }
+  }

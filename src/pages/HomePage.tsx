@@ -6,7 +6,7 @@ import { HowItWorks } from "../components/HowItWorks";
 
 function HomePage() {
   return (
-    <div className="min-h-screen">
+    <div>
       <Header />
       <main>
         <Hero />

@@ -1,6 +1,5 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import './styles.css';
 
 interface FileUploaderProps {
   onFileUpload: (proof: any, signals: any) => void;
@@ -8,6 +7,7 @@ interface FileUploaderProps {
 }
 
 export const FileUploader: React.FC<FileUploaderProps> = ({ onFileUpload, onError }) => {
+  const { t } = useTranslation();
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const credential_file = event.target.files?.[0];
 
@@ -35,16 +35,14 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onFileUpload, onErro
   };
 
   return (
-    <div className="file-upload-container">
-  <label className="file-upload-label">
+    <div>
+  <label>
     <input 
       type="file" 
       accept=".json" 
       multiple 
       onChange={handleFileUpload} 
-      className="file-upload-input" 
     />
-    <span className="file-upload-button">Upload File</span>
   </label>
 </div>
   );

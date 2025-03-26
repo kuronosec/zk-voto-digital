@@ -1,13 +1,14 @@
+// src/i18n.tsx
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 
 // Import resources
 const resources = {
   en: {
-    translation: require('./public/locales/en/translation.json')
+    translation: require('./locales/en/translation.json')
   },
   es: {
-    translation: require('./public/locales/es/translation.json')
+    translation: require('./locales/es/translation.json')
   }
 };
 
@@ -16,8 +17,8 @@ i18n
   .use(initReactI18next)
   .init({
     resources,
-    lng: 'en', // Default language
-    fallbackLng: 'es', // Fallback language if translation is missing
+    lng: localStorage.getItem('i18nextLng') || 'en', // Usa localStorage directamente
+    fallbackLng: 'en',
     interpolation: {
       escapeValue: false // React already handles escaping
     }
