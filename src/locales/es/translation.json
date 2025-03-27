@@ -1,0 +1,181 @@
+{
+    "common": {
+      "home": "Inicio",
+      "howItWorks": "Cómo funciona",
+      "digitalVote": "Voto Digital",
+      "createProposal": "Crear Propuesta",
+      "seeResults": "Ver Resultados",
+      "connectWallet": "Conectar Wallet",
+      "loading": "Cargando...",
+      "error": "Ocurrió un error",
+      "invalidFileFormat": "Formato de archivo no válido",
+      "uploadFile": "Subir Archivo",
+      "identityVerification": "Verificación de Identidad",
+      "voteSuccess": "¡El voto fue enviado con éxito!",
+      "voteResults": "Resultados de la Votación",
+      "proposal": "Propuesta",
+      "votes": "Votos",
+      "metamaskLogin": "Por favor, inicia sesión con Metamask para acceder al sistema de votación.",
+      "metamaskLoginShort": "Por favor, inicia sesión con Metamask..."
+    },
+    "voting": {
+      "title": "Sistema de Votación - Validación de Identidad Ciudadana",
+      "question": "Vote en la siguiente propuesta:",
+      "submit": "Enviar Voto",
+      "success": "Su voto ha sido registrado con éxito",
+      "error": "Error al enviar su voto"
+    },
+    "validation": {
+      "title": "Sistema de Votación - Firma Digital con Conocimiento Cero",
+      "login": "Por favor, inicie sesión con Metamask..."
+    },
+    "admin": {
+      "title": "Sistema de Votación - Crear una propuesta personalizada",
+      "question": "Ingrese su pregunta",
+      "options": "Ingrese opciones de votación",
+      "submit": "Crear Propuesta"
+    },
+    "results": {
+      "title": "Resultados de la Votación",
+      "totalVotes": "Votos Totales",
+      "proposal": "Propuesta",
+      "votes": "Votos"
+    },
+    "requestFirma": {
+      "title": "Cree una nueva Prueba de Identidad para poder emitir un voto",
+      "authenticate": "Autenticar",
+      "processing": "Podrá continuar en un momento...",
+      "instruction": "Por favor, utilice su tarjeta de Firma Digital para autenticarse y votar"
+    },
+    "vc": "Credencial Verificable",
+    "hero": {
+    "title": "Votación Anónima Segura con Blockchain y Pruebas de Conocimiento Cero",
+    "subtitle": "Preserva tu privacidad mientras pruebas tu identidad con la Firma Digital de Costa Rica",
+    "description": "Participa en procesos democráticos sin revelar información personal. Verifica tu identidad, emite votos anónimos y contribuye a un futuro más transparente.",
+    "tryButton": "Pruébalo Ahora"
+  },
+  "features": {
+    "title": "Características Principales",
+    "items": [
+      {
+        "title": "Verificación Segura",
+        "description": "Verificación criptográficamente segura sin revelar datos privados",
+        "icon": "🔒"
+      },
+      {
+        "title": "Prueba de Humanidad",
+        "description": "Demuestra que no eres un bot, algo crítico en la era de la IA",
+        "icon": "👤"
+      },
+      {
+        "title": "Verificar Edad",
+        "description": "Prueba que eres mayor de 18 años sin enviar tu identidad sensible",
+        "icon": "📅"
+      },
+      {
+        "title": "Votá de Forma Anónima y Segura",
+        "description": "Participa en campañas de votación de manera anónima mientras demuestras tus derechos de participación",
+        "icon": "🗳️"
+      },
+      {
+        "title": "Integración Sencilla",
+        "description": "Integración API simple con sistemas y flujos de trabajo existentes",
+        "icon": "🔌"
+      },
+      {
+        "title": "Verificación Instantánea",
+        "description": "Verificación en tiempo real de firmas y documentos",
+        "icon": "⚡"
+      }
+    ]
+  },
+  "howItWorks": {
+    "title": "Cómo Funciona",
+    "steps": [
+      {
+        "number": "01",
+        "title": "Verificación de Tarjeta Inteligente",
+        "description": "Verifica tu identidad localmente en tu dispositivo sin enviar información sensible"
+      },
+      {
+        "number": "02",
+        "title": "Generar Prueba",
+        "description": "Nuestro sistema genera una prueba de conocimiento cero de tu identidad"
+      },
+      {
+        "number": "03",
+        "title": "Enviar Prueba ZK",
+        "description": "Proporciona una prueba de tu identidad manteniendo la privacidad"
+      },
+      {
+        "number": "04",
+        "title": "Verificación por Terceros",
+        "description": "Cualquiera puede verificar la prueba de identidad sin acceder a tus datos privados"
+      }
+    ]
+  },
+  "footer": {
+  "title": "ZK-Voto-Digital",
+  "description": "Votación anónima segura con tecnología blockchain y pruebas de conocimiento cero",
+  "github": "Ver en GitHub",
+  "links": {
+    "home": "Inicio",
+    "howItWorks": "Cómo Funciona",
+    "tryIt": "Pruébalo",
+    "vote": "Votar"
+  },
+  "copyright": "© {year} ZK-Voto-Digital. Código abierto bajo licencia Apache-2.0."
+},
+"questionForm": {
+  "intro": "Crea una nueva propuesta de votación ingresando tu pregunta y añadiendo las opciones entre las que los votantes pueden elegir.",
+  "question": {
+    "label": "Pregunta:",
+    "placeholder": "Ingresa tu pregunta aquí",
+    "help": "Sé claro y específico con tu pregunta para obtener los mejores resultados."
+  },
+  "options": {
+    "title": "Sistema de votación: crea una propuesta personalizada",
+    "label": "Opciones posibles:",
+    "placeholder": "Opción {number}",
+    "add": "Añadir Opción",
+    "remove": "Eliminar"
+  },
+  "submit": {
+    "button": "Crear Propuesta",
+    "submitting": "Enviando..."
+  },
+  "messages": {
+    "success": "¡La propuesta de votación fue enviada con éxito!",
+    "error": "Ocurrió un error"
+  }
+},
+"requestFirmaFile": {
+  "title": "Crear una nueva Prueba de Identidad",
+  "authBox": {
+    "title": "Autenticación Requerida",
+    "description": "Por favor, utiliza tu tarjeta de Firma Digital para autenticarte y votar. Tu identidad será verificada sin revelar ninguna información personal."
+  },
+  "button": "Autenticar con Firma Digital",
+  "loading": "Preparando autenticación...",
+  "error": {
+    "token": "Error al intercambiar el código de autorización por un token de acceso"
+  },
+  "zkpInfo": {
+    "title": "¿Qué es una Prueba de Conocimiento Cero?",
+    "description1": "La tecnología de Prueba de Conocimiento Cero te permite demostrar ciertos hechos sobre tu identidad sin revelar información personal sensible.",
+    "description2": "Por ejemplo, puedes probar que tienes la edad legal para votar sin revelar tu fecha exacta de nacimiento, o demostrar que eres ciudadano sin compartir tu número de identificación."
+  }
+},
+  "credential": {
+    "title": "Ingresa Tu Credencial",
+    "description": "Sube tu archivo de credencial para verificar tu identidad utilizando Pruebas de Conocimiento Cero. Tu información personal permanece privada mientras tu identidad es verificada.",
+    "requirements": {
+      "title": "Requisitos del archivo:",
+      "item1": "Sube un archivo JSON de Credencial Verificable",
+      "item2": "El archivo debe contener una prueba de conocimiento cero generada con tu Firma Digital de Costa Rica",
+      "item3": "La credencial debe incluir tanto la prueba criptográfica como las señales públicas para verificación",
+      "item4": "Si no tienes un archivo de credencial, puedes generar uno a través del proceso de autenticación"
+    }
+  }
+}
+  

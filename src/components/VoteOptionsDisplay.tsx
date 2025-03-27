@@ -4,6 +4,7 @@ import { displayMethod } from '../constants/displayConfig';
 import { Button } from "rimble-ui";
 import { castVote } from '../hooks/castVote';
 import { useVote } from "../pages/VoteContext";
+import { useTranslation } from 'react-i18next';
 
 type Proposal = {
   description: string;
@@ -18,6 +19,7 @@ interface VoteOptionsDisplayProps {
 }
 
 export const VoteOptionsDisplay: React.FC<VoteOptionsDisplayProps> = ({ voteData }) => {
+  const { t } = useTranslation();
   const { verifiableCredential } = useVote();
   const [selectedProposalIndex, setSelectedProposalIndex] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -71,7 +73,7 @@ export const VoteOptionsDisplay: React.FC<VoteOptionsDisplayProps> = ({ voteData
             ))}
           </form>
 
-          <div className="button-wrapper">
+          <div>
             <Button.Outline onClick={doCastVote} disabled={selectedProposalIndex === null}>Send Vote</Button.Outline>
           </div>
         </div>
@@ -81,7 +83,7 @@ export const VoteOptionsDisplay: React.FC<VoteOptionsDisplayProps> = ({ voteData
       {error ? (
         <p style={{ color: 'red' }}>{error}</p>
       ) : done ? (
-        <p style={{ color: 'red' }}>Vote was send succesfully!</p>
+        <p style={{ color: 'red' }}>{t('common.voteSuccess')}</p>
       ) : (
         <p></p>
       )}

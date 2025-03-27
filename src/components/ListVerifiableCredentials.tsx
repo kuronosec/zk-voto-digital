@@ -29,7 +29,7 @@ const ListVerifiableCredentials: React.FC<VCAvailableProps> = ({ onVCAvailable, 
       ) : done && data ? (
         <CredentialDisplay data={data} />
       ) : (
-        <p>Loading...</p>
+        <p>{t('common.loading')}</p>
       )}
     </div>
   );
