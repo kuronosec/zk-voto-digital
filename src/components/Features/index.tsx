@@ -41,7 +41,7 @@ export const Features = () => {
   return (
     <section style={{
       position: "relative",
-      marginTop: "-85px",
+      marginTop: "-60px",
       padding: "0 20px",
       paddingBottom: "30px",
       zIndex: "10",

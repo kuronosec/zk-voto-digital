@@ -6,6 +6,7 @@
       "createProposal": "Create Proposal",
       "seeResults": "See Voting Results",
       "connectWallet": "Connect Wallet",
+      "walletDisconnect": "Disconnect",     
       "loading": "Loading...",
       "error": "An error occurred",
       "invalidFileFormat": "Invalid file format",

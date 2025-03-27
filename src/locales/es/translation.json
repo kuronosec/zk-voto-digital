@@ -6,6 +6,7 @@
       "createProposal": "Crear Propuesta",
       "seeResults": "Ver Resultados",
       "connectWallet": "Conectar Wallet",
+      "walletDisconnect": "Desconectar",  
       "loading": "Cargando...",
       "error": "Ocurrió un error",
       "invalidFileFormat": "Formato de archivo no válido",
