@@ -3,7 +3,6 @@ import React, { useState, useEffect, CSSProperties } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { LanguageSelector } from '../LanguageSelector';
-// No necesitamos importar ethers para esta funcionalidad
 
 export const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -106,6 +105,26 @@ export const Header = () => {
     }
   };
 
+  // Disconnect from MetaMask
+  const disconnectWallet = () => {
+    // En MetaMask no hay un método directo para "desconectar", pero podemos
+    // resetear nuestro estado para simular una desconexión
+    setIsConnected(false);
+    setUserAddress(null);
+    
+    // Informamos al usuario que se ha desconectado
+    alert(t('common.walletDisconnect'));
+  };
+
+  // Handle wallet button click based on connection state
+  const handleWalletButtonClick = () => {
+    if (isConnected) {
+      disconnectWallet();
+    } else {
+      connectWallet();
+    }
+  };
+
   // Format address for display
   const shortenAddress = (address: string) => {
     return `${address.slice(0, 6)}...${address.slice(-4)}`;
@@ -183,7 +202,7 @@ export const Header = () => {
     top: '64px',
     left: '0',
     right: '0',
-    backgroundColor: '#3f119b',
+    backgroundColor: '#362463',
     padding: '20px',
     display: isMenuOpen ? 'flex' : 'none',
     flexDirection: 'column',
@@ -244,13 +263,18 @@ export const Header = () => {
           <LanguageSelector />
           <button 
             style={isConnected ? connectedButtonStyle : buttonStyle}
-            onClick={connectWallet}
+            onClick={handleWalletButtonClick}
           >
             <span>
               {isConnected 
-                ? shortenAddress(userAddress || '') 
+                ? t('common.walletDisconnect') 
                 : t('common.connectWallet')}
             </span>
+            {isConnected && userAddress && (
+              <span style={{ marginLeft: '8px', fontSize: '14px' }}>
+                ({shortenAddress(userAddress)})
+              </span>
+            )}
           </button>
         </div>
 
@@ -277,24 +301,22 @@ export const Header = () => {
           <Link to="/results" style={linkStyle}>
             {t('common.seeResults')}
           </Link>
+          <LanguageSelector />
           <button 
             style={isConnected ? mobileConnectedButtonStyle : mobileButtonStyle}
-            onClick={connectWallet}
+            onClick={handleWalletButtonClick}
           >
             <span>
               {isConnected 
-                ? shortenAddress(userAddress || '') 
+                ? t('common.walletDisconnect') 
                 : t('common.connectWallet')}
             </span>
-            {!isConnected && (
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 4v16m8-8H4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
+            {isConnected && userAddress && (
+              <span style={{ marginLeft: '8px', fontSize: '14px' }}>
+                ({shortenAddress(userAddress)})
+              </span>
             )}
           </button>
-          <div style={mobileLangSelectorStyle}>
-            <LanguageSelector />
-          </div>
         </div>
       </nav>
     </header>
