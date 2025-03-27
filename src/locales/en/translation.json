@@ -124,7 +124,7 @@
     "tryIt": "Try It",
     "vote": "Vote"
   },
-  "copyright": "© {year} ZK-Voto-Digital. Open source under the Apache-2.0 license."
+  "copyright": "© 2025 ZK-Voto-Digital. Open source under the Apache-2.0 license."
   },
   "questionForm": {
   "intro": "Create a new voting proposal by entering your question and adding the options voters can choose from.",
