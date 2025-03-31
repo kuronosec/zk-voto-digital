@@ -19,6 +19,11 @@
     gap: 8px; /* space-x-2 */
     font-size: 1.25rem; /* text-xl */
     font-weight: bold;
+
+    a {
+      text-decoration: none;
+      color: white;
+    }
   }
   
   .nav-links {
