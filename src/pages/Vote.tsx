@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from 'react-i18next';
 import { useState, useEffect } from 'react';
 import { useVote } from "./VoteContext";
+import { useWallet } from "../context/WalletContext";
 
 const Vote: React.FC = () => {
   const { t } = useTranslation();
@@ -16,11 +17,19 @@ const Vote: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [canVote, setCanVote] = useState(false);
   const { verifiableCredential, setVoteScope, voteScope } = useVote();
+  
+  const { isConnected, connect, account } = useWallet();
 
   const navigate = useNavigate();
 
-  // Get vote data
   const fetchVoteScope = async () => {
+    if (!isConnected || !account) {
+      setError("Wallet no yet available.");
+      setVoteScope(0);
+      setLoading(false);
+      return;
+    }
+    
     try {
       const { _voteScope, _error } = await getVoteScope();
       if ( _error === "No election yet available for user.") {
@@ -31,7 +40,6 @@ const Vote: React.FC = () => {
         setVoteScope(_voteScope);
       }
       setError(_error);
-      setLoading(false);
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");
     } finally {
@@ -39,16 +47,28 @@ const Vote: React.FC = () => {
     }
   };
 
-  // If no VC available, create one
   useEffect(() => {
+    if (!isConnected) {
+      setLoading(false);
+      setError("Wallet no yet available.");
+      return;
+    }
+    
     if (verifiableCredential === null && voteScope === null) {
       fetchVoteScope();
       navigate("/request-firma");
     }
-  }, []);
+  }, [isConnected, account, verifiableCredential, voteScope, navigate]);
 
-  // Get vote data
   const fetchVoteData = async () => {
+    if (!isConnected || !account) {
+      setCanVote(false);
+      setVoteData(null);
+      setError("Wallet no yet available.");
+      setLoading(false);
+      return;
+    }
+    
     try {
       const { _data, _error } = await getVoteData();
       if ( _error === "No proposals yet available for user.") {
@@ -62,7 +82,6 @@ const Vote: React.FC = () => {
         setVoteData(_data);
       }
       setError(_error);
-      setLoading(false);
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");
     } finally {
@@ -71,12 +90,11 @@ const Vote: React.FC = () => {
   };
   
   useEffect(() => {
-    if (verifiableCredential !== null) {
+    if (verifiableCredential !== null && isConnected && account) {
       fetchVoteData();
     }
-  }, [verifiableCredential]);
+  }, [verifiableCredential, isConnected, account]);
 
-  // 4. Show voting form when available
   return (
     <div style={{
       minHeight: "100vh",
@@ -112,6 +130,21 @@ const Vote: React.FC = () => {
           <div style={{
             padding: "30px"
           }}>
+            {isConnected && account && (
+              <div style={{
+                backgroundColor: "#f0fff4",
+                color: "#38a169",
+                border: "1px solid #c6f6d5",
+                borderRadius: "6px",
+                padding: "12px",
+                marginBottom: "20px",
+                textAlign: "center",
+                fontSize: "14px"
+              }}>
+                <p style={{ margin: 0 }}>{t('common.connectedAs')}: {account}</p>
+              </div>
+            )}
+            
             <h2 style={{
               fontSize: "1.4rem",
               color: "#333",
@@ -129,6 +162,26 @@ const Vote: React.FC = () => {
                 marginBottom: "20px"
               }}>
                 <p style={{ margin: "0" }}>{error}</p>
+                
+                {error === "Wallet no yet available." && (
+                  <div style={{ marginTop: "15px", textAlign: "center" }}>
+                    <button 
+                      onClick={connect}
+                      style={{
+                        backgroundColor: "#5856D6",
+                        color: "white",
+                        border: "none",
+                        borderRadius: "6px",
+                        padding: "10px 20px",
+                        fontSize: "0.9rem",
+                        fontWeight: "500",
+                        cursor: "pointer"
+                      }}
+                    >
+                      {t('common.connectWallet')}
+                    </button>
+                  </div>
+                )}
               </div>
             ) : loading ? (
               <div style={{
@@ -152,7 +205,7 @@ const Vote: React.FC = () => {
                   }
                 `}</style>
               </div>
-            ) : !canVote || !voteData ? (
+            ) : !isConnected ? (
               <div style={{
                 backgroundColor: "#f8fafc",
                 borderRadius: "8px",
@@ -186,18 +239,71 @@ const Vote: React.FC = () => {
                   color: "#4a5568",
                   marginBottom: "20px"
                 }}>{t('common.metamaskLogin')}.</p>
-                <button style={{
-                  backgroundColor: "#5856D6",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "6px",
-                  padding: "12px 24px",
-                  fontSize: "1rem",
-                  fontWeight: "500",
-                  cursor: "pointer",
-                  transition: "background-color 0.2s ease"
-                }}>
+                <button 
+                  onClick={connect}
+                  style={{
+                    backgroundColor: "#5856D6",
+                    color: "white",
+                    border: "none",
+                    borderRadius: "6px",
+                    padding: "12px 24px",
+                    fontSize: "1rem",
+                    fontWeight: "500",
+                    cursor: "pointer",
+                    transition: "background-color 0.2s ease"
+                  }}
+                >
                   {t('common.connectWallet')}
+                </button>
+              </div>
+            ) : !canVote || !voteData ? (
+              <div style={{
+                backgroundColor: "#f8fafc",
+                borderRadius: "8px",
+                padding: "30px",
+                textAlign: "center",
+                border: "1px solid #e2e8f0"
+              }}>
+                <div style={{
+                  marginBottom: "20px",
+                  fontSize: "24px",
+                  color: "#5856D6"
+                }}>
+                  <svg 
+                    xmlns="http://www.w3.org/2000/svg" 
+                    width="36" 
+                    height="36" 
+                    viewBox="0 0 24 24" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    strokeWidth="2" 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round"
+                  >
+                    <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path>
+                    <polyline points="13 2 13 9 20 9"></polyline>
+                  </svg>
+                </div>
+                <p style={{
+                  fontSize: "1.1rem",
+                  color: "#4a5568",
+                  marginBottom: "20px"
+                }}>{t('voting.noProposalsAvailable')}</p>
+                <button 
+                  onClick={() => navigate("/results")}
+                  style={{
+                    backgroundColor: "#5856D6",
+                    color: "white",
+                    border: "none",
+                    borderRadius: "6px",
+                    padding: "12px 24px",
+                    fontSize: "1rem",
+                    fontWeight: "500",
+                    cursor: "pointer",
+                    transition: "background-color 0.2s ease"
+                  }}
+                >
+                  {t('common.viewResults')}
                 </button>
               </div>
             ) : (

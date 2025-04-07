@@ -29,7 +29,7 @@ function packGroth16Proof(
     groth16Proof.pi_b[0][1],
     groth16Proof.pi_b[0][0],
     groth16Proof.pi_b[1][1],
-    groth16Proof.pi_b[1][0],
+    groth16Proof.pi_b[1][0],  
     groth16Proof.pi_c[0],
     groth16Proof.pi_c[1],
   ]
@@ -79,8 +79,8 @@ export const getVoteData = async ():
 
         data = jsonResult;
       }
-    } catch (err) {
-      if (err.code === 4001) {
+    } catch (err: unknown) {
+      if ((err as any).code === 4001) {
         console.error("User rejected the request.");
         error = "User rejected the request.";
       } else {
@@ -142,8 +142,8 @@ export const castVote = async (verifiableCredential: any, selectedProposalIndex:
       );
       result = result_transaction;
       done = true;
-    } catch (err) {
-      if (err.code === 4001) {
+    } catch (err: unknown) {
+      if ((err as any).code === 4001) {
         console.error("User rejected the request.");
         error = "User rejected the request.";
       } else {

@@ -40,8 +40,8 @@ export const createProposal = async (question: any, options: any):
         error = "Wrong admin address creating the voting contract";
         done = false;
       }
-    } catch (err) {
-      if (err.code === 4001) {
+    } catch (err: unknown) {
+      if ((err as any).code === 4001) {
         console.error("User rejected the request.");
         error = "User rejected the request.";
       } else {

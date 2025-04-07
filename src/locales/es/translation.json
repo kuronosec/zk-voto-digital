@@ -17,7 +17,8 @@
       "proposal": "Propuesta",
       "votes": "Votos",
       "metamaskLogin": "Por favor, inicia sesión con Metamask para acceder al sistema de votación.",
-      "metamaskLoginShort": "Por favor, inicia sesión con Metamask..."
+      "metamaskLoginShort": "Por favor, inicia sesión con Metamask...",
+      "download": "Descargar"
     },
     "voting": {
       "title": "Sistema de Votación - Validación de Identidad Ciudadana",
