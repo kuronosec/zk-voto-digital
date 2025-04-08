@@ -4,7 +4,7 @@
       "howItWorks": "How it Works",
       "digitalVote": "Digital Vote",
       "createProposal": "Create Proposal",
-      "seeResults": "See Voting Results",
+      "seeResults": "Voting Results",
       "connectWallet": "Connect Wallet",
       "walletDisconnect": "Disconnect",     
       "loading": "Loading...",
@@ -17,7 +17,17 @@
       "proposal": "Proposal",
       "votes": "Votes",
       "metamaskLogin": "Please login with Metamask to access the voting system.",
-      "metamaskLoginShort": "Please login with Metamask..."
+      "metamaskLoginShort": "Please login with Metamask...",
+      "download": "Download",
+      "connectedAs": "Connected As",
+      "totalVotes": "Total Votes",
+      "percentage": "Percentage",
+      "walletNotConnected": "Wallet Not Connected",
+      "submitting": "Sending...",
+      "sendVote": "Submit Vote",
+      "voteSuccessfullySent": "Vote sent successfully!",
+      "thankYouForParticipating": "Thank you for participating in this vote.",
+      "loadingVotingData": "Loading voting data..."
     },
     "voting": {
       "title": "Voting System - Citizen Identity Validation",

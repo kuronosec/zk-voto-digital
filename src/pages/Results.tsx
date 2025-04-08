@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Header } from "../components/Header";
 import { Footer } from "../components/Footer";
 import { getVoteData } from "../hooks/getVoteResults";
+import { useWallet } from "../context/WalletContext";
 import { useTranslation } from 'react-i18next';
 
 interface Proposal {
@@ -17,21 +18,8 @@ const VoteResults: React.FC = () => {
   const [totalVotes, setTotalVotes] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-
-  const connectWallet = async () => {
-    try {
-      if (window.ethereum) {
-        await window.ethereum.request({ method: 'eth_requestAccounts' });
-        // After connecting wallet, try fetching data again
-        fetchVoteResults();
-      } else {
-        setError("MetaMask no está instalado. Por favor instala MetaMask para continuar.");
-      }
-    } catch (err) {
-      console.error("Error al conectar wallet:", err);
-      setError("No se pudo conectar la wallet. Por favor inténtalo de nuevo.");
-    }
-  };
+  
+  const { isConnected, connect, account, isChangingNetwork } = useWallet();
 
   const fetchVoteResults = async () => {
     setLoading(true);
@@ -58,8 +46,44 @@ const VoteResults: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchVoteResults();
-  }, []);
+    if (isConnected && account && !isChangingNetwork) {
+      fetchVoteResults();
+    } else if (!isConnected) {
+      setLoading(false);
+      setError("Wallet no yet available.");
+    }
+  }, [isConnected, account, isChangingNetwork]);
+
+  const NetworkChangingSection = () => (
+    <div style={{
+      padding: "60px 20px",
+      textAlign: "center"
+    }}>
+      <div style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        flexDirection: "column"
+      }}>
+        <div style={{
+          border: "5px solid #f3f3f3",
+          borderTop: "5px solid #5856D6",
+          borderRadius: "50%",
+          width: "50px",
+          height: "50px",
+          animation: "spin 1s linear infinite",
+          marginBottom: "20px"
+        }}></div>
+        <style>{`
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+        `}</style>
+        <p style={{ fontSize: "18px", color: "#4a5568" }}>Switching Network</p>
+      </div>
+    </div>
+  );
 
   return (
     <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
@@ -79,7 +103,9 @@ const VoteResults: React.FC = () => {
           boxShadow: "0 2px 10px rgba(0, 0, 0, 0.1)",
           overflow: "hidden"
         }}>
-          {loading ? (
+          {isChangingNetwork ? (
+            <NetworkChangingSection />
+          ) : loading ? (
             <div style={{
               padding: "80px 20px",
               textAlign: "center"
@@ -129,9 +155,9 @@ const VoteResults: React.FC = () => {
                   t('common.walletNotConnected') : 
                   error}
               </p>
-              {error === "Wallet no yet available." && (
+              {(error === "Wallet no yet available." || !isConnected) && (
                 <button 
-                  onClick={connectWallet}
+                  onClick={connect}
                   style={{
                     backgroundColor: "#5856D6",
                     color: "white",
@@ -156,6 +182,21 @@ const VoteResults: React.FC = () => {
             </div>
           ) : (
             <div style={{ padding: '30px' }}>
+              {isConnected && account && (
+                <div style={{
+                  backgroundColor: "#f0fff4",
+                  color: "#38a169",
+                  border: "1px solid #c6f6d5",
+                  borderRadius: "6px",
+                  padding: "12px",
+                  marginBottom: "20px",
+                  textAlign: "center",
+                  fontSize: "14px"
+                }}>
+                  <p style={{ margin: 0 }}>{t('common.connectedAs')}: {account}</p>
+                </div>
+              )}
+            
               <h1 style={{ 
                 textAlign: 'center', 
                 marginBottom: '25px',
@@ -203,6 +244,16 @@ const VoteResults: React.FC = () => {
                       }}>
                         {t('common.votes')}
                       </th>
+                      <th style={{
+                        padding: '15px',
+                        backgroundColor: '#5856D6',
+                        color: 'white',
+                        textAlign: 'center',
+                        width: "180px",
+                        fontWeight: "600"
+                      }}>
+                        {t('common.percentage')}
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
@@ -227,6 +278,30 @@ const VoteResults: React.FC = () => {
                           borderBottom: '1px solid #eee'
                         }}>
                           {proposal.voteCount}
+                        </td>
+                        <td style={{ 
+                          padding: '15px', 
+                          textAlign: 'center',
+                          fontWeight: "600",
+                          borderBottom: '1px solid #eee'
+                        }}>
+                          {totalVotes > 0 
+                            ? `${((proposal.voteCount / totalVotes) * 100).toFixed(1)}%` 
+                            : '0%'}
+                          <div style={{
+                            width: '100%',
+                            backgroundColor: '#e9ecef',
+                            borderRadius: '4px',
+                            height: '8px',
+                            marginTop: '8px',
+                            overflow: 'hidden'
+                          }}>
+                            <div style={{
+                              width: `${totalVotes > 0 ? (proposal.voteCount / totalVotes) * 100 : 0}%`,
+                              backgroundColor: '#5856D6',
+                              height: '100%'
+                            }}></div>
+                          </div>
                         </td>
                       </tr>
                     ))}

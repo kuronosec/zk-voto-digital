@@ -17,7 +17,17 @@
       "proposal": "Propuesta",
       "votes": "Votos",
       "metamaskLogin": "Por favor, inicia sesión con Metamask para acceder al sistema de votación.",
-      "metamaskLoginShort": "Por favor, inicia sesión con Metamask..."
+      "metamaskLoginShort": "Por favor, inicia sesión con Metamask...",
+      "download": "Descargar",
+      "connectedAs": "Conectado como",
+      "totalVotes": "Votos Totales",
+      "percentage": "Porcentaje",
+      "walletNotConnected": "Wallet No Conectada",
+      "submitting": "Enviando...",
+      "sendVote": "Enviar Voto",
+      "voteSuccessfullySent": "¡Voto enviado con éxito!",
+      "thankYouForParticipating": "Gracias por participar en esta votación.",
+      "loadingVotingData": "Cargando datos de votación..."
     },
     "voting": {
       "title": "Sistema de Votación - Validación de Identidad Ciudadana",

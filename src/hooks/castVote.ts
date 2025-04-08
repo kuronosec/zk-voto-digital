@@ -15,6 +15,11 @@ export type PackedGroth16Proof = [
   BigNumberish
 ]
 
+interface Proposal {
+  description: string;
+  voteCount: number;
+}
+
 /**
  * Packs a proof into a format compatible with ZKFirmaDigital.sol contract.
  * @param originalProof The proof generated with SnarkJS.
@@ -29,7 +34,7 @@ function packGroth16Proof(
     groth16Proof.pi_b[0][1],
     groth16Proof.pi_b[0][0],
     groth16Proof.pi_b[1][1],
-    groth16Proof.pi_b[1][0],
+    groth16Proof.pi_b[1][0],  
     groth16Proof.pi_c[0],
     groth16Proof.pi_c[1],
   ]
@@ -37,67 +42,78 @@ function packGroth16Proof(
 
 export const getVoteData = async ():
   Promise<{ _data: any; _error: string | null }> => {
-  var data = {};
-  var error = "";
+  let data: any = null;
+  let error: string | null = null;
 
-  const fetchData = async () => {
-    try {
-      const accounts = await window.ethereum.request({ method: 'eth_accounts' });
-      if (accounts.length === 0) {
-        // Prompt the user to connect MetaMask if no accounts are authorized
-        await window.ethereum.request({ method: 'eth_requestAccounts' });
+  try {
+    const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+    if (accounts.length === 0) {
+      // Prompt the user to connect MetaMask if no accounts are authorized
+      await window.ethereum.request({ method: 'eth_requestAccounts' });
+    }
+    
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = provider.getSigner();
+    const contract = new ethers.Contract(voteContractAddress, voteContractABI, signer);
+
+    let proposals: Proposal[] = [];
+
+    const votingQuestion = await contract.votingQuestion();
+    const length = await contract.getProposalCount(); // Get the total number of proposals
+    
+    console.log("Número de propuestas:", length.toNumber());
+    
+    if (length.toNumber() === 0) {
+      console.log("proposals is empty.");
+      error = 'No proposals yet available for user.';
+    } else {
+      for (let i = 0; i < length.toNumber(); i++) {
+        const proposal = await contract.proposals(i);
+        proposals.push({
+          description: proposal.description,
+          voteCount: proposal.voteCount.toNumber()
+        });
       }
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      const signer = provider.getSigner();
-      const contract = new ethers.Contract(voteContractAddress, voteContractABI, signer);
 
-      type Proposal = {
-        description: string;
-        voteCount: number;
+      data = {
+        votingQuestion: votingQuestion,
+        proposals: proposals
       };
-      
-      // Initialize the array
-      let proposals: Proposal[] = [];
 
-      // Get information about voting process
-      const votingQuestion:String = await contract.votingQuestion();
-      const length = await contract.getProposalCount(); // Get the total number of proposals
-      
-      for (let i = 0; i < length; i++) {
-        proposals.push(await contract.proposals(i)); // Fetch each proposal by index
-      }
-      if (length === 0) {
-        console.log("proposals is empty.");
-        data = {};
-        error = 'No proposals yet available for user.';
-      } else {
-        // Format the result as JSON
-        const jsonResult = {
-          votingQuestion: votingQuestion,
-          proposals: proposals
-        };
-
-        data = jsonResult;
-      }
-    } catch (err) {
-      if (err.code === 4001) {
-        console.error("User rejected the request.");
-        error = "User rejected the request.";
-      } else {
-        console.error("Error:", err);
-        error = "Wallet no yet available."
-      }
-    };
+      console.log("Datos formateados correctamente:", data);
+    }
+  } catch (err: unknown) {
+    console.error("Error en getVoteData:", err);
+    if ((err as any).code === 4001) {
+      error = "User rejected the request.";
+    } else {
+      error = "Wallet no yet available.";
+    }
   }
 
-  fetchData();
-
-  return new Promise((resolve) => {
-    setTimeout(() => {
-        resolve({ _data: data, _error: error });
-    }, 2000);
-  });
+  return { 
+    _data: data, 
+    _error: error 
+  };
 }
+
+export const hasVoted = async (
+  userNullifier: string,
+  useTestZKFirmaDigital: boolean
+): Promise<boolean> => {
+  const provider = ethers.getDefaultProvider(process.env.NEXT_PUBLIC_RPC_URL);
+  const voteContract = new ethers.Contract(
+    `0x${
+      useTestZKFirmaDigital
+        ? process.env.NEXT_PUBLIC_VOTE_CONTRACT_ADDRESS_TEST
+        : process.env.NEXT_PUBLIC_VOTE_CONTRACT_ADDRESS_PROD
+    }`,
+    voteContractABI,
+    provider
+  );
+
+  return await voteContract.checkVoted(userNullifier);
+};
 
 export const castVote = async (verifiableCredential: any, selectedProposalIndex: number):
   Promise<{ _result: any; _error: string | null; _done: boolean }> => {
@@ -142,8 +158,8 @@ export const castVote = async (verifiableCredential: any, selectedProposalIndex:
       );
       result = result_transaction;
       done = true;
-    } catch (err) {
-      if (err.code === 4001) {
+    } catch (err: unknown) {
+      if ((err as any).code === 4001) {
         console.error("User rejected the request.");
         error = "User rejected the request.";
       } else {
@@ -155,7 +171,7 @@ export const castVote = async (verifiableCredential: any, selectedProposalIndex:
     }
   };
 
-  pushData();
+  await pushData();
 
   return new Promise((resolve) => {
     setTimeout(() => {

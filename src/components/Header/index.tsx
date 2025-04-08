@@ -1,55 +1,21 @@
-// src/components/Header/index.tsx
 import React, { useState, useEffect, CSSProperties } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { LanguageSelector } from '../LanguageSelector';
+import { useWallet } from '../../context/WalletContext';
 
 export const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
-  const [isConnected, setIsConnected] = useState(false);
-  const [userAddress, setUserAddress] = useState<string | null>(null);
   const { t } = useTranslation();
+  
+  // Use the wallet context
+  const { isConnected, account, connect, checkWalletState } = useWallet();
 
-  // Check if already connected on component mount
+  // Check wallet state on component mount
   useEffect(() => {
-    const checkConnection = async () => {
-      if (window.ethereum) {
-        try {
-          const accounts = await window.ethereum.request({ method: 'eth_accounts' });
-          if (accounts.length > 0) {
-            setIsConnected(true);
-            setUserAddress(accounts[0]);
-          }
-        } catch (error) {
-          console.error("Error checking MetaMask connection:", error);
-        }
-      }
-    };
-    
-    checkConnection();
-  }, []);
-
-  // Listen for account changes
-  useEffect(() => {
-    if (window.ethereum) {
-      window.ethereum.on('accountsChanged', (accounts: string[]) => {
-        if (accounts.length > 0) {
-          setIsConnected(true);
-          setUserAddress(accounts[0]);
-        } else {
-          setIsConnected(false);
-          setUserAddress(null);
-        }
-      });
-    }
-
-    return () => {
-      if (window.ethereum && window.ethereum.removeListener) {
-        window.ethereum.removeListener('accountsChanged', () => {});
-      }
-    };
-  }, []);
+    checkWalletState();
+  }, [checkWalletState]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -65,68 +31,10 @@ export const Header = () => {
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
-
-  // Connect to MetaMask wallet
-  const connectWallet = async () => {
-    // Si ya estamos conectados, no hacemos nada
-    if (isConnected) return;
-    
-    if (!window.ethereum) {
-      alert("Please install MetaMask to use this feature");
-      return;
-    }
-
-    try {
-      // Primero intentamos obtener las cuentas ya conectadas
-      const existingAccounts = await window.ethereum.request({ method: 'eth_accounts' });
-      if (existingAccounts.length > 0) {
-        setIsConnected(true);
-        setUserAddress(existingAccounts[0]);
-        return;
-      }
-
-      // Si no hay cuentas existentes, solicitamos conectar
-      const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-      if (accounts.length > 0) {
-        setIsConnected(true);
-        setUserAddress(accounts[0]);
-      }
-    } catch (error: any) {
-      console.error("Error connecting to MetaMask:", error);
-      if (error.code === 4001) {
-        // User rejected the request
-        alert("Please connect to MetaMask to continue");
-      } else if (error.code === -32002) {
-        // Ya está procesando una solicitud de conexión
-        alert("Connection request already in progress. Please check MetaMask extension.");
-      } else {
-        alert("Error connecting to MetaMask. Please try again.");
-      }
-    }
-  };
-
-  // Disconnect from MetaMask
-  const disconnectWallet = () => {
-    // En MetaMask no hay un método directo para "desconectar", pero podemos
-    // resetear nuestro estado para simular una desconexión
-    setIsConnected(false);
-    setUserAddress(null);
-    
-    // Informamos al usuario que se ha desconectado
-    alert(t('common.walletDisconnect'));
-  };
-
-  // Handle wallet button click based on connection state
-  const handleWalletButtonClick = () => {
-    if (isConnected) {
-      disconnectWallet();
-    } else {
-      connectWallet();
-    }
-  };
-
+  
   // Format address for display
   const shortenAddress = (address: string) => {
+    if (!address) return '';
     return `${address.slice(0, 6)}...${address.slice(-4)}`;
   };
 
@@ -135,7 +43,11 @@ export const Header = () => {
     backgroundColor: '#362463',
     color: 'white',
     padding: '16px 24px',
-    boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+    position: 'sticky',
+    top: 0,
+    zIndex: 1000, // Asegura que el header esté por encima de otros elementos
+    width: '100%'
   };
 
   const navStyle: CSSProperties = {
@@ -233,12 +145,6 @@ export const Header = () => {
     backgroundColor: 'rgba(255, 255, 255, 0.2)'
   };
 
-  const mobileLangSelectorStyle: CSSProperties = {
-    display: 'flex',
-    justifyContent: 'center',
-    marginTop: '15px'
-  };
-
   return (
     <header style={headerStyle}>
       <nav style={navStyle}>
@@ -260,21 +166,19 @@ export const Header = () => {
           <Link to="/results" style={linkStyle}>
             {t('common.seeResults')}
           </Link>
+          <Link to="https://github.com/kuronosec/zk-firma-digital?tab=readme-ov-file#installation" style={linkStyle}>
+            {t('common.download')}
+          </Link>
           <LanguageSelector />
           <button 
             style={isConnected ? connectedButtonStyle : buttonStyle}
-            onClick={handleWalletButtonClick}
+            onClick={connect}
           >
             <span>
               {isConnected 
-                ? t('common.walletDisconnect') 
+                ? shortenAddress(account || '') 
                 : t('common.connectWallet')}
             </span>
-            {isConnected && userAddress && (
-              <span style={{ marginLeft: '8px', fontSize: '14px' }}>
-                ({shortenAddress(userAddress)})
-              </span>
-            )}
           </button>
         </div>
 
@@ -301,21 +205,19 @@ export const Header = () => {
           <Link to="/results" style={linkStyle}>
             {t('common.seeResults')}
           </Link>
+          <Link to="https://github.com/kuronosec/zk-firma-digital?tab=readme-ov-file#installation" style={linkStyle}>
+            {t('common.download')}
+          </Link>
           <LanguageSelector />
           <button 
             style={isConnected ? mobileConnectedButtonStyle : mobileButtonStyle}
-            onClick={handleWalletButtonClick}
+            onClick={connect}
           >
             <span>
               {isConnected 
-                ? t('common.walletDisconnect') 
+                ? shortenAddress(account || '') 
                 : t('common.connectWallet')}
             </span>
-            {isConnected && userAddress && (
-              <span style={{ marginLeft: '8px', fontSize: '14px' }}>
-                ({shortenAddress(userAddress)})
-              </span>
-            )}
           </button>
         </div>
       </nav>

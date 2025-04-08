@@ -55,21 +55,6 @@ export const Hero = () => {
           }}>
             {t('hero.description')}
           </p>
-          
-          <a href="/try-it" style={{
-            display: "inline-block",
-            backgroundColor: "white",
-            color: "#5F29B9",
-            fontWeight: "600",
-            padding: "0.75rem 1.5rem",
-            borderRadius: "0.375rem",
-            textDecoration: "none",
-            fontSize: "1rem",
-            transition: "all 0.3s ease",
-            boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)"
-          }}>
-            {t('hero.tryButton')}
-          </a>
         </div>
         
         {/* Image */}

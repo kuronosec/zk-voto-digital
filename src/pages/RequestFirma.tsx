@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { ethers } from 'ethers';
 import { useSearchParams } from "react-router-dom";
 import axios from "axios";
 import queryString from "query-string";
@@ -7,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { Header } from "../components/Header";
 import { Footer } from "../components/Footer";
 import { useVote } from "./VoteContext";
+import { useWallet } from "../context/WalletContext";
 import { useTranslation } from "react-i18next";
 
 // Secrets
@@ -43,44 +43,38 @@ const RequestFirma: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const { verifiableCredential, setVerifiableCredential, voteScope } = useVote();
   const navigate = useNavigate();
-
-  const getUser = async () => {
-    const accounts = await window.ethereum.request({ method: 'eth_accounts' });
-    if (accounts.length === 0) {
-      // Prompt the user to connect MetaMask if no accounts are authorized
-      await window.ethereum.request({ method: 'eth_requestAccounts' });
-    }
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const signer = provider.getSigner();
-    const userId = await signer.getAddress();
-
-    return userId;
-  };
+  const { isConnected, account, connect, checkWalletState, isChangingNetwork } = useWallet();
+  const [isCheckingWallet, setIsCheckingWallet] = useState(true);
+  
+  // Check wallet state on component mount
+  useEffect(() => {
+    const checkWallet = async () => {
+      await checkWalletState();
+      setIsCheckingWallet(false);
+    };
+    
+    checkWallet();
+  }, [checkWalletState]);
   
   // Step 1: Generate the authorization URL
   useEffect(() => {
-    const fetchUserAndSetUrl = async () => {
-      const code = searchParams.get("code");
+    if (!isConnected || !account) return;
+    
+    const code = searchParams.get("code");
 
-      const userId = await getUser();
-      console.log("RequestFirma userId: ", userId);
-
-      if (!code && !tokenData && voteScope !== null) {
-        const url = `${AUTH_SERVER_URL}/authorize?` + queryString.stringify({
-          grant_type: "code",
-          client_id: CLIENT_ID,
-          user_id: userId,
-          redirect_uri: REDIRECT_URI,
-          scope: "zk-firma-digital",
-          state: Math.random() * 10000, // Random value to protect against CSRF,
-          nullifier_seed: voteScope
-        });
-        setAuthUrl(url);
-      }
-    };
-
-    fetchUserAndSetUrl();
-  }, [voteScope]);
+    if (!code && !tokenData && voteScope !== null) {
+      const url = `${AUTH_SERVER_URL}/authorize?` + queryString.stringify({
+        grant_type: "code",
+        client_id: CLIENT_ID,
+        user_id: account,
+        redirect_uri: REDIRECT_URI,
+        scope: "zk-firma-digital",
+        state: Math.random() * 10000, 
+        nullifier_seed: voteScope
+      });
+      setAuthUrl(url);
+    }
+  }, [voteScope, isConnected, account, searchParams, tokenData]);
 
   // Step 2: Handle the callback and exchange the code for an access token
   useEffect(() => {
@@ -106,12 +100,13 @@ const RequestFirma: React.FC = () => {
           );
 
           const { access_token } = response.data;
-          const { verifiable_credential } = response.data
+          const { verifiable_credential } = response.data;
           setTokenData(parseJwt(access_token));
           try {
             setVerifiableCredential(JSON.parse(verifiable_credential));
           } catch (error) {
             console.error("Invalid verifiable credential: " + error);
+            setError("Invalid verifiable credential format");
           }
         } catch (err) {
           console.error("Error exchanging authorization code:", err);
@@ -121,13 +116,128 @@ const RequestFirma: React.FC = () => {
 
       exchangeToken();
     }
-  }, [searchParams]);
+  }, [searchParams, setVerifiableCredential]);
 
   useEffect(() => {
-    if (verifiableCredential !== null ) {
+    if (verifiableCredential !== null) {
       navigate("/vote");
     }
-  }, [verifiableCredential]); // Only runs when loading, data, or navigate changes
+  }, [verifiableCredential, navigate]);
+  
+  const WalletConnectionSection = () => (
+    <div style={{
+      textAlign: "center",
+      backgroundColor: "#f0f4ff",
+      borderRadius: "8px",
+      padding: "24px",
+      marginBottom: "30px"
+    }}>
+      <div style={{
+        display: "flex",
+        justifyContent: "center",
+        marginBottom: "16px"
+      }}>
+        <svg 
+          xmlns="http://www.w3.org/2000/svg" 
+          width="48" 
+          height="48" 
+          viewBox="0 0 24 24" 
+          fill="none" 
+          stroke="#5856D6" 
+          strokeWidth="2" 
+          strokeLinecap="round" 
+          strokeLinejoin="round"
+        >
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+        </svg>
+      </div>
+      <p style={{
+        fontSize: "1.1rem",
+        color: "#333",
+        marginBottom: "16px",
+        fontWeight: "500"
+      }}>
+        {t('common.connectWalletTitle')}
+      </p>
+      <p style={{
+        color: "#666",
+        lineHeight: "1.6",
+        marginBottom: "20px"
+      }}>
+        {t('common.connectWalletDescription')}
+      </p>
+      <button
+        onClick={connect}
+        style={{
+          backgroundColor: "#5856D6",
+          color: "white",
+          border: "none",
+          padding: "12px 24px",
+          borderRadius: "6px",
+          fontSize: "1rem",
+          fontWeight: "500",
+          cursor: "pointer",
+          transition: "background-color 0.2s",
+          display: "inline-flex",
+          alignItems: "center"
+        }}
+      >
+        <svg 
+          xmlns="http://www.w3.org/2000/svg" 
+          width="20" 
+          height="20" 
+          viewBox="0 0 24 24" 
+          fill="none" 
+          stroke="currentColor" 
+          strokeWidth="2" 
+          strokeLinecap="round" 
+          strokeLinejoin="round"
+          style={{ marginRight: "8px" }}
+        >
+          <rect x="2" y="4" width="20" height="16" rx="2" ry="2"></rect>
+          <path d="M6 12h12"></path>
+        </svg>
+        {t('common.connectWallet')}
+      </button>
+    </div>
+  );
+
+  const NetworkChangingSection = () => (
+    <div style={{
+      backgroundColor: "#f8fafc",
+      padding: "20px",
+      borderRadius: "8px",
+      textAlign: "center",
+      border: "1px solid #e2e8f0",
+      marginBottom: "20px"
+    }}>
+      <div style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        marginBottom: "16px"
+      }}>
+        <div style={{
+          border: "4px solid #f3f3f3",
+          borderTop: "4px solid #5856D6",
+          borderRadius: "50%",
+          width: "32px",
+          height: "32px",
+          animation: "spin 1s linear infinite"
+        }}></div>
+        <style>{`
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+        `}</style>
+      </div>
+      <p style={{ color: "#4a5568", margin: "0" }}>
+        Switching Network
+      </p>
+    </div>
+  );
   
   // Step 3: Display the UI
   return (
@@ -166,138 +276,162 @@ const RequestFirma: React.FC = () => {
           <div style={{
             padding: "30px"
           }}>
-            <div style={{
-              textAlign: "center",
-              marginBottom: "30px"
-            }}>
+            {isCheckingWallet ? (
               <div style={{
-                backgroundColor: "#f0f4ff",
-                borderRadius: "8px",
-                padding: "24px",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                margin: "30px 0"
+              }}>
+                <div style={{
+                  border: "4px solid #f3f3f3",
+                  borderTop: "4px solid #5856D6",
+                  borderRadius: "50%",
+                  width: "32px",
+                  height: "32px",
+                  animation: "spin 1s linear infinite",
+                  marginRight: "12px"
+                }}></div>
+                <p style={{ color: "#666", margin: "0" }}>{t('common.loading')}</p>
+                <style>{`
+                  @keyframes spin {
+                    0% { transform: rotate(0deg); }
+                    100% { transform: rotate(360deg); }
+                  }
+                `}</style>
+              </div>
+            ) : isChangingNetwork ? (
+              <NetworkChangingSection />
+            ) : !isConnected ? (
+              <WalletConnectionSection />
+            ) : (
+              <div style={{
+                textAlign: "center",
                 marginBottom: "30px"
               }}>
                 <div style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  marginBottom: "16px"
+                  backgroundColor: "#f0f4ff",
+                  borderRadius: "8px",
+                  padding: "24px",
+                  marginBottom: "30px"
                 }}>
-                  <svg 
-                    xmlns="http://www.w3.org/2000/svg" 
-                    width="48" 
-                    height="48" 
-                    viewBox="0 0 24 24" 
-                    fill="none" 
-                    stroke="#5856D6" 
-                    strokeWidth="2" 
-                    strokeLinecap="round" 
-                    strokeLinejoin="round"
-                  >
-                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                  </svg>
-                </div>
-                <p style={{
-                  fontSize: "1.1rem",
-                  color: "#333",
-                  marginBottom: "8px",
-                  fontWeight: "500"
-                }}>
-                  {t('requestFirmaFile.authBox.title')}
-                </p>
-                <p style={{
-                  color: "#666",
-                  lineHeight: "1.6",
-                  margin: "0"
-                }}>
-                 {t('requestFirmaFile.authBox.description')}
-                </p>
-              </div>
-              
-              {authUrl ? (
-                <div style={{
-                  marginTop: "30px"
-                }}>
-                  <button
-                    onClick={() => {
-                      if (authUrl) {
-                        window.location.href = authUrl;
-                      } else {
-                        console.error("Authorization URL is not defined.");
-                      }
-                    }}
-                    style={{
-                      backgroundColor: "#5856D6",
-                      color: "white",
-                      border: "none",
-                      padding: "14px 32px",
-                      borderRadius: "6px",
-                      fontSize: "1rem",
-                      fontWeight: "500",
-                      cursor: "pointer",
-                      transition: "background-color 0.2s",
-                      display: "inline-flex",
-                      alignItems: "center"
-                    }}
-                  >
+                  <div style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    marginBottom: "16px"
+                  }}>
                     <svg 
                       xmlns="http://www.w3.org/2000/svg" 
-                      width="20" 
-                      height="20" 
+                      width="48" 
+                      height="48" 
                       viewBox="0 0 24 24" 
                       fill="none" 
-                      stroke="currentColor" 
+                      stroke="#5856D6" 
                       strokeWidth="2" 
                       strokeLinecap="round" 
                       strokeLinejoin="round"
-                      style={{ marginRight: "8px" }}
                     >
-                      <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
-                      <polyline points="10 17 15 12 10 7"></polyline>
-                      <line x1="15" y1="12" x2="3" y2="12"></line>
+                      <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                      <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
                     </svg>
-                    {t('requestFirmaFile.button')}
-                  </button>
+                  </div>
+                  <p style={{
+                    fontSize: "1.1rem",
+                    color: "#333",
+                    marginBottom: "8px",
+                    fontWeight: "500"
+                  }}>
+                    {t('requestFirmaFile.authBox.title')}
+                  </p>
+                  <p style={{
+                    color: "#666",
+                    lineHeight: "1.6",
+                    margin: "0"
+                  }}>
+                   {t('requestFirmaFile.authBox.description')}
+                  </p>
                 </div>
-              ) : (
-                <div style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  margin: "30px 0"
-                }}>
+                
+                {authUrl ? (
                   <div style={{
-                    border: "4px solid #f3f3f3",
-                    borderTop: "4px solid #5856D6",
-                    borderRadius: "50%",
-                    width: "32px",
-                    height: "32px",
-                    animation: "spin 1s linear infinite",
-                    marginRight: "12px"
-                  }}></div>
-                  <p style={{ color: "#666", margin: "0" }}>{t('requestFirmaFile.loading')}</p>
-                  <style>{`
-                    @keyframes spin {
-                      0% { transform: rotate(0deg); }
-                      100% { transform: rotate(360deg); }
-                    }
-                  `}</style>
-                </div>
-              )}
-              
-              {error && (
-                <div style={{
-                  backgroundColor: "#fff5f5",
-                  color: "#e53e3e",
-                  border: "1px solid #fed7d7",
-                  borderRadius: "6px",
-                  padding: "16px",
-                  marginTop: "20px",
-                  textAlign: "left"
-                }}>
-                  <p style={{ margin: "0" }}>{error}</p>
-                </div>
-              )}
-            </div>
+                    marginTop: "30px"
+                  }}>
+                    <button
+                      onClick={() => {
+                        if (authUrl) {
+                          window.location.href = authUrl;
+                        } else {
+                          console.error("Authorization URL is not defined.");
+                        }
+                      }}
+                      style={{
+                        backgroundColor: "#5856D6",
+                        color: "white",
+                        border: "none",
+                        padding: "14px 32px",
+                        borderRadius: "6px",
+                        fontSize: "1rem",
+                        fontWeight: "500",
+                        cursor: "pointer",
+                        transition: "background-color 0.2s",
+                        display: "inline-flex",
+                        alignItems: "center"
+                      }}
+                    >
+                      <svg 
+                        xmlns="http://www.w3.org/2000/svg" 
+                        width="20" 
+                        height="20" 
+                        viewBox="0 0 24 24" 
+                        fill="none" 
+                        stroke="currentColor" 
+                        strokeWidth="2" 
+                        strokeLinecap="round" 
+                        strokeLinejoin="round"
+                        style={{ marginRight: "8px" }}
+                      >
+                        <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+                        <polyline points="10 17 15 12 10 7"></polyline>
+                        <line x1="15" y1="12" x2="3" y2="12"></line>
+                      </svg>
+                      {t('requestFirmaFile.button')}
+                    </button>
+                  </div>
+                ) : (
+                  <div style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    margin: "30px 0"
+                  }}>
+                    <div style={{
+                      border: "4px solid #f3f3f3",
+                      borderTop: "4px solid #5856D6",
+                      borderRadius: "50%",
+                      width: "32px",
+                      height: "32px",
+                      animation: "spin 1s linear infinite",
+                      marginRight: "12px"
+                    }}></div>
+                    <p style={{ color: "#666", margin: "0" }}>{t('requestFirmaFile.loading')}</p>
+                  </div>
+                )}
+                
+                {error && (
+                  <div style={{
+                    backgroundColor: "#fff5f5",
+                    color: "#e53e3e",
+                    border: "1px solid #fed7d7",
+                    borderRadius: "6px",
+                    padding: "16px",
+                    marginTop: "20px",
+                    textAlign: "left"
+                  }}>
+                    <p style={{ margin: "0" }}>{error}</p>
+                  </div>
+                )}
+              </div>
+            )}
             
             <div style={{
               borderTop: "1px solid #edf2f7",

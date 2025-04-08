@@ -52,8 +52,8 @@ export const getCredentialData = async ():
 
         data = jsonResult;
       }
-    } catch (err) {
-      if (err.code === 4001) {
+    } catch (err: unknown) {
+      if ((err as any).code === 4001) {
         console.error("User rejected the request.");
         error = "User rejected the request.";
       } else {
@@ -94,8 +94,8 @@ export const getVoteScope = async ():
         console.log("voteScope is empty.");
         error = 'No election yet available for user.';
       }
-    } catch (err) {
-      if (err.code === 4001) {
+    } catch (err: unknown) {
+      if ((err as any).code === 4001) {
         console.error("User rejected the request.");
         error = "User rejected the request.";
       } else {
@@ -109,7 +109,7 @@ export const getVoteScope = async ():
 
   return new Promise((resolve) => {
     setTimeout(() => {
-        resolve({ _voteScope: voteScope, _error: error});
+        resolve({ _voteScope: voteScope || 0, _error: error});
     }, 2000);
   });
 }

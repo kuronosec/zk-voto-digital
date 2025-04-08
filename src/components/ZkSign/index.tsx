@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Button } from "rimble-ui";
 import { useTranslation } from 'react-i18next';
 import '../../i18n';
 
