@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
 
 // Constants
-const POLYGON_AMOY_CHAIN_ID = '0x13881'; // Chain ID for Polygon Amoy in hexadecimal
+const POLYGON_AMOY_CHAIN_ID = '0x13882'; // Chain ID for Polygon Amoy in hexadecimal
 
 export interface WalletState {
   isConnected: boolean;

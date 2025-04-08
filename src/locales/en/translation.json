@@ -18,7 +18,10 @@
       "votes": "Votes",
       "metamaskLogin": "Please login with Metamask to access the voting system.",
       "metamaskLoginShort": "Please login with Metamask...",
-      "download": "Download"
+      "download": "Download",
+      "connectedAs": "Connected As",
+      "totalVotes": "Total Votes",
+      "percentage": "Percentage"
     },
     "voting": {
       "title": "Voting System - Citizen Identity Validation",

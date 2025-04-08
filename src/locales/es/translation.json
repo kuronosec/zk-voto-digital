@@ -18,7 +18,10 @@
       "votes": "Votos",
       "metamaskLogin": "Por favor, inicia sesión con Metamask para acceder al sistema de votación.",
       "metamaskLoginShort": "Por favor, inicia sesión con Metamask...",
-      "download": "Descargar"
+      "download": "Descargar",
+      "connectedAs": "Conectado como",
+      "totalVotes": "Votos Totales",
+      "percentage": "Porcentaje"
     },
     "voting": {
       "title": "Sistema de Votación - Validación de Identidad Ciudadana",
