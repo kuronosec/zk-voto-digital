@@ -43,7 +43,7 @@ const RequestFirma: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const { verifiableCredential, setVerifiableCredential, voteScope } = useVote();
   const navigate = useNavigate();
-  const { isConnected, account, connect, checkWalletState } = useWallet();
+  const { isConnected, account, connect, checkWalletState, isChangingNetwork } = useWallet();
   const [isCheckingWallet, setIsCheckingWallet] = useState(true);
   
   // Check wallet state on component mount
@@ -76,6 +76,7 @@ const RequestFirma: React.FC = () => {
     }
   }, [voteScope, isConnected, account, searchParams, tokenData]);
 
+  // Step 2: Handle the callback and exchange the code for an access token
   useEffect(() => {
     const code = searchParams.get("code");
 
@@ -99,7 +100,7 @@ const RequestFirma: React.FC = () => {
           );
 
           const { access_token } = response.data;
-          const { verifiable_credential } = response.data
+          const { verifiable_credential } = response.data;
           setTokenData(parseJwt(access_token));
           try {
             setVerifiableCredential(JSON.parse(verifiable_credential));
@@ -121,7 +122,7 @@ const RequestFirma: React.FC = () => {
     if (verifiableCredential !== null) {
       navigate("/vote");
     }
-  }, [verifiableCredential, navigate]); 
+  }, [verifiableCredential, navigate]);
   
   const WalletConnectionSection = () => (
     <div style={{
@@ -201,7 +202,44 @@ const RequestFirma: React.FC = () => {
       </button>
     </div>
   );
+
+  const NetworkChangingSection = () => (
+    <div style={{
+      backgroundColor: "#f8fafc",
+      padding: "20px",
+      borderRadius: "8px",
+      textAlign: "center",
+      border: "1px solid #e2e8f0",
+      marginBottom: "20px"
+    }}>
+      <div style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        marginBottom: "16px"
+      }}>
+        <div style={{
+          border: "4px solid #f3f3f3",
+          borderTop: "4px solid #5856D6",
+          borderRadius: "50%",
+          width: "32px",
+          height: "32px",
+          animation: "spin 1s linear infinite"
+        }}></div>
+        <style>{`
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+        `}</style>
+      </div>
+      <p style={{ color: "#4a5568", margin: "0" }}>
+        Switching Network
+      </p>
+    </div>
+  );
   
+  // Step 3: Display the UI
   return (
     <div style={{
       minHeight: "100vh",
@@ -262,6 +300,8 @@ const RequestFirma: React.FC = () => {
                   }
                 `}</style>
               </div>
+            ) : isChangingNetwork ? (
+              <NetworkChangingSection />
             ) : !isConnected ? (
               <WalletConnectionSection />
             ) : (

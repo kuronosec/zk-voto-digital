@@ -18,10 +18,11 @@ const Vote: React.FC = () => {
   const [canVote, setCanVote] = useState(false);
   const { verifiableCredential, setVoteScope, voteScope } = useVote();
   
-  const { isConnected, connect, account } = useWallet();
+  const { isConnected, connect, account, isChangingNetwork } = useWallet();
 
   const navigate = useNavigate();
 
+  // Get vote data
   const fetchVoteScope = async () => {
     if (!isConnected || !account) {
       setError("Wallet no yet available.");
@@ -47,6 +48,7 @@ const Vote: React.FC = () => {
     }
   };
 
+
   useEffect(() => {
     if (!isConnected) {
       setLoading(false);
@@ -60,6 +62,7 @@ const Vote: React.FC = () => {
     }
   }, [isConnected, account, verifiableCredential, voteScope, navigate]);
 
+  // Get vote data
   const fetchVoteData = async () => {
     if (!isConnected || !account) {
       setCanVote(false);
@@ -71,19 +74,32 @@ const Vote: React.FC = () => {
     
     try {
       const { _data, _error } = await getVoteData();
-      if ( _error === "No proposals yet available for user.") {
+      console.log("Datos de votación recibidos:", _data); 
+      
+      if (_error === "No proposals yet available for user.") {
         setCanVote(false);
         setVoteData(null);
-      } else if ( _error === "Wallet no yet available." ) {
+      } else if (_error === "Wallet no yet available.") {
         setCanVote(false);
         setVoteData(null);
+      } else if (!_data || !_data.votingQuestion || !_data.proposals) {
+        console.error("Datos de votación incompletos:", _data);
+        setCanVote(false);
+        setVoteData(null);
+        setError("Datos de votación incompletos");
       } else {
         setCanVote(true);
         setVoteData(_data);
       }
-      setError(_error);
+      
+      if (_error) {
+        setError(_error);
+      }
     } catch (err) {
+      console.error("Error al obtener datos de votación:", err);
       setError(err instanceof Error ? err.message : "An error occurred");
+      setCanVote(false);
+      setVoteData(null);
     } finally {
       setLoading(false);
     }
@@ -152,7 +168,41 @@ const Vote: React.FC = () => {
               fontWeight: "500"
             }}>{t('vc')}</h2>
             
-            {error ? (
+            {isChangingNetwork ? (
+              <div style={{
+                backgroundColor: "#f8fafc",
+                padding: "20px",
+                borderRadius: "8px",
+                textAlign: "center",
+                border: "1px solid #e2e8f0",
+                marginBottom: "20px"
+              }}>
+                <div style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  marginBottom: "16px"
+                }}>
+                  <div style={{
+                    border: "4px solid #f3f3f3",
+                    borderTop: "4px solid #5856D6",
+                    borderRadius: "50%",
+                    width: "32px",
+                    height: "32px",
+                    animation: "spin 1s linear infinite"
+                  }}></div>
+                  <style>{`
+                    @keyframes spin {
+                      0% { transform: rotate(0deg); }
+                      100% { transform: rotate(360deg); }
+                    }
+                  `}</style>
+                </div>
+                <p style={{ color: "#4a5568", margin: "0" }}>
+                  {t('common.switchingNetwork')}
+                </p>
+              </div>
+            ) : error ? (
               <div style={{
                 padding: "16px",
                 backgroundColor: "#fff5f5",
@@ -305,6 +355,35 @@ const Vote: React.FC = () => {
                 >
                   {t('common.viewResults')}
                 </button>
+              </div>
+            ) : !voteData.votingQuestion || !voteData.proposals ? (
+              <div style={{
+                backgroundColor: "#f8fafc",
+                borderRadius: "8px",
+                padding: "30px",
+                textAlign: "center",
+                border: "1px solid #e2e8f0"
+              }}>
+                <div style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  marginBottom: "16px"
+                }}>
+                  <div style={{
+                    border: "4px solid #f3f3f3",
+                    borderTop: "4px solid #5856D6",
+                    borderRadius: "50%",
+                    width: "32px",
+                    height: "32px",
+                    animation: "spin 1s linear infinite"
+                  }}></div>
+                </div>
+                <p style={{
+                  fontSize: "1.1rem",
+                  color: "#4a5568",
+                  marginBottom: "20px"
+                }}>Cargando datos de votación...</p>
               </div>
             ) : (
               <VoteOptionsDisplay voteData={voteData} />

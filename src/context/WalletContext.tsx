@@ -8,7 +8,6 @@ interface WalletContextType extends WalletState {
   switchToPolygonAmoy: () => Promise<boolean>;
 }
 
-// Default context value
 const defaultContext: WalletContextType = {
   isConnected: false,
   account: null,
@@ -16,6 +15,7 @@ const defaultContext: WalletContextType = {
   chainId: null,
   provider: null,
   signer: null,
+  isChangingNetwork: false,
   connect: async () => {},
   checkWalletState: async () => {},
   switchToPolygonAmoy: async () => false

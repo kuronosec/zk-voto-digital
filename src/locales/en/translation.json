@@ -21,7 +21,13 @@
       "download": "Download",
       "connectedAs": "Connected As",
       "totalVotes": "Total Votes",
-      "percentage": "Percentage"
+      "percentage": "Percentage",
+      "walletNotConnected": "Wallet Not Connected",
+      "submitting": "Sending...",
+      "sendVote": "Submit Vote",
+      "voteSuccessfullySent": "Vote sent successfully!",
+      "thankYouForParticipating": "Thank you for participating in this vote.",
+      "loadingVotingData": "Loading voting data..."
     },
     "voting": {
       "title": "Voting System - Citizen Identity Validation",

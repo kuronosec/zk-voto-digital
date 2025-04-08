@@ -19,7 +19,7 @@ const VoteResults: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   
-  const { isConnected, connect, account } = useWallet();
+  const { isConnected, connect, account, isChangingNetwork } = useWallet();
 
   const fetchVoteResults = async () => {
     setLoading(true);
@@ -46,13 +46,44 @@ const VoteResults: React.FC = () => {
   };
 
   useEffect(() => {
-    if (isConnected && account) {
+    if (isConnected && account && !isChangingNetwork) {
       fetchVoteResults();
-    } else {
+    } else if (!isConnected) {
       setLoading(false);
       setError("Wallet no yet available.");
     }
-  }, [isConnected, account]);
+  }, [isConnected, account, isChangingNetwork]);
+
+  const NetworkChangingSection = () => (
+    <div style={{
+      padding: "60px 20px",
+      textAlign: "center"
+    }}>
+      <div style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        flexDirection: "column"
+      }}>
+        <div style={{
+          border: "5px solid #f3f3f3",
+          borderTop: "5px solid #5856D6",
+          borderRadius: "50%",
+          width: "50px",
+          height: "50px",
+          animation: "spin 1s linear infinite",
+          marginBottom: "20px"
+        }}></div>
+        <style>{`
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+        `}</style>
+        <p style={{ fontSize: "18px", color: "#4a5568" }}>Switching Network</p>
+      </div>
+    </div>
+  );
 
   return (
     <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
@@ -72,7 +103,9 @@ const VoteResults: React.FC = () => {
           boxShadow: "0 2px 10px rgba(0, 0, 0, 0.1)",
           overflow: "hidden"
         }}>
-          {loading ? (
+          {isChangingNetwork ? (
+            <NetworkChangingSection />
+          ) : loading ? (
             <div style={{
               padding: "80px 20px",
               textAlign: "center"

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
 
 // Constants
-const POLYGON_AMOY_CHAIN_ID = '0x13882'; // Chain ID for Polygon Amoy in hexadecimal
+const POLYGON_AMOY_CHAIN_ID = '0x13882'; 
 
 export interface WalletState {
   isConnected: boolean;
@@ -11,6 +11,7 @@ export interface WalletState {
   chainId: string | null;
   provider: ethers.providers.Web3Provider | null;
   signer: ethers.Signer | null;
+  isChangingNetwork: boolean;
 }
 
 export const useWalletConnection = () => {
@@ -20,7 +21,8 @@ export const useWalletConnection = () => {
     error: null,
     chainId: null,
     provider: null,
-    signer: null
+    signer: null,
+    isChangingNetwork: false
   });
 
   // Check current wallet state without requesting connection
@@ -48,7 +50,8 @@ export const useWalletConnection = () => {
             error: "Please switch to Polygon Amoy network",
             chainId,
             provider,
-            signer
+            signer,
+            isChangingNetwork: false
           });
         } else {
           setState({
@@ -57,7 +60,8 @@ export const useWalletConnection = () => {
             error: null,
             chainId,
             provider,
-            signer
+            signer,
+            isChangingNetwork: false
           });
         }
       } else {
@@ -67,7 +71,8 @@ export const useWalletConnection = () => {
           error: null,
           chainId,
           provider: null,
-          signer: null
+          signer: null,
+          isChangingNetwork: false
         });
       }
     } catch (error: any) {
@@ -77,7 +82,8 @@ export const useWalletConnection = () => {
         isConnected: false,
         error: error.message || "Failed to check wallet connection",
         provider: null,
-        signer: null
+        signer: null,
+        isChangingNetwork: false
       }));
     }
   };
@@ -87,11 +93,15 @@ export const useWalletConnection = () => {
     if (!window.ethereum) return false;
 
     try {
+      setState(prev => ({ ...prev, isChangingNetwork: true, error: null }));
+      
       await window.ethereum.request({
         method: 'wallet_switchEthereumChain',
         params: [{ chainId: POLYGON_AMOY_CHAIN_ID }],
       });
+      
       await checkWalletState();
+      setState(prev => ({ ...prev, isChangingNetwork: false }));
       return true;
     } catch (error: any) {
       // If error code is 4902, the network isn't added yet
@@ -114,12 +124,14 @@ export const useWalletConnection = () => {
             ],
           });
           await checkWalletState();
+          setState(prev => ({ ...prev, isChangingNetwork: false }));
           return true;
         } catch (addError: any) {
           console.error('Failed to add Polygon Amoy network:', addError);
           setState(prev => ({ 
             ...prev, 
-            error: "Failed to add Polygon Amoy network"
+            error: "Failed to add Polygon Amoy network",
+            isChangingNetwork: false
           }));
           return false;
         }
@@ -127,89 +139,70 @@ export const useWalletConnection = () => {
       console.error('Failed to switch to Polygon Amoy network:', error);
       setState(prev => ({ 
         ...prev, 
-        error: "Failed to switch to Polygon Amoy network"
+        error: "Failed to switch to Polygon Amoy network",
+        isChangingNetwork: false
       }));
       return false;
     }
   };
 
-  // Function called when user clicks the connect button
-  const connect = async () => {
-    if (!window.ethereum) {
-      setState(prev => ({ ...prev, error: "MetaMask is not installed" }));
-      return;
-    }
+const connect = async () => {
+  if (!window.ethereum) {
+    setState(prev => ({ ...prev, error: "MetaMask is not installed" }));
+    return;
+  }
 
-    try {
+  try {
+    const accounts = await window.ethereum.request({ 
+      method: 'eth_requestAccounts' 
+    });
+    
+    if (accounts && accounts.length > 0) {
       const provider = new ethers.providers.Web3Provider(window.ethereum);
-      // This shows the MetaMask popup
-      const accounts = await window.ethereum.request({ 
-        method: 'eth_requestAccounts' 
+      const chainId = await window.ethereum.request({ method: 'eth_chainId' }) as string;
+      const signer = provider.getSigner();
+      const account = await signer.getAddress();
+
+      setState({
+        isConnected: true,
+        account,
+        error: chainId !== POLYGON_AMOY_CHAIN_ID ? "Switching to Polygon Amoy network..." : null,
+        chainId,
+        provider,
+        signer,
+        isChangingNetwork: chainId !== POLYGON_AMOY_CHAIN_ID
       });
       
-      if (accounts && accounts.length > 0) {
-        const chainId = await window.ethereum.request({ method: 'eth_chainId' }) as string;
-        const signer = provider.getSigner();
-        const account = await signer.getAddress();
-
-        // Check if on the correct network
-        if (chainId !== POLYGON_AMOY_CHAIN_ID) {
-          setState({
-            isConnected: true,
-            account,
-            error: "Please switch to Polygon Amo48484 network",
-            chainId,
-            provider,
-            signer
-          });
-        } else {
-          setState({
-            isConnected: true,
-            account,
-            error: null,
-            chainId,
-            provider,
-            signer
-          });
-        }
-      }
-    } catch (error: any) {
-      // More specific error handling
-      if (error.code === 4001) {
-        setState(prev => ({
-          ...prev,
-          isConnected: false,
-          error: "User rejected the connection request",
-          provider: null,
-          signer: null
-        }));
-      } else if (error.code === -32002) {
-        setState(prev => ({
-          ...prev,
-          isConnected: false,
-          error: "Connection request already pending",
-          provider: null,
-          signer: null
-        }));
-      } else {
-        setState(prev => ({
-          ...prev,
-          isConnected: false,
-          error: "Failed to connect wallet",
-          provider: null,
-          signer: null
-        }));
+      if (chainId !== POLYGON_AMOY_CHAIN_ID) {
+        console.log("Connected but on wrong network. Switching to Polygon Amoy...");
+        
+        setTimeout(async () => {
+          await switchToPolygonAmoy();
+        }, 500);
       }
     }
-  };
+  } catch (error: any) {
+  }
+};
 
-  // Initial verification and setup of listeners
+const handleChainChanged = async (chainId: string) => {
+  console.log("Chain changed to:", chainId);
+  if (chainId !== POLYGON_AMOY_CHAIN_ID && state.isConnected) {
+    console.log("Not on Polygon Amoy. Current chain:", chainId);
+    if (!state.isChangingNetwork) {
+      console.log("Attempting to switch to Polygon Amoy automatically");
+      await switchToPolygonAmoy();
+    }
+  } else {
+    console.log("Chain is correct or not connected. Updating state.");
+    await checkWalletState();
+  }
+};
+
   useEffect(() => {
-    // Initial state check
     checkWalletState();
 
     if (window.ethereum) {
-      // Set up listeners for changes
       const handleAccountsChanged = async (accounts: any) => {
         if (accounts.length === 0) {
           // User disconnected wallet
@@ -219,17 +212,23 @@ export const useWalletConnection = () => {
             error: null,
             chainId: null,
             provider: null,
-            signer: null
+            signer: null,
+            isChangingNetwork: false
           });
         } else {
           // Update with new account
           await checkWalletState();
+          
+          // If connected but not on the right network, switch automatically
+          const chainId = await window.ethereum.request({ method: 'eth_chainId' }) as string;
+          if (chainId !== POLYGON_AMOY_CHAIN_ID) {
+            await switchToPolygonAmoy();
+          }
         }
       };
 
-      const handleChainChanged = () => {
-        // Reload state when network changes
-        checkWalletState();
+      const handleChainChangedEvent = (chainId: string) => {
+        handleChainChanged(chainId);
       };
 
       const handleDisconnect = (error: any) => {
@@ -240,23 +239,24 @@ export const useWalletConnection = () => {
           error: null,
           chainId: null,
           provider: null,
-          signer: null
+          signer: null,
+          isChangingNetwork: false
         });
       };
 
       window.ethereum.on('accountsChanged', handleAccountsChanged);
-      window.ethereum.on('chainChanged', handleChainChanged);
+      window.ethereum.on('chainChanged', handleChainChangedEvent);
       window.ethereum.on('disconnect', handleDisconnect);
 
       return () => {
         if (window.ethereum) {
           window.ethereum.removeListener('accountsChanged', handleAccountsChanged);
-          window.ethereum.removeListener('chainChanged', handleChainChanged);
+          window.ethereum.removeListener('chainChanged', handleChainChangedEvent);
           window.ethereum.removeListener('disconnect', handleDisconnect);
         }
       };
     }
-  }, []);
+  }, [state.isConnected, state.isChangingNetwork]);
 
   return {
     ...state,
