@@ -6,7 +6,7 @@ import { getVoteScope } from '../hooks/getCredentialData';
 import { VoteOptionsDisplay } from '../components/VoteOptionsDisplay';
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from 'react-i18next';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useVote } from "./VoteContext";
 import { useWallet } from "../context/WalletContext";
 
@@ -19,36 +19,54 @@ const Vote: React.FC = () => {
   const { verifiableCredential, setVoteScope, voteScope } = useVote();
   
   const { isConnected, connect, account, isChangingNetwork } = useWallet();
-
   const navigate = useNavigate();
+  
+  // Usamos useRef para mantener un seguimiento de si el componente está montado
+  const isMounted = useRef(true);
 
-  // Get vote data
-  const fetchVoteScope = async () => {
+  // Limpiar el indicador cuando el componente se desmonte
+  useEffect(() => {
+    return () => {
+      isMounted.current = false;
+    };
+  }, []);
+
+  // Get vote scope data - memoizado para evitar recreación
+  const fetchVoteScope = useCallback(async () => {
     if (!isConnected || !account) {
-      setError("Wallet no yet available.");
-      setVoteScope(0);
-      setLoading(false);
+      if (isMounted.current) {
+        setError("Wallet no yet available.");
+        setVoteScope(0);
+        setLoading(false);
+      }
       return;
     }
     
     try {
       const { _voteScope, _error } = await getVoteScope();
-      if ( _error === "No election yet available for user.") {
-        setVoteScope(0);
-      } else if ( _error === "Wallet no yet available." ) {
-        setVoteScope(0);
-      } else {
-        setVoteScope(_voteScope);
+      // Solo actualizar si el componente sigue montado
+      if (isMounted.current) {
+        if (_error === "No election yet available for user.") {
+          setVoteScope(0);
+        } else if (_error === "Wallet no yet available.") {
+          setVoteScope(0);
+        } else {
+          setVoteScope(_voteScope);
+        }
+        setError(_error);
       }
-      setError(_error);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "An error occurred");
+      if (isMounted.current) {
+        setError(err instanceof Error ? err.message : "An error occurred");
+      }
     } finally {
-      setLoading(false);
+      if (isMounted.current) {
+        setLoading(false);
+      }
     }
-  };
+  }, [isConnected, account, setVoteScope]);
 
-
+  // Efecto para manejar la verificación inicial y navegación
   useEffect(() => {
     if (!isConnected) {
       setLoading(false);
@@ -57,59 +75,80 @@ const Vote: React.FC = () => {
     }
     
     if (verifiableCredential === null && voteScope === null) {
-      fetchVoteScope();
-      navigate("/request-firma");
+      // No queremos actualizar estados cuando el componente está en proceso de navegación
+      // así que primero verificamos el voteScope y luego navegamos
+      fetchVoteScope().then(() => {
+        // Solo navegamos si el componente sigue montado
+        if (isMounted.current) {
+          navigate("/request-firma");
+        }
+      });
     }
-  }, [isConnected, account, verifiableCredential, voteScope, navigate]);
+  }, [isConnected, account, verifiableCredential, voteScope, navigate, fetchVoteScope]);
 
-  // Get vote data
-  const fetchVoteData = async () => {
+  // Get vote data - memoizado para evitar recreación
+  const fetchVoteData = useCallback(async () => {
     if (!isConnected || !account) {
-      setCanVote(false);
-      setVoteData(null);
-      setError("Wallet no yet available.");
-      setLoading(false);
+      if (isMounted.current) {
+        setCanVote(false);
+        setVoteData(null);
+        setError("Wallet no yet available.");
+        setLoading(false);
+      }
       return;
     }
     
     try {
       const { _data, _error } = await getVoteData();
-      console.log("Datos de votación recibidos:", _data); 
       
-      if (_error === "No proposals yet available for user.") {
-        setCanVote(false);
-        setVoteData(null);
-      } else if (_error === "Wallet no yet available.") {
-        setCanVote(false);
-        setVoteData(null);
-      } else if (!_data || !_data.votingQuestion || !_data.proposals) {
-        console.error("Datos de votación incompletos:", _data);
-        setCanVote(false);
-        setVoteData(null);
-        setError("Datos de votación incompletos");
-      } else {
-        setCanVote(true);
-        setVoteData(_data);
-      }
-      
-      if (_error) {
-        setError(_error);
+      // Solo actualizar si el componente sigue montado
+      if (isMounted.current) {
+        console.log("Datos de votación recibidos:", _data); 
+        
+        if (_error === "No proposals yet available for user.") {
+          setCanVote(false);
+          setVoteData(null);
+        } else if (_error === "Wallet no yet available.") {
+          setCanVote(false);
+          setVoteData(null);
+        } else if (!_data || !_data.votingQuestion || !_data.proposals) {
+          console.error("Datos de votación incompletos:", _data);
+          setCanVote(false);
+          setVoteData(null);
+          setError("Datos de votación incompletos");
+        } else {
+          setCanVote(true);
+          setVoteData(_data);
+        }
+        
+        if (_error) {
+          setError(_error);
+        }
       }
     } catch (err) {
-      console.error("Error al obtener datos de votación:", err);
-      setError(err instanceof Error ? err.message : "An error occurred");
-      setCanVote(false);
-      setVoteData(null);
+      if (isMounted.current) {
+        console.error("Error al obtener datos de votación:", err);
+        setError(err instanceof Error ? err.message : "An error occurred");
+        setCanVote(false);
+        setVoteData(null);
+      }
     } finally {
-      setLoading(false);
+      if (isMounted.current) {
+        setLoading(false);
+      }
     }
-  };
+  }, [isConnected, account]);
   
+  // Efecto para obtener datos de votación cuando cambian credenciales o conexión
   useEffect(() => {
     if (verifiableCredential !== null && isConnected && account) {
       fetchVoteData();
     }
-  }, [verifiableCredential, isConnected, account]);
+    
+    // Limpieza: es buena práctica cancelar peticiones pendientes, pero aquí no
+    // es posible ya que getVoteData no da un mecanismo para cancelar.
+    // Por eso usamos isMounted para evitar actualizaciones si desmonta.
+  }, [verifiableCredential, isConnected, account, fetchVoteData]);
 
   return (
     <div style={{

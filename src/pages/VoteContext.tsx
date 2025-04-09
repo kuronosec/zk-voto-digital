@@ -19,48 +19,38 @@ export const VoteProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [hasVoted, setHasVoted] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   
+  // Integrar con el contexto de wallet
   const { isConnected, account } = useWallet();
 
+  // Efecto para limpiar el estado cuando la wallet se desconecta
   useEffect(() => {
     if (!isConnected || !account) {
+      // Si la wallet se desconecta, reiniciamos el estado del contexto de voto
       setVerifiableCredential(null);
       setHasVoted(false);
       setIsLoading(false);
     }
   }, [isConnected, account]);
 
-  useEffect(() => {
-    const checkVoteStatus = async () => {
-      if (verifiableCredential && isConnected && account) {
-        try {
-          setIsLoading(false);
-        } catch (error) {
-          console.error("Error checking vote status:", error);
-          setIsLoading(false);
-        }
-      }
-    };
-
-    checkVoteStatus();
-  }, [verifiableCredential, isConnected, account]);
+  // Proporciona solo un objeto de valores memoizados
+  const value = {
+    verifiableCredential,
+    setVerifiableCredential,
+    voteScope,
+    setVoteScope,
+    hasVoted,
+    setHasVoted,
+    isLoading
+  };
 
   return (
-    <VoteContext.Provider 
-      value={{
-        verifiableCredential,
-        setVerifiableCredential,
-        voteScope,
-        setVoteScope,
-        hasVoted,
-        setHasVoted,
-        isLoading
-      }}
-    >
+    <VoteContext.Provider value={value}>
       {children}
     </VoteContext.Provider>
   );
 };
 
+// Custom hook para usar el contexto
 export const useVote = () => {
   const context = useContext(VoteContext);
   if (!context) {
