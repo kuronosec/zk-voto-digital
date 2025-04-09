@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
 import axios from "axios";
 import queryString from "query-string";
@@ -46,7 +46,7 @@ const RequestFirma: React.FC = () => {
   const { isConnected, account, connect, checkWalletState, isChangingNetwork } = useWallet();
   const [isCheckingWallet, setIsCheckingWallet] = useState(true);
   
-  // Check wallet state on component mount
+  // Check wallet state on component mount only once
   useEffect(() => {
     const checkWallet = async () => {
       await checkWalletState();
@@ -56,70 +56,78 @@ const RequestFirma: React.FC = () => {
     checkWallet();
   }, [checkWalletState]);
   
-  // Step 1: Generate the authorization URL
-  useEffect(() => {
-    if (!isConnected || !account) return;
-    
-    const code = searchParams.get("code");
-
-    if (!code && !tokenData && voteScope !== null) {
-      const url = `${AUTH_SERVER_URL}/authorize?` + queryString.stringify({
+  // Memoizar la generación de la URL de autorización para evitar recálculos innecesarios
+  const generateAuthUrl = useCallback(() => {
+    if (isConnected && account && voteScope !== null && !tokenData) {
+      return `${AUTH_SERVER_URL}/authorize?` + queryString.stringify({
         grant_type: "code",
         client_id: CLIENT_ID,
         user_id: account,
         redirect_uri: REDIRECT_URI,
         scope: "zk-firma-digital",
-        state: Math.random() * 10000, 
+        state: String(Math.floor(Math.random() * 10000)), // Convertir a string para evitar regeneración
         nullifier_seed: voteScope
       });
-      setAuthUrl(url);
     }
-  }, [voteScope, isConnected, account, searchParams, tokenData]);
+    return "";
+  }, [isConnected, account, voteScope, tokenData]);
 
-  // Step 2: Handle the callback and exchange the code for an access token
+  // Actualizar authUrl solo cuando cambien las dependencias relevantes
   useEffect(() => {
     const code = searchParams.get("code");
-
-    if (code) {
-      const exchangeToken = async () => {
-        try {
-          const response = await axios.post(
-            `${AUTH_SERVER_URL}/token`,
-            queryString.stringify({
-              code: code,
-              client_id: CLIENT_ID,
-              client_secret: CLIENT_SECRET,
-              redirect_uri: REDIRECT_URI,
-              grant_type: "authorization_code",
-            }),
-            {
-              headers: {
-                "Content-Type": "application/x-www-form-urlencoded",
-              },
-            }
-          );
-
-          const { access_token } = response.data;
-          const { verifiable_credential } = response.data;
-          setTokenData(parseJwt(access_token));
-          try {
-            setVerifiableCredential(JSON.parse(verifiable_credential));
-          } catch (error) {
-            console.error("Invalid verifiable credential: " + error);
-            setError("Invalid verifiable credential format");
-          }
-        } catch (err) {
-          console.error("Error exchanging authorization code:", err);
-          setError("Failed to exchange authorization code for access token");
-        }
-      };
-
-      exchangeToken();
+    if (!code) {
+      const url = generateAuthUrl();
+      if (url) {
+        setAuthUrl(url);
+      }
     }
-  }, [searchParams, setVerifiableCredential]);
+  }, [generateAuthUrl, searchParams]);
 
+  // Manejar el intercambio de código por token solo cuando sea necesario
   useEffect(() => {
-    if (verifiableCredential !== null) {
+    const code = searchParams.get("code");
+    if (!code || tokenData) return;
+
+    const exchangeToken = async () => {
+      try {
+        const response = await axios.post(
+          `${AUTH_SERVER_URL}/token`,
+          queryString.stringify({
+            code: code,
+            client_id: CLIENT_ID,
+            client_secret: CLIENT_SECRET,
+            redirect_uri: REDIRECT_URI,
+            grant_type: "authorization_code",
+          }),
+          {
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded",
+            },
+          }
+        );
+
+        const { access_token, verifiable_credential } = response.data;
+        setTokenData(parseJwt(access_token));
+        
+        try {
+          const parsedCredential = JSON.parse(verifiable_credential);
+          setVerifiableCredential(parsedCredential);
+        } catch (error) {
+          console.error("Invalid verifiable credential: " + error);
+          setError("Invalid verifiable credential format");
+        }
+      } catch (err) {
+        console.error("Error exchanging authorization code:", err);
+        setError("Failed to exchange authorization code for access token");
+      }
+    };
+
+    exchangeToken();
+  }, [searchParams, setVerifiableCredential, tokenData]);
+
+  // Navegar a la página de votación cuando tengamos credenciales verificables
+  useEffect(() => {
+    if (verifiableCredential) {
       navigate("/vote");
     }
   }, [verifiableCredential, navigate]);
@@ -239,7 +247,7 @@ const RequestFirma: React.FC = () => {
     </div>
   );
   
-  // Step 3: Display the UI
+  // Render UI
   return (
     <div style={{
       minHeight: "100vh",
