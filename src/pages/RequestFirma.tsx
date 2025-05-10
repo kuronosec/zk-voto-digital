@@ -62,7 +62,6 @@ const RequestFirma: React.FC = () => {
       return `${AUTH_SERVER_URL}/authorize?` + queryString.stringify({
         grant_type: "code",
         client_id: CLIENT_ID,
-        client_secret: CLIENT_SECRET,
         user_id: account,
         redirect_uri: REDIRECT_URI,
         scope: "zk-firma-digital",
