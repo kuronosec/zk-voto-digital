@@ -18,7 +18,7 @@
       "votes": "Votes",
       "metamaskLogin": "Please login with Metamask to access the voting system.",
       "metamaskLoginShort": "Please login with Metamask...",
-      "download": "Download",
+      "download": "Install Zikuani",
       "connectedAs": "Connected As",
       "totalVotes": "Total Votes",
       "percentage": "Percentage",
@@ -133,7 +133,8 @@
     "home": "Home",
     "howItWorks": "How It Works",
     "tryIt": "Try It",
-    "vote": "Vote"
+    "vote": "Vote",
+    "documentation": "Documentation"
   },
   "copyright": "© 2025 ZK-Voto-Digital. Open source under the Apache-2.0 license."
   },

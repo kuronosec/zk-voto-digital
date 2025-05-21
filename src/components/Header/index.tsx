@@ -166,7 +166,7 @@ export const Header = () => {
           <Link to="/results" style={linkStyle}>
             {t('common.seeResults')}
           </Link>
-          <Link to="https://github.com/kuronosec/zk-firma-digital?tab=readme-ov-file#installation" style={linkStyle}>
+          <Link to="https://docs.sakundi.io/es/docs/user-section/client-installation" style={linkStyle}>
             {t('common.download')}
           </Link>
           <LanguageSelector />

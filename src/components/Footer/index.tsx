@@ -113,6 +113,12 @@ export const Footer = () => {
           >
             {t('footer.links.vote')}
           </a>
+          <a href="https://docs.sakundi.io/es/docs/user-section" style={{ color: "white", textDecoration: "none", opacity: "0.8", transition: "opacity 0.2s ease" }}
+             onMouseOver={(e) => e.currentTarget.style.opacity = "1"}
+             onMouseOut={(e) => e.currentTarget.style.opacity = "0.8"}
+          >
+          {t('footer.links.documentation')}
+          </a>
         </div>
 
         <div style={{
