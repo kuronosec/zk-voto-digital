@@ -5,7 +5,7 @@ import { walletConnect } from "wagmi/connectors";
 const projectId = process.env.NEXT_PUBLIC_PROJECT_ID || "";
 
 const metadata = {
-  name: "ZK Firma Digital",
+  name: "ZK Voto Digital",
   description: "Example voting app",
   url: "https://localhost:3000/",
   icons: ["https://avatars.githubusercontent.com/u/37784886"],

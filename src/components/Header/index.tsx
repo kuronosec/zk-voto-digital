@@ -149,7 +149,7 @@ export const Header = () => {
     <header style={headerStyle}>
       <nav style={navStyle}>
         <Link to="/" style={logoStyle}>
-          ZK Firma Digital
+          ZK Voto Digital
         </Link>
 
         {/* Desktop Menu */}
