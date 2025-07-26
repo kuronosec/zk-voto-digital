@@ -97,6 +97,7 @@ const RequestFirma: React.FC = () => {
             client_id: CLIENT_ID,
             client_secret: CLIENT_SECRET,
             redirect_uri: REDIRECT_URI,
+            scope: "zk-firma-digital",
             grant_type: "authorization_code",
           }),
           {
@@ -106,11 +107,13 @@ const RequestFirma: React.FC = () => {
           }
         );
 
-        const { access_token, verifiable_credential } = response.data;
+        const { access_token, token_type, expires_in, proof } = response.data;
+        const verifiable_credential = proof;
         setTokenData(parseJwt(access_token));
         
         try {
-          const parsedCredential = JSON.parse(verifiable_credential);
+          const parsedCredential = JSON.parse(JSON.parse(JSON.parse(verifiable_credential)));
+          console.log("Verifiable credential:", parsedCredential);
           setVerifiableCredential(parsedCredential);
         } catch (error) {
           console.error("Invalid verifiable credential: " + error);

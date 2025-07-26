@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { ethers } from 'ethers';
 
 // Constants
-const POLYGON_AMOY_CHAIN_ID = '0x13882'; 
+const POLYGON_AMOY_CHAIN_ID = '0x413';
 
 export interface WalletState {
   isConnected: boolean;
@@ -124,8 +124,8 @@ export const useWalletConnection = () => {
                   symbol: 'MATIC',
                   decimals: 18,
                 },
-                rpcUrls: ['https://rpc-amoy.polygon.technology/'],
-                blockExplorerUrls: ['https://amoy.polygonscan.com/'],
+                rpcUrls: ['http://65.21.121.242:18545'],
+                blockExplorerUrls: ['https://primordial.bdagscan.com'],
               },
             ],
           });
@@ -182,12 +182,12 @@ export const useWalletConnection = () => {
           isChangingNetwork: chainId !== POLYGON_AMOY_CHAIN_ID
         });
         
-        if (chainId !== POLYGON_AMOY_CHAIN_ID) {
+        /*if (chainId !== POLYGON_AMOY_CHAIN_ID) {
           console.log("Connected but on wrong network. Switching to Polygon Amoy...");
           setTimeout(async () => {
             await switchToPolygonAmoy();
           }, 500);
-        }
+        }*/
       }
     } catch (error: any) {
       console.error("Failed to connect wallet:", error);
@@ -205,11 +205,11 @@ export const useWalletConnection = () => {
     await checkWalletState();
     
     // Solo intentar cambiar a Polygon Amoy si el usuario está conectado y no estamos ya cambiando
-    if (chainId !== POLYGON_AMOY_CHAIN_ID && state.isConnected && !isChangingNetworkRef.current) {
+    /*if (chainId !== POLYGON_AMOY_CHAIN_ID && state.isConnected && !isChangingNetworkRef.current) {
       console.log("Not on Polygon Amoy. Current chain:", chainId);
       console.log("Attempting to switch to Polygon Amoy automatically");
       await switchToPolygonAmoy();
-    }
+    }*/
   }, [state.isConnected, checkWalletState, switchToPolygonAmoy]);
 
   useEffect(() => {

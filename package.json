@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@craco/craco": "6",
     "@metamask/providers": "^18.1.0",
     "@tailwindcss/postcss7-compat": "^2.2.17",
