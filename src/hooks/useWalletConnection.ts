@@ -31,7 +31,12 @@ export const useWalletConnection = () => {
   // Check current wallet state without requesting connection
   const checkWalletState = useCallback(async () => {
     if (!window.ethereum) {
-      setState(prev => ({ ...prev, error: "MetaMask is not installed", isConnected: false }));
+      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+      setState(prev => ({
+        ...prev,
+        error: isMobile ? "Open in MetaMask to connect" : "MetaMask is not installed",
+        isConnected: false
+      }));
       return;
     }
 
@@ -157,7 +162,13 @@ export const useWalletConnection = () => {
 
   const connect = useCallback(async () => {
     if (!window.ethereum) {
-      setState(prev => ({ ...prev, error: "MetaMask is not installed" }));
+      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+      if (isMobile) {
+        const dappUrl = encodeURIComponent(window.location.href);
+        window.location.href = `https://metamask.app.link/dapp/${dappUrl}`;
+      } else {
+        setState(prev => ({ ...prev, error: "MetaMask is not installed" }));
+      }
       return;
     }
 

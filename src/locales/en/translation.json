@@ -18,6 +18,7 @@
       "votes": "Votes",
       "metamaskLogin": "Please login with Metamask to access the voting system.",
       "metamaskLoginShort": "Please login with Metamask...",
+      "openInMetamask": "Open this page in the MetaMask app to connect.",
       "download": "Install Zikuani",
       "connectedAs": "Connected As",
       "totalVotes": "Total Votes",

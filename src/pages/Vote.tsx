@@ -254,7 +254,7 @@ const Vote: React.FC = () => {
                 
                 {error === "Wallet no yet available." && (
                   <div style={{ marginTop: "15px", textAlign: "center" }}>
-                    <button 
+                    <button
                       onClick={connect}
                       style={{
                         backgroundColor: "#5856D6",
@@ -270,6 +270,9 @@ const Vote: React.FC = () => {
                       {t('common.connectWallet')}
                     </button>
                   </div>
+                )}
+                {error === "Open in MetaMask to connect" && (
+                  <p style={{ marginTop: "15px" }}>{t('common.openInMetamask')}</p>
                 )}
               </div>
             ) : loading ? (

@@ -54,7 +54,12 @@ const VoteValidation: React.FC = () => {
       <h1>{t('voting.title')}</h1>
       <h2>{t('vc')}</h2>
       {error ? (
-        <p style={{ color: 'red' }}>{error}</p>
+        <div>
+          <p style={{ color: 'red' }}>{error}</p>
+          {error === "Open in MetaMask to connect" && (
+            <p>{t('common.openInMetamask')}</p>
+          )}
+        </div>
       ) : !loading && done && Object.keys(data).length > 0 ? (
         <VoteOptionsDisplay voteData={data} />
       ) : (
