@@ -1,6 +1,7 @@
 import { ethers } from 'ethers';
 import { issuerContractAddress, issuerContractABI } from '../constants/issuerContract';
 import { Groth16Proof } from 'snarkjs'
+import { getEthersSigner } from '../utils/provider';
 
 type BigNumberish = string | bigint
 
@@ -43,13 +44,7 @@ export const issueCredential = async (verifiableCredential: any):
 
   const pushData = async () => {
     try {
-      const accounts = await window.ethereum.request({ method: 'eth_accounts' });
-      if (accounts.length === 0) {
-        // Prompt the user to connect MetaMask if no accounts are authorized
-        await window.ethereum.request({ method: 'eth_requestAccounts' });
-      }
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      const signer = provider.getSigner();
+      const signer = await getEthersSigner();
       const userId = await signer.getAddress();
       const contract = new ethers.Contract(issuerContractAddress, issuerContractABI, signer);
       // The order of the public data in the credential is the following

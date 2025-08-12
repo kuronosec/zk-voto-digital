@@ -1,6 +1,7 @@
 import { ethers } from 'ethers';
 import { voteContractBytecode, voteContractABI } from '../constants/voteContract';
 import { issuerContractAddress } from '../constants/issuerContract';
+import { getEthersSigner } from '../utils/provider';
 
 export const createProposal = async (question: any, options: any):
   Promise<{ _result: any; _error: string | null; _done: boolean }> => {
@@ -10,13 +11,7 @@ export const createProposal = async (question: any, options: any):
 
   const pushData = async () => {
     try {
-      const accounts = await window.ethereum.request({ method: 'eth_accounts' });
-      if (accounts.length === 0) {
-        // Prompt the user to connect MetaMask if no accounts are authorized
-        await window.ethereum.request({ method: 'eth_requestAccounts' });
-      }
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      const signer = provider.getSigner();
+      const signer = await getEthersSigner();
       const userId = await signer.getAddress();
       const voteScope = Math.floor(Math.random() * 100000);
 

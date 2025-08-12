@@ -1,8 +1,9 @@
 import { http, createConfig } from "wagmi";
-import { polygonAmoy } from "viem/chains";
 import { walletConnect } from "wagmi/connectors";
+import { getViemChain } from "./constants/network";
 
-const projectId = process.env.NEXT_PUBLIC_PROJECT_ID || "";
+// CRA uses REACT_APP_* env prefix
+const projectId = process.env.REACT_APP_WALLETCONNECT_PROJECT_ID || "";
 
 const metadata = {
   name: "ZK Firma Digital",
@@ -11,15 +12,18 @@ const metadata = {
   icons: ["https://avatars.githubusercontent.com/u/37784886"],
 };
 
+const chain = getViemChain();
+
 export const wagmiConfig = createConfig({
-  chains: [polygonAmoy],
+  chains: [chain],
   connectors: [
     walletConnect({
       projectId,
       metadata,
+      showQrModal: true
     }),
   ],
   transports: {
-    [polygonAmoy.id]: http(),
+    [chain.id]: http(),
   },
 });

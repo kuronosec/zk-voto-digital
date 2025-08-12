@@ -1,6 +1,7 @@
 import { ethers } from 'ethers';
 import { voteContractAddress, voteContractABI } from '../constants/voteContract';
 import { Groth16Proof } from 'snarkjs'
+import { getEthersSigner } from '../utils/provider';
 
 type BigNumberish = string | bigint
 
@@ -46,14 +47,7 @@ export const getVoteData = async ():
   let error: string | null = null;
 
   try {
-    const accounts = await window.ethereum.request({ method: 'eth_accounts' });
-    if (accounts.length === 0) {
-      // Prompt the user to connect MetaMask if no accounts are authorized
-      await window.ethereum.request({ method: 'eth_requestAccounts' });
-    }
-    
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const signer = provider.getSigner();
+    const signer = await getEthersSigner();
     const contract = new ethers.Contract(voteContractAddress, voteContractABI, signer);
 
     let proposals: Proposal[] = [];
@@ -87,7 +81,7 @@ export const getVoteData = async ():
     if ((err as any).code === 4001) {
       error = "User rejected the request.";
     } else {
-      error = "Wallet no yet available.";
+      error = "Wallet no disponible aún. Por favor conecta tu wallet.";
     }
   }
 
@@ -123,13 +117,7 @@ export const castVote = async (verifiableCredential: any, selectedProposalIndex:
 
   const pushData = async () => {
     try {
-      const accounts = await window.ethereum.request({ method: 'eth_accounts' });
-      if (accounts.length === 0) {
-        // Prompt the user to connect MetaMask if no accounts are authorized
-        await window.ethereum.request({ method: 'eth_requestAccounts' });
-      }
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      const signer = provider.getSigner();
+      const signer = await getEthersSigner();
       const userId = await signer.getAddress();
       const voteContract = new ethers.Contract(voteContractAddress, voteContractABI, signer);
       // The order of the public data in the credential is the following

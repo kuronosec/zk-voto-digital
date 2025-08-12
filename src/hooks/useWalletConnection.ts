@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
+import { getAddEthereumChainParams, getChainIdHex } from '../constants/network';
 
-// Constants
-const POLYGON_AMOY_CHAIN_ID = '0x13882'; 
+// Target chain from env-configurable constants
+const TARGET_CHAIN_ID_HEX = getChainIdHex();
 
 export interface WalletState {
   isConnected: boolean;
@@ -43,11 +44,11 @@ export const useWalletConnection = () => {
         const account = await signer.getAddress();
 
         // Check if on the correct network
-        if (chainId !== POLYGON_AMOY_CHAIN_ID) {
+        if (chainId !== TARGET_CHAIN_ID_HEX) {
           setState({
             isConnected: true,
             account,
-            error: "Please switch to Polygon Amoy network",
+            error: "Por favor cambia a la red objetivo",
             chainId,
             provider,
             signer,
@@ -88,8 +89,8 @@ export const useWalletConnection = () => {
     }
   };
 
-  // Function to switch to Polygon Amoy network
-  const switchToPolygonAmoy = async (): Promise<boolean> => {
+  // Switch to target network
+  const switchToTargetNetwork = async (): Promise<boolean> => {
     if (!window.ethereum) return false;
 
     try {
@@ -97,7 +98,7 @@ export const useWalletConnection = () => {
       
       await window.ethereum.request({
         method: 'wallet_switchEthereumChain',
-        params: [{ chainId: POLYGON_AMOY_CHAIN_ID }],
+        params: [{ chainId: TARGET_CHAIN_ID_HEX }],
       });
       
       await checkWalletState();
@@ -109,37 +110,25 @@ export const useWalletConnection = () => {
         try {
           await window.ethereum.request({
             method: 'wallet_addEthereumChain',
-            params: [
-              {
-                chainId: POLYGON_AMOY_CHAIN_ID,
-                chainName: 'Polygon Amoy',
-                nativeCurrency: {
-                  name: 'MATIC',
-                  symbol: 'MATIC',
-                  decimals: 18,
-                },
-                rpcUrls: ['https://rpc-amoy.polygon.technology/'],
-                blockExplorerUrls: ['https://amoy.polygonscan.com/'],
-              },
-            ],
+            params: [getAddEthereumChainParams()],
           });
           await checkWalletState();
           setState(prev => ({ ...prev, isChangingNetwork: false }));
           return true;
         } catch (addError: any) {
-          console.error('Failed to add Polygon Amoy network:', addError);
+          console.error('Failed to add target network:', addError);
           setState(prev => ({ 
             ...prev, 
-            error: "Failed to add Polygon Amoy network",
+            error: "No se pudo agregar la red objetivo",
             isChangingNetwork: false
           }));
           return false;
         }
       }
-      console.error('Failed to switch to Polygon Amoy network:', error);
+      console.error('Failed to switch to target network:', error);
       setState(prev => ({ 
         ...prev, 
-        error: "Failed to switch to Polygon Amoy network",
+        error: "No se pudo cambiar a la red objetivo",
         isChangingNetwork: false
       }));
       return false;
@@ -166,18 +155,18 @@ const connect = async () => {
       setState({
         isConnected: true,
         account,
-        error: chainId !== POLYGON_AMOY_CHAIN_ID ? "Switching to Polygon Amoy network..." : null,
+        error: chainId !== TARGET_CHAIN_ID_HEX ? "Cambiando a la red objetivo..." : null,
         chainId,
         provider,
         signer,
-        isChangingNetwork: chainId !== POLYGON_AMOY_CHAIN_ID
+        isChangingNetwork: chainId !== TARGET_CHAIN_ID_HEX
       });
       
-      if (chainId !== POLYGON_AMOY_CHAIN_ID) {
-        console.log("Connected but on wrong network. Switching to Polygon Amoy...");
+      if (chainId !== TARGET_CHAIN_ID_HEX) {
+        console.log("Connected but on wrong network. Switching to target network...");
         
         setTimeout(async () => {
-          await switchToPolygonAmoy();
+          await switchToTargetNetwork();
         }, 500);
       }
     }
@@ -187,11 +176,11 @@ const connect = async () => {
 
 const handleChainChanged = async (chainId: string) => {
   console.log("Chain changed to:", chainId);
-  if (chainId !== POLYGON_AMOY_CHAIN_ID && state.isConnected) {
-    console.log("Not on Polygon Amoy. Current chain:", chainId);
+  if (chainId !== TARGET_CHAIN_ID_HEX && state.isConnected) {
+    console.log("Not on target chain. Current chain:", chainId);
     if (!state.isChangingNetwork) {
-      console.log("Attempting to switch to Polygon Amoy automatically");
-      await switchToPolygonAmoy();
+      console.log("Attempting to switch to target chain automatically");
+      await switchToTargetNetwork();
     }
   } else {
     console.log("Chain is correct or not connected. Updating state.");
@@ -221,8 +210,8 @@ const handleChainChanged = async (chainId: string) => {
           
           // If connected but not on the right network, switch automatically
           const chainId = await window.ethereum.request({ method: 'eth_chainId' }) as string;
-          if (chainId !== POLYGON_AMOY_CHAIN_ID) {
-            await switchToPolygonAmoy();
+          if (chainId !== TARGET_CHAIN_ID_HEX) {
+            await switchToTargetNetwork();
           }
         }
       };
@@ -262,6 +251,6 @@ const handleChainChanged = async (chainId: string) => {
     ...state,
     connect,
     checkWalletState,
-    switchToPolygonAmoy
+    switchToTargetNetwork
   };
 };
