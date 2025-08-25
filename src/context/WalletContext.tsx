@@ -1,11 +1,13 @@
 import React, { createContext, useContext } from 'react';
 import { useWalletConnection } from '../hooks/useWalletConnection';
 import type { WalletState } from '../hooks/useWalletConnection';
+import type { DeviceInfo } from '../hooks/useDeviceDetection';
 
 interface WalletContextType extends WalletState {
   connect: () => Promise<void>;
   checkWalletState: () => Promise<void>;
-  switchToPolygonAmoy: () => Promise<boolean>;
+  switchToBlockDAGTestnet: () => Promise<boolean>;
+  deviceInfo: DeviceInfo;
 }
 
 const defaultContext: WalletContextType = {
@@ -18,7 +20,18 @@ const defaultContext: WalletContextType = {
   isChangingNetwork: false,
   connect: async () => {},
   checkWalletState: async () => {},
-  switchToPolygonAmoy: async () => false
+  switchToBlockDAGTestnet: async () => false,
+  deviceInfo: {
+    isMobile: false,
+    isTablet: false,
+    isDesktop: true,
+    isBrowser: false,
+    hasMetaMaskExtension: false,
+    hasMetaMaskMobile: false,
+    canUseWalletConnect: false,
+    preferredConnection: 'extension',
+    screenSize: 'md'
+  }
 };
 
 const WalletContext = createContext<WalletContextType>(defaultContext);
@@ -29,7 +42,8 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   return (
     <WalletContext.Provider value={{ 
       ...wallet,
-      checkWalletState: wallet.checkWalletState 
+      checkWalletState: wallet.checkWalletState,
+      deviceInfo: wallet.deviceInfo
     }}>
       {children}
     </WalletContext.Provider>
