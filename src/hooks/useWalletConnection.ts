@@ -122,14 +122,14 @@ export const useWalletConnection = () => {
             params: [
               {
                 chainId: BLOCKDAG_TESTNET_CHAIN_ID,
-                chainName: 'BlockDag',
+                chainName: 'BlockDAG Testnet',
                 nativeCurrency: {
-                  name: 'BDAG',
+                  name: 'BlockDAG',
                   symbol: 'BDAG',
                   decimals: 18,
                 },
-                rpcUrls: ['https://rpc.primordial.bdagscan.com'],
-                blockExplorerUrls: ['https://explorer.blockdag.network/'],
+                rpcUrls: ['https://rpc.primordial.bdagscan.com/'],
+                blockExplorerUrls: ['https://primordial.bdagscan.com/'],
               },
             ],
           });
@@ -176,7 +176,12 @@ export const useWalletConnection = () => {
         if (document.visibilityState === 'visible') {
           // Wait a bit for MetaMask to initialize
           setTimeout(async () => {
-            await checkWalletState();
+            // Try to connect and then switch network automatically
+            if (window.ethereum) {
+              await connectDesktop();
+            } else {
+              await checkWalletState();
+            }
           }, 1000);
           document.removeEventListener('visibilitychange', handleVisibilityChange);
         }
@@ -187,7 +192,8 @@ export const useWalletConnection = () => {
       // Also check periodically in case visibility API doesn't work
       const checkInterval = setInterval(async () => {
         if (window.ethereum) {
-          await checkWalletState();
+          // When provider becomes available in MetaMask browser, connect and switch
+          await connectDesktop();
           clearInterval(checkInterval);
         }
       }, 2000);

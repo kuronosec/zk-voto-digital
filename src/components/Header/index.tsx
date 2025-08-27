@@ -209,16 +209,21 @@ export const Header = () => {
             {t('common.download')}
           </Link>
           <LanguageSelector />
-          <button 
-            style={isConnected ? mobileConnectedButtonStyle : mobileButtonStyle}
-            onClick={connect}
+          <Link 
+            to={isConnected ? '#' : '/mobile-network-info'}
+            style={{ textDecoration: 'none' }}
           >
+            <button 
+              style={isConnected ? mobileConnectedButtonStyle : mobileButtonStyle}
+              onClick={isConnected ? undefined : undefined}
+            >
             <span>
               {isConnected 
                 ? shortenAddress(account || '') 
                 : t('common.connectWallet')}
             </span>
-          </button>
+            </button>
+          </Link>
         </div>
       </nav>
     </header>

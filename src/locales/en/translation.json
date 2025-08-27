@@ -189,4 +189,27 @@
         "item4": "If you don't have a credential file, you can generate one through the authentication process"
       }
     }
+  ,
+  "mobileNetwork": {
+    "title": "Connect on mobile",
+    "subtitle": "In MetaMask Mobile, add the network manually.",
+    "fields": {
+      "networkName": "Network name",
+      "rpcUrl": "RPC URL",
+      "chainId": "Chain ID",
+      "symbol": "Symbol",
+      "explorer": "Block explorer"
+    },
+    "values": {
+      "name": "BlockDAG Testnet",
+      "rpc": "https://rpc.primordial.bdagscan.com/",
+      "chainId": "1043 (0x413)",
+      "symbol": "BDAG",
+      "explorer": "https://primordial.bdagscan.com/"
+    },
+    "connect": "Connect Wallet",
+    "note": "MetaMask will open; if the network doesn't switch automatically, select it manually.",
+    "copy": "Copy",
+    "copied": "Copied"
+  }
   }

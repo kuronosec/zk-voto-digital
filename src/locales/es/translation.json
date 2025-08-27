@@ -189,5 +189,28 @@
       "item4": "Si no tienes un archivo de credencial, puedes generar uno a través del proceso de autenticación"
     }
   }
+  ,
+  "mobileNetwork": {
+    "title": "Conectar en móvil",
+    "subtitle": "En MetaMask Mobile, agrega la red manualmente.",
+    "fields": {
+      "networkName": "Nombre de la red",
+      "rpcUrl": "URL de RPC",
+      "chainId": "Identificador de cadena (Chain ID)",
+      "symbol": "Símbolo",
+      "explorer": "Explorador de bloques"
+    },
+    "values": {
+      "name": "BlockDAG Testnet",
+      "rpc": "https://rpc.primordial.bdagscan.com/",
+      "chainId": "1043 (0x413)",
+      "symbol": "BDAG",
+      "explorer": "https://primordial.bdagscan.com/"
+    },
+    "connect": "Conectar Wallet",
+    "note": "Se abrirá MetaMask; si la red no cambia automáticamente, selecciónala manualmente.",
+    "copy": "Copiar",
+    "copied": "Copiado"
+  }
 }
   
