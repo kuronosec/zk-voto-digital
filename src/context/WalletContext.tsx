@@ -5,7 +5,7 @@ import type { WalletState } from '../hooks/useWalletConnection';
 interface WalletContextType extends WalletState {
   connect: () => Promise<void>;
   checkWalletState: () => Promise<void>;
-  switchToPolygonAmoy: () => Promise<boolean>;
+  switchToBlockDAG: () => Promise<boolean>;
 }
 
 const defaultContext: WalletContextType = {
@@ -18,7 +18,7 @@ const defaultContext: WalletContextType = {
   isChangingNetwork: false,
   connect: async () => {},
   checkWalletState: async () => {},
-  switchToPolygonAmoy: async () => false
+  switchToBlockDAG: async () => false
 };
 
 const WalletContext = createContext<WalletContextType>(defaultContext);

@@ -27,7 +27,14 @@
       "sendVote": "Enviar Voto",
       "voteSuccessfullySent": "¡Voto enviado con éxito!",
       "thankYouForParticipating": "Gracias por participar en esta votación.",
-      "loadingVotingData": "Cargando datos de votación..."
+      "loadingVotingData": "Cargando datos de votación...",
+      "mobileInstructions": "Instrucciones Móvil",
+      "openMetaMask": "Abrir MetaMask",
+      "redirectingToMetaMask": "Redirigiendo a MetaMask...",
+      "failedToOpenMetaMask": "No se pudo abrir MetaMask. Por favor instala MetaMask Mobile.",
+      "switchToNetwork": "Cambiar a",
+      "wrongNetwork": "Red Incorrecta",
+      "networkName": "BlockDAG Testnet"
     },
     "voting": {
       "title": "Sistema de Votación - Validación de Identidad Ciudadana",
@@ -187,6 +194,41 @@
       "item2": "El archivo debe contener una prueba de conocimiento cero generada con tu Firma Digital de Costa Rica",
       "item3": "La credencial debe incluir tanto la prueba criptográfica como las señales públicas para verificación",
       "item4": "Si no tienes un archivo de credencial, puedes generar uno a través del proceso de autenticación"
+    }
+  },
+  "mobileConnect": {
+    "title": "Usar dApp en Móvil",
+    "subtitle": "Para usar nuestra dApp desde el celular, debes usarla desde el navegador de MetaMask Mobile.",
+    "step1": {
+      "title": "Copia esta URL",
+      "description": "Primero, copia la dirección de nuestra dApp:",
+      "copyButton": "Copiar",
+      "copiedButton": "Copiado"
+    },
+    "step2": {
+      "title": "Abre MetaMask",
+      "description": "Usa el botón de abajo para abrir MetaMask Mobile:",
+      "button": "Abrir MetaMask"
+    },
+    "step3": {
+      "title": "Ve al Browser de MetaMask",
+      "description": "Una vez en MetaMask, toca el icono del navegador (🌐) en la parte inferior de la app."
+    },
+    "step4": {
+      "title": "Pega la URL",
+      "description": "En la barra de direcciones del navegador de MetaMask, pega la URL que copiaste en el paso 1."
+    },
+    "step5": {
+      "title": "Conecta y Configura",
+      "description": "• Conecta tu wallet cuando la dApp lo solicite\n• Configura la red BlockDAG Testnet si no se configura automáticamente\n• ¡Ya puedes usar la dApp desde MetaMask Mobile! 🎉"
+    },
+    "warning": {
+      "title": "Importante:",
+      "description": "Solo usa la dApp desde el navegador de MetaMask Mobile. Los navegadores normales (Chrome, Safari) no pueden conectarse a tu wallet móvil."
+    },
+    "connected": {
+      "title": "¡Wallet Conectado!",
+      "address": "Dirección:"
     }
   }
 }

@@ -1,16 +1,22 @@
 import React, { useState, useEffect, CSSProperties } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { LanguageSelector } from '../LanguageSelector';
 import { useWallet } from '../../context/WalletContext';
+import { getWalletEnvironmentInfo } from '../../utils/walletDetection';
+import { BLOCKDAG_CHAIN_ID } from '../../constants/networks';
 
 export const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const { t } = useTranslation();
+  const navigate = useNavigate();
   
   // Use the wallet context
-  const { isConnected, account, connect, checkWalletState } = useWallet();
+  const { isConnected, account, connect, checkWalletState, chainId } = useWallet();
+  
+  // Get wallet environment info
+  const walletEnv = getWalletEnvironmentInfo();
 
   // Check wallet state on component mount
   useEffect(() => {
@@ -20,6 +26,10 @@ export const Header = () => {
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth < 768);
+      // Close menu on desktop resize
+      if (window.innerWidth >= 768) {
+        setIsMenuOpen(false);
+      }
     };
     
     window.addEventListener('resize', handleResize);
@@ -28,14 +38,102 @@ export const Header = () => {
     };
   }, []);
 
+  // Close menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Element;
+      const header = document.querySelector('header');
+      
+      if (isMenuOpen && header && !header.contains(target)) {
+        setIsMenuOpen(false);
+      }
+    };
+
+    if (isMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isMenuOpen]);
+
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
+  };
+
+  const closeMenu = () => {
+    setIsMenuOpen(false);
   };
   
   // Format address for display
   const shortenAddress = (address: string) => {
     if (!address) return '';
     return `${address.slice(0, 6)}...${address.slice(-4)}`;
+  };
+
+  // Handle wallet connection based on environment
+  const handleWalletConnect = () => {
+    if (isConnected) {
+      // If already connected, just call connect to handle network switching
+      connect();
+      return;
+    }
+
+    if (walletEnv.isMobile && !walletEnv.isMetaMaskBrowser) {
+      // Mobile user outside MetaMask browser -> redirect to instructions
+      navigate('/mobile-connect');
+      return;
+    }
+
+    // Desktop or MetaMask browser -> normal connect
+    connect();
+  };
+
+  // Get button text based on current state and environment
+  const getButtonText = () => {
+    if (isConnected) {
+      if (chainId === BLOCKDAG_CHAIN_ID) {
+        return shortenAddress(account || '');
+      } else {
+        return `${t('common.switchToNetwork')} ${t('common.networkName')}`;
+      }
+    }
+    
+    if (walletEnv.isMobile && !walletEnv.isMetaMaskBrowser) {
+      return `📱 ${t('common.mobileInstructions')}`;
+    }
+    
+    if (walletEnv.isMobile && walletEnv.isMetaMaskBrowser) {
+      return t('common.connectWallet');
+    }
+    
+    return t('common.connectWallet');
+  };
+
+  // Get button status indicator
+  const getNetworkIndicator = () => {
+    if (!isConnected) return null;
+    
+    const isCorrectNetwork = chainId === BLOCKDAG_CHAIN_ID;
+    
+    return (
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: '8px',
+        fontSize: '12px',
+        color: isCorrectNetwork ? '#10b981' : '#ef4444'
+      }}>
+        <div style={{
+          width: '8px',
+          height: '8px',
+          borderRadius: '50%',
+          backgroundColor: isCorrectNetwork ? '#10b981' : '#ef4444'
+        }}></div>
+        {isCorrectNetwork ? t('common.networkName') : t('common.wrongNetwork')}
+      </div>
+    );
   };
 
   // Estilos con tipado correcto usando CSSProperties
@@ -170,16 +268,15 @@ export const Header = () => {
             {t('common.download')}
           </Link>
           <LanguageSelector />
-          <button 
-            style={isConnected ? connectedButtonStyle : buttonStyle}
-            onClick={connect}
-          >
-            <span>
-              {isConnected 
-                ? shortenAddress(account || '') 
-                : t('common.connectWallet')}
-            </span>
-          </button>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+            <button 
+              style={isConnected ? connectedButtonStyle : buttonStyle}
+              onClick={handleWalletConnect}
+            >
+              <span>{getButtonText()}</span>
+            </button>
+            {getNetworkIndicator()}
+          </div>
         </div>
 
         {/* Mobile Menu Button (Hamburger) */}
@@ -193,32 +290,34 @@ export const Header = () => {
 
         {/* Mobile Menu */}
         <div style={mobileMenuStyle}>
-          <Link to="/#how-it-works" style={linkStyle}>
+          <Link to="/#how-it-works" style={linkStyle} onClick={closeMenu}>
             {t('common.howItWorks')}
           </Link>
-          <Link to="/vote" style={linkStyle}>
+          <Link to="/vote" style={linkStyle} onClick={closeMenu}>
             {t('common.digitalVote')}
           </Link>
-          <Link to="/create-proposal" style={linkStyle}>
+          <Link to="/create-proposal" style={linkStyle} onClick={closeMenu}>
             {t('common.createProposal')}
           </Link>
-          <Link to="/results" style={linkStyle}>
+          <Link to="/results" style={linkStyle} onClick={closeMenu}>
             {t('common.seeResults')}
           </Link>
-          <Link to="https://github.com/kuronosec/zk-firma-digital?tab=readme-ov-file#installation" style={linkStyle}>
+          <Link to="https://github.com/kuronosec/zk-firma-digital?tab=readme-ov-file#installation" style={linkStyle} onClick={closeMenu}>
             {t('common.download')}
           </Link>
           <LanguageSelector />
-          <button 
-            style={isConnected ? mobileConnectedButtonStyle : mobileButtonStyle}
-            onClick={connect}
-          >
-            <span>
-              {isConnected 
-                ? shortenAddress(account || '') 
-                : t('common.connectWallet')}
-            </span>
-          </button>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <button 
+              style={isConnected ? mobileConnectedButtonStyle : mobileButtonStyle}
+              onClick={() => {
+                handleWalletConnect();
+                closeMenu();
+              }}
+            >
+              <span>{getButtonText()}</span>
+            </button>
+            {getNetworkIndicator()}
+          </div>
         </div>
       </nav>
     </header>

@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useVote } from "./VoteContext";
 import { useWallet } from "../context/WalletContext";
+import { createSmartWalletConnect, getSmartConnectButtonText } from "../utils/walletConnection";
 
 const Vote: React.FC = () => {
   const { t } = useTranslation();
@@ -20,6 +21,9 @@ const Vote: React.FC = () => {
   
   const { isConnected, connect, account, isChangingNetwork } = useWallet();
   const navigate = useNavigate();
+  
+  // Create smart wallet connect handler
+  const smartConnect = createSmartWalletConnect(connect, navigate, isConnected);
   
   // Usamos useRef para mantener un seguimiento de si el componente está montado
   const isMounted = useRef(true);
@@ -255,7 +259,7 @@ const Vote: React.FC = () => {
                 {error === "Wallet no yet available." && (
                   <div style={{ marginTop: "15px", textAlign: "center" }}>
                     <button 
-                      onClick={connect}
+                      onClick={smartConnect}
                       style={{
                         backgroundColor: "#5856D6",
                         color: "white",
@@ -267,7 +271,7 @@ const Vote: React.FC = () => {
                         cursor: "pointer"
                       }}
                     >
-                      {t('common.connectWallet')}
+                      {getSmartConnectButtonText(isConnected, t)}
                     </button>
                   </div>
                 )}
@@ -329,7 +333,7 @@ const Vote: React.FC = () => {
                   marginBottom: "20px"
                 }}>{t('common.metamaskLogin')}.</p>
                 <button 
-                  onClick={connect}
+                  onClick={smartConnect}
                   style={{
                     backgroundColor: "#5856D6",
                     color: "white",
@@ -342,7 +346,7 @@ const Vote: React.FC = () => {
                     transition: "background-color 0.2s ease"
                   }}
                 >
-                  {t('common.connectWallet')}
+                  {getSmartConnectButtonText(isConnected, t)}
                 </button>
               </div>
             ) : !canVote || !voteData ? (

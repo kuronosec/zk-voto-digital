@@ -8,6 +8,7 @@ import { Footer } from "../components/Footer";
 import { useVote } from "./VoteContext";
 import { useWallet } from "../context/WalletContext";
 import { useTranslation } from "react-i18next";
+import { createSmartWalletConnect, getSmartConnectButtonText } from "../utils/walletConnection";
 
 // Secrets
 const CLIENT_ID = process.env.REACT_APP_CLIENT_ID || "hello@example.com";
@@ -45,6 +46,9 @@ const RequestFirma: React.FC = () => {
   const navigate = useNavigate();
   const { isConnected, account, connect, checkWalletState, isChangingNetwork } = useWallet();
   const [isCheckingWallet, setIsCheckingWallet] = useState(true);
+  
+  // Create smart wallet connect handler
+  const smartConnect = createSmartWalletConnect(connect, navigate, isConnected);
   
   // Check wallet state on component mount only once
   useEffect(() => {
@@ -176,7 +180,7 @@ const RequestFirma: React.FC = () => {
         {t('common.connectWalletDescription')}
       </p>
       <button
-        onClick={connect}
+        onClick={smartConnect}
         style={{
           backgroundColor: "#5856D6",
           color: "white",
@@ -206,7 +210,7 @@ const RequestFirma: React.FC = () => {
           <rect x="2" y="4" width="20" height="16" rx="2" ry="2"></rect>
           <path d="M6 12h12"></path>
         </svg>
-        {t('common.connectWallet')}
+        {getSmartConnectButtonText(isConnected, t)}
       </button>
     </div>
   );
