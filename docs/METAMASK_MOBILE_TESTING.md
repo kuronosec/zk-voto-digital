@@ -3,14 +3,14 @@
 ## 🎯 Implemented Features
 
 ### **1. Enhanced Deep Linking**
-- ✅ **Primary Method**: `metamask://dapp/192.168.100.8:3000` 
+- ✅ **Primary Method**: `metamask://dapp/localhost:3000` 
 - ✅ **Fallback Method**: Universal link `https://metamask.app.link/dapp/...`
 - ✅ **Failure Detection**: If deep link fails, automatically tries universal link
 - ✅ **Automatic Retries**: Timeout and multiple fallback system
 
 ### **2. Mobile User Flow**
 1. User on Chrome/Safari mobile sees "🦊 Open in MetaMask" button
-2. Click → Attempts `metamask://dapp/192.168.100.8:3000`
+2. Click → Attempts `metamask://dapp/localhost:3000`
 3. If it fails → Automatically tries universal link
 4. MetaMask opens **directly in the dApp browser** (not home)
 5. BlockDAG configures automatically
@@ -20,23 +20,23 @@
 
 ### **Preparation**
 1. Have MetaMask Mobile installed on device
-2. Ensure app is running on `192.168.100.8:3000`
+2. Ensure app is running on `localhost:3000`
 3. Connect mobile to same WiFi network
 
 ### **Testing on Real Device**
 
 #### **Method 1: Manual Testing**
 1. Open Chrome/Safari on mobile
-2. Navigate to `http://192.168.100.8:3000`
+2. Navigate to `http://localhost:3000`
 3. Click "🦊 Open in MetaMask"
 4. **Expected Result**: MetaMask opens directly in the dApp
 
 #### **Method 2: Direct Deep Link Testing**
-1. In mobile browser, type directly: `metamask://dapp/192.168.100.8:3000`
+1. In mobile browser, type directly: `metamask://dapp/localhost:3000`
 2. **Expected Result**: MetaMask opens with dApp loaded
 
 #### **Method 3: Universal Link Testing**
-1. In mobile browser, navigate to: `https://metamask.app.link/dapp/http%3A%2F%2F192.168.100.8%3A3000`
+1. In mobile browser, navigate to: `https://metamask.app.link/dapp/http%3A%2F%2Flocalhost%3A3000`
 2. **Expected Result**: MetaMask opens with dApp loaded
 
 ### **Debugging**
@@ -46,7 +46,7 @@ Open developer tools on mobile to see logs:
 
 Logs will show:
 ```javascript
-"Redirecting to MetaMask with deep link: metamask://dapp/192.168.100.8:3000"
+"Redirecting to MetaMask with deep link: metamask://dapp/localhost:3000"
 "Primary deep link: metamask://dapp/..."  
 "Fallback universal link: https://metamask.app.link/dapp/..."
 ```
@@ -54,8 +54,8 @@ Logs will show:
 ## 🔧 Development vs Production Configuration
 
 ### **Development (current)**
-- URL: `metamask://dapp/192.168.100.8:3000`
-- Universal: `https://metamask.app.link/dapp/http%3A%2F%2F192.168.100.8%3A3000`
+- URL: `metamask://dapp/localhost:3000`
+- Universal: `https://metamask.app.link/dapp/http%3A%2F%2Flocalhost%3A3000`
 
 ### **Production (when deployed)**
 - URL: `metamask://dapp/yourdomain.com`
@@ -66,7 +66,7 @@ Logs will show:
 ### **If Deep Link Doesn't Work:**
 1. **Check MetaMask**: Ensure MetaMask Mobile is installed
 2. **Check Network**: Device must be on same WiFi network
-3. **Check IP**: Confirm `192.168.100.8:3000` is accessible
+3. **Check IP**: Confirm `localhost:3000` is accessible
 4. **Browser Cache**: Clear mobile browser cache
 5. **MetaMask Cache**: Force close and reopen MetaMask
 

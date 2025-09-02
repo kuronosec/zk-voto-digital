@@ -33,7 +33,7 @@ export const getMetaMaskDeepLink = (): string => {
   
   if (isDevelopment) {
     // For development, use the fixed IP address with http
-    baseUrl = '192.168.100.8:3000';
+    baseUrl = 'localhost:3000';
   } else {
     // For production, use the current domain with https
     baseUrl = window.location.host + window.location.pathname + window.location.search;
@@ -130,7 +130,7 @@ export const getMetaMaskUniversalLink = (): string => {
   let fullUrl: string;
   
   if (isDevelopment) {
-    fullUrl = `http://192.168.100.8:3000${window.location.pathname}${window.location.search}`;
+    fullUrl = `http://localhost:3000${window.location.pathname}${window.location.search}`;
   } else {
     fullUrl = window.location.href;
   }
