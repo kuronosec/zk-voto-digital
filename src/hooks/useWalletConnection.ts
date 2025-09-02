@@ -1,8 +1,12 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { ethers } from 'ethers';
-
-// Constants
-const POLYGON_AMOY_CHAIN_ID = '0x13882'; 
+import { BLOCKDAG_CHAIN_ID, getNetworkConfig } from '../constants/networks';
+import { 
+  shouldRedirectToMetaMask, 
+  redirectToMetaMaskWithFallback, 
+  isMetaMaskAvailable,
+  getWalletEnvironmentInfo
+} from '../utils/walletDetection'; 
 
 export interface WalletState {
   isConnected: boolean;
@@ -30,7 +34,7 @@ export const useWalletConnection = () => {
 
   // Check current wallet state without requesting connection
   const checkWalletState = useCallback(async () => {
-    if (!window.ethereum) {
+    if (!isMetaMaskAvailable()) {
       setState(prev => ({ ...prev, error: "MetaMask is not installed", isConnected: false }));
       return;
     }
@@ -45,12 +49,12 @@ export const useWalletConnection = () => {
         const signer = provider.getSigner();
         const account = await signer.getAddress();
 
-        // Check if on the correct network
-        if (chainId !== POLYGON_AMOY_CHAIN_ID) {
+        // Check if on the correct network (BlockDAG)
+        if (chainId !== BLOCKDAG_CHAIN_ID) {
           setState({
             isConnected: true,
             account,
-            error: "Please switch to Polygon Amoy network",
+            error: "Please switch to BlockDAG Testnet",
             chainId,
             provider,
             signer,
@@ -91,9 +95,9 @@ export const useWalletConnection = () => {
     }
   }, []);
 
-  // Function to switch to Polygon Amoy network
-  const switchToPolygonAmoy = useCallback(async (): Promise<boolean> => {
-    if (!window.ethereum) return false;
+  // Function to switch to BlockDAG Testnet network
+  const switchToBlockDAG = useCallback(async (): Promise<boolean> => {
+    if (!isMetaMaskAvailable()) return false;
     if (isChangingNetworkRef.current) return false;
 
     try {
@@ -102,7 +106,7 @@ export const useWalletConnection = () => {
       
       await window.ethereum.request({
         method: 'wallet_switchEthereumChain',
-        params: [{ chainId: POLYGON_AMOY_CHAIN_ID }],
+        params: [{ chainId: BLOCKDAG_CHAIN_ID }],
       });
       
       await checkWalletState();
@@ -113,41 +117,30 @@ export const useWalletConnection = () => {
       // If error code is 4902, the network isn't added yet
       if (error.code === 4902) {
         try {
+          const networkConfig = getNetworkConfig();
           await window.ethereum.request({
             method: 'wallet_addEthereumChain',
-            params: [
-              {
-                chainId: POLYGON_AMOY_CHAIN_ID,
-                chainName: 'Polygon Amoy',
-                nativeCurrency: {
-                  name: 'MATIC',
-                  symbol: 'MATIC',
-                  decimals: 18,
-                },
-                rpcUrls: ['https://rpc-amoy.polygon.technology/'],
-                blockExplorerUrls: ['https://amoy.polygonscan.com/'],
-              },
-            ],
+            params: [networkConfig],
           });
           await checkWalletState();
           setState(prev => ({ ...prev, isChangingNetwork: false }));
           isChangingNetworkRef.current = false;
           return true;
         } catch (addError: any) {
-          console.error('Failed to add Polygon Amoy network:', addError);
+          console.error('Failed to add BlockDAG Testnet:', addError);
           setState(prev => ({ 
             ...prev, 
-            error: "Failed to add Polygon Amoy network",
+            error: "Failed to add BlockDAG Testnet",
             isChangingNetwork: false
           }));
           isChangingNetworkRef.current = false;
           return false;
         }
       }
-      console.error('Failed to switch to Polygon Amoy network:', error);
+      console.error('Failed to switch to BlockDAG Testnet:', error);
       setState(prev => ({ 
         ...prev, 
-        error: "Failed to switch to Polygon Amoy network",
+        error: "Failed to switch to BlockDAG Testnet",
         isChangingNetwork: false
       }));
       isChangingNetworkRef.current = false;
@@ -156,8 +149,29 @@ export const useWalletConnection = () => {
   }, [checkWalletState]);
 
   const connect = useCallback(async () => {
-    if (!window.ethereum) {
-      setState(prev => ({ ...prev, error: "MetaMask is not installed" }));
+    // Check if we should redirect to MetaMask Mobile
+    if (shouldRedirectToMetaMask()) {
+      console.log("Mobile device detected, redirecting to MetaMask...");
+      setState(prev => ({ ...prev, error: "Redirecting to MetaMask..." }));
+      
+      try {
+        await redirectToMetaMaskWithFallback();
+      } catch (error) {
+        console.error("Failed to redirect to MetaMask:", error);
+        setState(prev => ({ ...prev, error: "Failed to open MetaMask. Please install MetaMask Mobile." }));
+      }
+      return;
+    }
+
+    if (!isMetaMaskAvailable()) {
+      const envInfo = getWalletEnvironmentInfo();
+      let errorMessage = "MetaMask is not installed";
+      
+      if (envInfo.isMobile) {
+        errorMessage = "Please open this app in MetaMask browser or install MetaMask Mobile";
+      }
+      
+      setState(prev => ({ ...prev, error: errorMessage }));
       return;
     }
 
@@ -175,17 +189,17 @@ export const useWalletConnection = () => {
         setState({
           isConnected: true,
           account,
-          error: chainId !== POLYGON_AMOY_CHAIN_ID ? "Switching to Polygon Amoy network..." : null,
+          error: chainId !== BLOCKDAG_CHAIN_ID ? "Switching to BlockDAG Testnet..." : null,
           chainId,
           provider,
           signer,
-          isChangingNetwork: chainId !== POLYGON_AMOY_CHAIN_ID
+          isChangingNetwork: chainId !== BLOCKDAG_CHAIN_ID
         });
         
-        if (chainId !== POLYGON_AMOY_CHAIN_ID) {
-          console.log("Connected but on wrong network. Switching to Polygon Amoy...");
+        if (chainId !== BLOCKDAG_CHAIN_ID) {
+          console.log("Connected but on wrong network. Switching to BlockDAG Testnet...");
           setTimeout(async () => {
-            await switchToPolygonAmoy();
+            await switchToBlockDAG();
           }, 500);
         }
       }
@@ -197,20 +211,20 @@ export const useWalletConnection = () => {
         isConnected: false
       }));
     }
-  }, [switchToPolygonAmoy]);
+  }, [switchToBlockDAG]);
 
   const handleChainChanged = useCallback(async (chainId: string) => {
     console.log("Chain changed to:", chainId);
-    // Simplemente actualiza el estado con la nueva cadena
+    // Simply update the state with the new chain
     await checkWalletState();
     
-    // Solo intentar cambiar a Polygon Amoy si el usuario está conectado y no estamos ya cambiando
-    if (chainId !== POLYGON_AMOY_CHAIN_ID && state.isConnected && !isChangingNetworkRef.current) {
-      console.log("Not on Polygon Amoy. Current chain:", chainId);
-      console.log("Attempting to switch to Polygon Amoy automatically");
-      await switchToPolygonAmoy();
+    // Only try to switch to BlockDAG if user is connected and we're not already changing
+    if (chainId !== BLOCKDAG_CHAIN_ID && state.isConnected && !isChangingNetworkRef.current) {
+      console.log("Not on BlockDAG Testnet. Current chain:", chainId);
+      console.log("Attempting to switch to BlockDAG Testnet automatically");
+      await switchToBlockDAG();
     }
-  }, [state.isConnected, checkWalletState, switchToPolygonAmoy]);
+  }, [state.isConnected, checkWalletState, switchToBlockDAG]);
 
   useEffect(() => {
     // Verificar el estado inicial
@@ -253,6 +267,6 @@ export const useWalletConnection = () => {
     ...state,
     connect,
     checkWalletState,
-    switchToPolygonAmoy
+    switchToBlockDAG
   };
 };

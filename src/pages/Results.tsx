@@ -1,10 +1,12 @@
 import '../i18n';
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Header } from "../components/Header";
 import { Footer } from "../components/Footer";
 import { getVoteData } from "../hooks/getVoteResults";
 import { useWallet } from "../context/WalletContext";
 import { useTranslation } from 'react-i18next';
+import { createSmartWalletConnect, getSmartConnectButtonText } from "../utils/walletConnection";
 
 interface Proposal {
   description: string;
@@ -13,6 +15,7 @@ interface Proposal {
 
 const VoteResults: React.FC = () => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [votingQuestion, setvotingQuestion] = useState<string | null>(null);
   const [proposals, setProposals] = useState<Proposal[]>([]);
   const [totalVotes, setTotalVotes] = useState<number>(0);
@@ -20,6 +23,9 @@ const VoteResults: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   
   const { isConnected, connect, account, isChangingNetwork } = useWallet();
+  
+  // Create smart wallet connect handler
+  const smartConnect = createSmartWalletConnect(connect, navigate, isConnected);
 
   const fetchVoteResults = async () => {
     setLoading(true);
@@ -157,7 +163,7 @@ const VoteResults: React.FC = () => {
               </p>
               {(error === "Wallet no yet available." || !isConnected) && (
                 <button 
-                  onClick={connect}
+                  onClick={smartConnect}
                   style={{
                     backgroundColor: "#5856D6",
                     color: "white",
@@ -176,7 +182,7 @@ const VoteResults: React.FC = () => {
                     (e.currentTarget.style.backgroundColor = "#5856D6")
                   }
                 >
-                  {t('common.connectWallet')}
+                  {getSmartConnectButtonText(isConnected, t)}
                 </button>
               )}
             </div>

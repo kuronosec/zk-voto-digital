@@ -11,6 +11,7 @@ import AdminGUI from "./pages/AdminGUI";
 import RequestFirma from "./pages/RequestFirma";
 import Results from "./pages/Results";
 import { ZkSign } from "./components/ZkSign";
+import { MobileInstructions } from "./pages/MobileInstructions";
 
 const App: React.FC = () => {
     return (
@@ -25,6 +26,7 @@ const App: React.FC = () => {
                         <Route path="/create-proposal" element={<AdminGUI />} />
                         <Route path="/results" element={<Results />} />
                         <Route path="/try-it" element={<ZkSign />} />
+                        <Route path="/mobile-connect" element={<MobileInstructions />} />
                     </Routes>
                 </Router>
             </VoteProvider>
