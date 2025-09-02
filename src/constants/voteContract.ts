@@ -1,6 +1,4 @@
-// NOTE: This contract address is from Polygon Amoy and needs to be updated 
-// once the contract is deployed on BlockDAG Testnet
-export const voteContractAddress = '0x929947c99911bCeD33aaE03a4BbaF88ba6AF101a';
+export const voteContractAddress = '0xEBa2A3f6c6652C9C5822023BF4d2F6076b2ca804';
 
 export const voteContractABI = [
   {

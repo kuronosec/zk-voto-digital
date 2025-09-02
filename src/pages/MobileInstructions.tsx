@@ -8,16 +8,25 @@ export const MobileInstructions = () => {
   const { isConnected, account } = useWallet();
   const [copied, setCopied] = useState(false);
   
-  // Get the current URL (for production, use the actual domain)
+  // Get the current URL based on environment
   const getDAppURL = () => {
-    const isDevelopment = window.location.hostname === 'localhost' || 
-                          window.location.hostname.includes('192.168') ||
-                          window.location.hostname === '127.0.0.1';
+    const hostname = window.location.hostname;
+    const environment = process.env.REACT_APP_ENVIRONMENT || process.env.NODE_ENV;
     
-    if (isDevelopment) {
-      return 'https://voto.sakundi.io/';
-    } else {
-      return 'https://voto.sakundi.io/';
+    // Local development (localhost or IP)
+    if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname.includes('192.168')) {
+      return `${window.location.protocol}//${hostname}:${window.location.port || '3000'}`;
+    }
+    
+    // Environment-based URLs
+    switch (environment) {
+      case 'development':
+        return 'https://voto-dev.sakundi.io';
+      case 'production':
+        return 'https://voto.sakundi.io';
+      default:
+        // Fallback: use current hostname if deployed elsewhere
+        return `${window.location.protocol}//${hostname}`;
     }
   };
 
