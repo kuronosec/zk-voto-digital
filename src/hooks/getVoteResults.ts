@@ -29,7 +29,9 @@ Promise<{ _votingQuestion: string, _proposalsArray: Proposal[]; _totalVotesBN: n
     const signer = provider.getSigner();
     const voteContract = new ethers.Contract(voteContractAddress, voteContractABI, signer);
 
-    const votingQuestion = await voteContract.votingQuestion();
+    const voteParams = await voteContract.voteParams();
+
+    const votingQuestion = voteParams[0];
 
     const proposalCountBN = await voteContract.getProposalCount();
     const proposalCount = proposalCountBN.toNumber();
