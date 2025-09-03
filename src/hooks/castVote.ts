@@ -1,6 +1,8 @@
 import { ethers } from 'ethers';
 import { voteContractAddress, voteContractABI } from '../constants/voteContract';
+import { replicatorContractAddress, replicatorContractABI } from '../constants/replicatorContract';
 import { Groth16Proof } from 'snarkjs'
+import { ZkProof } from '@rarimo/zk-passport'
 
 type BigNumberish = string | bigint
 
@@ -170,6 +172,93 @@ export const castVote = async (verifiableCredential: any, selectedProposalIndex:
       }
     }
   };
+
+  await pushData();
+
+  return new Promise((resolve) => {
+    setTimeout(() => {
+        resolve({ _result: result, _error: error, _done: done });
+    }, 2000);
+  });
+}
+
+export const updatePassportRoot = async (proof: any):
+  Promise<{ _result: any; _error: string | null; _done: boolean }> => {
+  var result = "";
+  var error = "";
+  var done = false;
+
+  async function getSignedRootState(root: string) {
+    const API_BASE_URL = 'https://replication.sakundi.io'
+
+    const requestUrl = new URL(`${API_BASE_URL}/integrations/proof-verification-relayer/v2/state`)
+    requestUrl.searchParams.set('filter[root]', root)
+    console.log(requestUrl.toString());
+
+    const res = await fetch(requestUrl.toString())
+    console.log(res.body);
+    const { data } = await res.json()
+    console.log("data: ", data);
+
+    return {
+      // Signature of root state signed by relayer private key.
+      signature: data.attributes.signature,
+      // Time when the event was caught, a.k.a state transition timestamp
+      timestamp: data.attributes.timestamp,
+    }
+  }
+
+  async function buildTreeArguments(proof: ZkProof) {
+    if (!proof.proof.piA.length || !proof.proof.piB.length || !proof.proof.piC.length) {
+      throw new Error('Invalid proof structure')
+    }
+
+    const root = BigInt(proof.pubSignals[11]).toString(16);
+
+    const { signature, timestamp } = await getSignedRootState(root);
+
+    return {
+      args: [
+        "0x"+root,
+        BigInt("0x"+timestamp),
+        "0x"+signature,
+      ] as const,
+    }
+  }
+
+  async function pushData() {
+    try {
+      const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+      if (accounts.length === 0) {
+        // Prompt the user to connect MetaMask if no accounts are authorized
+        await window.ethereum.request({ method: 'eth_requestAccounts' });
+      }
+      
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const signer = provider.getSigner();
+      const RegistrationSMTReplicator = new ethers.Contract(
+        replicatorContractAddress, replicatorContractABI, signer);
+
+      const { args } = await buildTreeArguments(proof);
+
+      const [root, timestamp, signature] = args;
+
+      const result_transaction = await RegistrationSMTReplicator.transitionRootWithSignature
+          (root, timestamp, signature);
+      result = result_transaction;
+      done = true;
+    } catch (err: unknown) {
+      if ((err as any).code === 4001) {
+        console.error("User rejected the request.");
+        error = "User rejected the request.";
+      } else {
+        console.error("Error:", err);
+        done = false;
+        console.error(err);
+        error = "Failed to write data to the contract";
+      }
+    }
+  }
 
   await pushData();
 
