@@ -101,6 +101,7 @@ const RequestFirma: React.FC = () => {
             client_id: CLIENT_ID,
             client_secret: CLIENT_SECRET,
             redirect_uri: REDIRECT_URI,
+            scope: "zk-firma-digital",
             grant_type: "authorization_code",
           }),
           {
