@@ -89,7 +89,8 @@ export const getVoteScope = async ():
       const voteContract = new ethers.Contract(voteContractAddress, voteContractABI, signer);
 
       // Get information about voting process
-      voteScope = await voteContract.voteScope();
+      const voteParams = await voteContract.voteParams();
+      voteScope = voteParams[7];
       if (voteScope === null || voteScope === 0) {
         console.log("voteScope is empty.");
         error = 'No election yet available for user.';
