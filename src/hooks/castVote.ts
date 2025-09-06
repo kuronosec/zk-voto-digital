@@ -60,7 +60,8 @@ export const getVoteData = async ():
 
     let proposals: Proposal[] = [];
 
-    const votingQuestion = await contract.votingQuestion();
+    const voteParams = await contract.voteParams();
+    const votingQuestion = voteParams[0];
     const length = await contract.getProposalCount(); // Get the total number of proposals
     
     console.log("Número de propuestas:", length.toNumber());

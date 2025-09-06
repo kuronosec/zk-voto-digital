@@ -111,11 +111,11 @@ const RequestFirma: React.FC = () => {
           }
         );
 
-        const { access_token, verifiable_credential } = response.data;
+        const { access_token, token_type, expires_in, proof } = response.data;
         setTokenData(parseJwt(access_token));
         
         try {
-          const parsedCredential = JSON.parse(verifiable_credential);
+          const parsedCredential = JSON.parse(JSON.stringify(proof, null, 2));
           setVerifiableCredential(parsedCredential);
         } catch (error) {
           console.error("Invalid verifiable credential: " + error);
