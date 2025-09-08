@@ -107,7 +107,7 @@ const Vote: React.FC = () => {
       
       // Solo actualizar si el componente sigue montado
       if (isMounted.current) {
-        console.log("Datos de votación recibidos:", _data); 
+        // console.log("Datos de votación recibidos:", _data);
         
         if (_error === "No proposals yet available for user.") {
           setCanVote(false);
