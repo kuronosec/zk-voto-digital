@@ -90,7 +90,7 @@ export const getVoteScope = async ():
 
       // Get information about voting process
       const voteParams = await voteContract.voteParams();
-      voteScope = voteParams[7];
+      voteScope = voteParams[5];
       if (voteScope === null || voteScope === 0) {
         console.log("voteScope is empty.");
         error = 'No election yet available for user.';

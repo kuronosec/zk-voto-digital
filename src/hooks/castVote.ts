@@ -62,9 +62,8 @@ export const getVoteData = async ():
 
     const voteParams = await contract.voteParams();
     const votingQuestion = voteParams[0];
-    const length = await contract.getProposalCount(); // Get the total number of proposals
-    
-    console.log("Número de propuestas:", length.toNumber());
+    // Get the total number of proposals
+    const length = await contract.getProposalCount();
     
     if (length.toNumber() === 0) {
       console.log("proposals is empty.");
@@ -82,8 +81,6 @@ export const getVoteData = async ():
         votingQuestion: votingQuestion,
         proposals: proposals
       };
-
-      console.log("Datos formateados correctamente:", data);
     }
   } catch (err: unknown) {
     console.error("Error en getVoteData:", err);
@@ -196,12 +193,9 @@ export const updatePassportRoot = async (proof: any):
 
     const requestUrl = new URL(`${API_BASE_URL}/integrations/proof-verification-relayer/v2/state`)
     requestUrl.searchParams.set('filter[root]', root)
-    console.log(requestUrl.toString());
 
     const res = await fetch(requestUrl.toString())
-    console.log(res.body);
     const { data } = await res.json()
-    console.log("data: ", data);
 
     return {
       // Signature of root state signed by relayer private key.
