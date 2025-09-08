@@ -142,14 +142,16 @@ export const castVote = async (verifiableCredential: any, selectedProposalIndex:
       // 3 - NullifierSeed
       // 4 - SignalHash
       // const nullifierSeed = voteContract.voteScope();
-      const nullifierSeed = verifiableCredential.proof.signatureValue.public[3];
-      const nullifier = verifiableCredential.proof.signatureValue.public[1];
+      const verifiableCredentialJSON = JSON.parse(verifiableCredential);
+
+      const nullifierSeed = verifiableCredentialJSON.proof.signatureValue.public[3];
+      const nullifier = verifiableCredentialJSON.proof.signatureValue.public[1];
       // Signal used when generating proof
       const signal = BigInt(userId).toString();
       // For the moment this is assumed always the case that age > 18
-      const revealArray = [verifiableCredential.proof.signatureValue.public[2]];
+      const revealArray = [verifiableCredentialJSON.proof.signatureValue.public[2]];
       // Get proof from credential
-      const proof = verifiableCredential.proof.signatureValue.proof;
+      const proof = verifiableCredentialJSON.proof.signatureValue.proof;
       // Call vote method
       const result_transaction = await voteContract.voteForProposal(
         selectedProposalIndex,
