@@ -34,14 +34,17 @@
       "failedToOpenMetaMask": "Failed to open MetaMask. Please install MetaMask Mobile.",
       "switchToNetwork": "Switch to",
       "wrongNetwork": "Wrong Network",
-      "networkName": "BlockDAG Testnet"
+      "networkName": "BlockDAG Testnet",
+      "viewResults": "View Results",
+      "switchingNetwork": "Switching network..."
     },
     "voting": {
       "title": "Voting System - Citizen Identity Validation",
       "question": "Vote on the following proposal:",
       "submit": "Submit Vote",
       "success": "Your vote has been successfully recorded",
-      "error": "Error submitting your vote"
+      "error": "Error submitting your vote",
+      "noProposalsAvailable": "No proposals available at this time"
     },
     "validation": {
       "title": "Voting System - Zero Knowledge Firma Digital",
@@ -230,5 +233,42 @@
         "title": "Wallet Connected!",
         "address": "Address:"
       }
+    },
+    "passport": {
+      "title": "Select Authentication Method",
+      "subtitle": "Choose how you want to verify your identity to vote",
+      "userId": "User ID",
+      "userIdPlaceholder": "Enter your unique identifier",
+      "authMethod": "Authentication Method",
+      "firmaDigital": "Digital Signature",
+      "passport": "Passport",
+      "country": "Passport Country",
+      "continue": "Continue",
+      "infoTitle": "Information",
+      "passportInfo": "Use your physical passport with the RariMe app to verify your identity privately and securely.",
+      "firmaDigitalInfo": "Use your Costa Rican Digital Signature card to authenticate directly.",
+      "verification": "Passport Verification",
+      "desktopInstructions": "Scan the QR code with the RariMe app",
+      "mobileInstructions": "Tap the button to open the RariMe app",
+      "preparingVerification": "Preparing verification...",
+      "verificationError": "Verification Error",
+      "retry": "Retry",
+      "verified": "Verified ✅",
+      "failed": "Failed ❌",
+      "verifying": "Verifying...",
+      "waiting": "Waiting for verification",
+      "openRarimeApp": "Open RariMe App",
+      "mobileAppInstructions": "If you don't have the app installed, the app store will open",
+      "qrInstructions": "Open the RariMe app on your mobile and scan this QR code",
+      "needApp": "Don't have the RariMe app?",
+      "downloadApp": "Download from here",
+      "checking": "Checking...",
+      "checkStatus": "Check Status",
+      "goBack": "Go Back",
+      "userIdRequired": "User ID required",
+      "appNotInstalled": "RariMe App not installed",
+      "appNotInstalledMessage": "It seems you don't have the RariMe app installed. Download it to continue with verification.",
+      "retryOpenApp": "Retry",
+      "openingApp": "Opening app..."
     }
   }
