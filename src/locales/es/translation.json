@@ -269,7 +269,9 @@
     "appNotInstalled": "App RariMe no instalada",
     "appNotInstalledMessage": "Parece que no tienes la app RariMe instalada. Descárgala para continuar con la verificación.",
     "retryOpenApp": "Reintentar",
-    "openingApp": "Abriendo app..."
+    "openingApp": "Abriendo app...",
+    "confirmAuth": "Confirmar Autenticación",
+    "confirming": "Confirmando..."
   }
 }
   

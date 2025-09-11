@@ -5,17 +5,20 @@ import { Header } from './Header';
 import { Footer } from './Footer';
 import { usePassportVerification, useVerificationStatus } from '../hooks/passportVote';
 import { PassportVerificationService } from '../services/passportService';
+import { useVote } from '../pages/VoteContext';
 
 const PassportVerification: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const state = location.state as { userId: string; nationality: string; eventId: string } | null;
+  const { setVerifiableCredential, setAuthMethod } = useVote();
 
   const [isMobile] = useState(PassportVerificationService.isMobile());
   const verificationStarted = useRef(false);
   const [showAppDownload, setShowAppDownload] = useState(false);
   const [isAttemptingAppOpen, setIsAttemptingAppOpen] = useState(false);
+  const [isConfirming, setIsConfirming] = useState(false);
   
   const {
     verificationLink,
@@ -62,10 +65,13 @@ const PassportVerification: React.FC = () => {
 
   useEffect(() => {
     if (status === 'verified' && proof) {
-      // Navigate to voting page with proof
-      navigate('/vote', { state: { passportProof: proof, authMethod: 'passport' } });
+      // Save proof as verifiable credential and set auth method
+      setVerifiableCredential(proof);
+      setAuthMethod('passport');
+      // Navigate to voting page
+      navigate('/vote');
     }
-  }, [status, proof, navigate]);
+  }, [status, proof, navigate, setVerifiableCredential, setAuthMethod]);
 
   const handleManualCheck = () => {
     startPolling();
@@ -128,6 +134,55 @@ const PassportVerification: React.FC = () => {
   const handleRetryAppOpen = () => {
     setShowAppDownload(false);
     handleOpenApp();
+  };
+  
+  const handleConfirmAuthentication = async () => {
+    if (!state || !verificationLink) return;
+    
+    setIsConfirming(true);
+    
+    try {
+      // Check if user has completed verification
+      const statusResponse = await PassportVerificationService.checkVerificationStatus(state.userId);
+      
+      if (statusResponse.status === 'verified') {
+        // Create the confirm URL to complete OAuth flow
+        const queryParams = {
+          grant_type: "code",
+          client_id: process.env.REACT_APP_CLIENT_ID || "hello@example.com",
+          user_id: state.userId,
+          redirect_uri: process.env.REACT_APP_REDIRECT_URI || `${window.location.origin}/vote/passport/callback`,
+          scope: "zk-passport",
+          state: String(Math.floor(Math.random() * 10000)),
+          nullifier_seed: 1000,
+          data: encodeURIComponent(
+            JSON.stringify({
+              "id": state.userId,
+              "type": "user",
+              "attributes": {
+                "age_lower_bound": 18,
+                "uniqueness": true,
+                "nationality": state.nationality,
+                "nationality_check": true,
+                "event_id": state.eventId,
+              }
+            })
+          )
+        };
+        
+        const confirmUrl = `${process.env.REACT_APP_AUTH_SERVER_URL || 'https://app.sakundi.io'}/confirm-authorize?` + new URLSearchParams(queryParams).toString();
+        
+        // Redirect to complete OAuth flow
+        window.location.href = confirmUrl;
+      } else {
+        alert("❌ Authentication not confirmed yet. Please complete verification in RariMe app first.");
+      }
+    } catch (error) {
+      console.error('Error confirming authentication:', error);
+      alert("❌ Failed to confirm authentication: " + (error instanceof Error ? error.message : 'Unknown error'));
+    } finally {
+      setIsConfirming(false);
+    }
   };
 
   if (!state) {
@@ -411,25 +466,44 @@ const PassportVerification: React.FC = () => {
             )}
 
             {/* Action Buttons */}
-            <div style={{ display: "flex", gap: "12px", justifyContent: "center" }}>
+            <div style={{ display: "flex", gap: "12px", justifyContent: "center", flexWrap: "wrap" }}>
               {status !== 'verified' && (
-                <button
-                  onClick={handleManualCheck}
-                  disabled={isPolling}
-                  style={{
-                    backgroundColor: "#5856D6",
-                    color: "white",
-                    border: "none",
-                    borderRadius: "8px",
-                    padding: "12px 24px",
-                    fontSize: "1rem",
-                    fontWeight: "600",
-                    cursor: isPolling ? "not-allowed" : "pointer",
-                    opacity: isPolling ? 0.6 : 1
-                  }}
-                >
-                  {isPolling ? t('passport.checking') : t('passport.checkStatus')}
-                </button>
+                <>
+                  <button
+                    onClick={handleConfirmAuthentication}
+                    disabled={isConfirming}
+                    style={{
+                      backgroundColor: "#059669",
+                      color: "white",
+                      border: "none",
+                      borderRadius: "8px",
+                      padding: "12px 24px",
+                      fontSize: "1rem",
+                      fontWeight: "600",
+                      cursor: isConfirming ? "not-allowed" : "pointer",
+                      opacity: isConfirming ? 0.6 : 1
+                    }}
+                  >
+                    {isConfirming ? t('passport.confirming') : t('passport.confirmAuth')}
+                  </button>
+                  <button
+                    onClick={handleManualCheck}
+                    disabled={isPolling}
+                    style={{
+                      backgroundColor: "#5856D6",
+                      color: "white",
+                      border: "none",
+                      borderRadius: "8px",
+                      padding: "12px 24px",
+                      fontSize: "1rem",
+                      fontWeight: "600",
+                      cursor: isPolling ? "not-allowed" : "pointer",
+                      opacity: isPolling ? 0.6 : 1
+                    }}
+                  >
+                    {isPolling ? t('passport.checking') : t('passport.checkStatus')}
+                  </button>
+                </>
               )}
 
               <button
