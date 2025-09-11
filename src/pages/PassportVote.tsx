@@ -48,7 +48,7 @@ const PassportVote: React.FC = () => {
     }
   };
 
-  const isFormValid = userId.trim().length > 0;
+  const isFormValid = userId.trim().length > 0 && isConnected;
 
   return (
     <div style={{
@@ -91,6 +91,27 @@ const PassportVote: React.FC = () => {
           }}>
             <form onSubmit={(e) => { e.preventDefault(); handleContinue(); }}>
               
+              {/* Wallet Connection Status */}
+              {!isConnected && (
+                <div style={{
+                  marginBottom: "24px",
+                  padding: "16px",
+                  backgroundColor: "#fef3cd",
+                  border: "1px solid #ffeaa7",
+                  borderRadius: "8px",
+                  textAlign: "center"
+                }}>
+                  <p style={{
+                    margin: "0",
+                    color: "#8b5a00",
+                    fontSize: "0.875rem",
+                    fontWeight: "500"
+                  }}>
+                    {t('passport.connectWalletMessage')}
+                  </p>
+                </div>
+              )}
+
               {/* User ID Input */}
               <div style={{ marginBottom: "24px" }}>
                 <label 
@@ -109,7 +130,7 @@ const PassportVote: React.FC = () => {
                   type="text"
                   id="userId"
                   value={userId}
-                  onChange={(e) => setUserId(e.target.value)}
+                  readOnly
                   placeholder={t('passport.userIdPlaceholder')}
                   style={{
                     width: "100%",
@@ -118,20 +139,20 @@ const PassportVote: React.FC = () => {
                     borderRadius: "6px",
                     fontSize: "1rem",
                     outline: "none",
-                    transition: "border-color 0.2s ease",
+                    backgroundColor: isConnected ? "#f9f9f9" : "#f5f5f5",
+                    cursor: "not-allowed",
+                    color: isConnected ? "#374151" : "#9ca3af"
                   }}
-                  onFocus={(e) => e.target.style.borderColor = "#5856D6"}
-                  onBlur={(e) => e.target.style.borderColor = "#d1d5db"}
                   required
                 />
-                {!isFormValid && userId.length > 0 && (
+                {!isConnected && (
                   <p style={{ 
-                    color: "#ef4444", 
+                    color: "#6b7280", 
                     fontSize: "0.75rem", 
                     marginTop: "4px",
                     margin: "4px 0 0" 
                   }}>
-                    {t('passport.userIdRequired')}
+                    {t('passport.walletNotConnectedDisabled')}
                   </p>
                 )}
               </div>
@@ -142,7 +163,7 @@ const PassportVote: React.FC = () => {
                   display: "block",
                   fontSize: "0.875rem",
                   fontWeight: "500",
-                  color: "#374151",
+                  color: isConnected ? "#374151" : "#9ca3af",
                   marginBottom: "12px"
                 }}>
                   {t('passport.authMethod')}:
@@ -153,10 +174,11 @@ const PassportVote: React.FC = () => {
                     display: "flex",
                     alignItems: "center",
                     padding: "12px",
-                    border: `2px solid ${selectedMethod === 'firma-digital' ? '#5856D6' : '#e5e7eb'}`,
+                    border: `2px solid ${selectedMethod === 'firma-digital' ? (isConnected ? '#5856D6' : '#d1d5db') : '#e5e7eb'}`,
                     borderRadius: "8px",
-                    cursor: "pointer",
-                    backgroundColor: selectedMethod === 'firma-digital' ? '#f8f7ff' : 'white'
+                    cursor: isConnected ? "pointer" : "not-allowed",
+                    backgroundColor: selectedMethod === 'firma-digital' ? (isConnected ? '#f8f7ff' : '#f9f9f9') : (isConnected ? 'white' : '#f9f9f9'),
+                    opacity: isConnected ? 1 : 0.6
                   }}>
                     <input
                       type="radio"
@@ -165,19 +187,21 @@ const PassportVote: React.FC = () => {
                       checked={selectedMethod === 'firma-digital'}
                       onChange={(e) => setSelectedMethod(e.target.value as 'firma-digital' | 'passport')}
                       style={{ marginRight: "12px" }}
+                      disabled={!isConnected}
                     />
                     <span style={{ fontSize: "1.2rem", marginRight: "8px" }}>🔐</span>
-                    <span style={{ fontWeight: "500" }}>{t('passport.firmaDigital')}</span>
+                    <span style={{ fontWeight: "500", color: isConnected ? "inherit" : "#9ca3af" }}>{t('passport.firmaDigital')}</span>
                   </label>
 
                   <label style={{
                     display: "flex",
                     alignItems: "center",
                     padding: "12px",
-                    border: `2px solid ${selectedMethod === 'passport' ? '#5856D6' : '#e5e7eb'}`,
+                    border: `2px solid ${selectedMethod === 'passport' ? (isConnected ? '#5856D6' : '#d1d5db') : '#e5e7eb'}`,
                     borderRadius: "8px",
-                    cursor: "pointer",
-                    backgroundColor: selectedMethod === 'passport' ? '#f8f7ff' : 'white'
+                    cursor: isConnected ? "pointer" : "not-allowed",
+                    backgroundColor: selectedMethod === 'passport' ? (isConnected ? '#f8f7ff' : '#f9f9f9') : (isConnected ? 'white' : '#f9f9f9'),
+                    opacity: isConnected ? 1 : 0.6
                   }}>
                     <input
                       type="radio"
@@ -186,9 +210,10 @@ const PassportVote: React.FC = () => {
                       checked={selectedMethod === 'passport'}
                       onChange={(e) => setSelectedMethod(e.target.value as 'firma-digital' | 'passport')}
                       style={{ marginRight: "12px" }}
+                      disabled={!isConnected}
                     />
                     <span style={{ fontSize: "1.2rem", marginRight: "8px" }}>🛂</span>
-                    <span style={{ fontWeight: "500" }}>{t('passport.passport')}</span>
+                    <span style={{ fontWeight: "500", color: isConnected ? "inherit" : "#9ca3af" }}>{t('passport.passport')}</span>
                   </label>
                 </div>
               </div>
@@ -202,7 +227,7 @@ const PassportVote: React.FC = () => {
                       display: "block",
                       fontSize: "0.875rem",
                       fontWeight: "500",
-                      color: "#374151",
+                      color: isConnected ? "#374151" : "#9ca3af",
                       marginBottom: "6px"
                     }}
                   >
@@ -212,15 +237,17 @@ const PassportVote: React.FC = () => {
                     id="country"
                     value={selectedCountry}
                     onChange={(e) => setSelectedCountry(e.target.value)}
+                    disabled={!isConnected}
                     style={{
                       width: "100%",
                       padding: "12px",
                       border: "1px solid #d1d5db",
                       borderRadius: "6px",
                       fontSize: "1rem",
-                      backgroundColor: "white",
+                      backgroundColor: isConnected ? "white" : "#f9f9f9",
                       outline: "none",
-                      cursor: "pointer"
+                      cursor: isConnected ? "pointer" : "not-allowed",
+                      opacity: isConnected ? 1 : 0.6
                     }}
                   >
                     {COUNTRIES.map((country) => (

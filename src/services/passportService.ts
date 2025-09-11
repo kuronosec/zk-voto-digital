@@ -12,6 +12,7 @@ export interface VerificationRequest {
 export interface VerificationLinkResponse {
   link: string;
   status: string;
+  get_proof_params?: string;
 }
 
 export interface VerificationStatusResponse {
@@ -54,7 +55,8 @@ export class PassportVerificationService {
       
       return {
         link: response.data.link,
-        status: response.data.status
+        status: response.data.status,
+        get_proof_params: response.data.get_proof_params
       };
     } catch (error) {
       console.error('Error requesting verification link:', error);
@@ -114,12 +116,41 @@ export class PassportVerificationService {
     }
   }
 
-  static generateDeepLink(verificationLink: string): string {
-    const callbackUrl = encodeURIComponent(`${window.location.origin}/vote/passport/verify`);
-    return `rarime://verify?callback=${callbackUrl}&link=${encodeURIComponent(verificationLink)}`;
+  static generateDeepLink(proofParamsUrl: string): string {
+    const deepLinkUrl = new URL('rarime://external');
+    deepLinkUrl.searchParams.append('type', 'proof-request');
+    deepLinkUrl.searchParams.append('proof_params_url', proofParamsUrl);
+    
+    return deepLinkUrl.toString();
   }
 
   static isMobile(): boolean {
     return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  }
+
+  static async requestVerificationWithParams(request: VerificationRequest): Promise<{ get_proof_params: string }> {
+    // Simulating the API call structure from the example
+    const eventId = request.eventId || 'default-event';
+    
+    try {
+      const response = await this.requestVerificationLink(request);
+      
+      if (response.get_proof_params) {
+        return { get_proof_params: response.get_proof_params };
+      }
+      
+      // Fallback: construct parameters if not provided by server
+      return {
+        get_proof_params: `${VERIFICATOR_BASE_URL}/verificator/proof-params?` + new URLSearchParams({
+          id: request.userId.toLowerCase(),
+          event_id: eventId,
+          uniqueness: 'true',
+          expiration_lower_bound: 'true'
+        }).toString()
+      };
+    } catch (error) {
+      console.error('Error requesting verification with params:', error);
+      throw error;
+    }
   }
 }

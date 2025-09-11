@@ -12,6 +12,7 @@ export interface PassportVoteExecuteParams {
 
 export const usePassportVerification = () => {
   const [verificationLink, setVerificationLink] = useState<string | null>(null);
+  const [proofParamsUrl, setProofParamsUrl] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [userId, setUserId] = useState<string>('');
@@ -26,7 +27,13 @@ export const usePassportVerification = () => {
       
       if (response.link) {
         setVerificationLink(response.link);
-      } else if (response.status === 'created') {
+      }
+      
+      if (response.get_proof_params) {
+        setProofParamsUrl(response.get_proof_params);
+      }
+      
+      if (response.status === 'created') {
         // Verification was already completed, skip to status check
         setVerificationLink('completed');
       }
@@ -43,12 +50,13 @@ export const usePassportVerification = () => {
     return qrApiUrl;
   }, []);
 
-  const generateDeepLink = useCallback((link: string) => {
-    return PassportVerificationService.generateDeepLink(link);
+  const generateDeepLink = useCallback((proofParams: string) => {
+    return PassportVerificationService.generateDeepLink(proofParams);
   }, []);
 
   const reset = useCallback(() => {
     setVerificationLink(null);
+    setProofParamsUrl(null);
     setError(null);
     setUserId('');
     setIsLoading(false);
@@ -56,6 +64,7 @@ export const usePassportVerification = () => {
 
   return {
     verificationLink,
+    proofParamsUrl,
     isLoading,
     error,
     userId,
@@ -102,7 +111,7 @@ export const useVerificationStatus = (userId: string, enabled: boolean = false) 
         clearInterval(pollInterval);
         setIsPolling(false);
       }
-    }, 2000); // Poll every 2 seconds
+    }, 5000); // Poll every 5 seconds like in the example
 
     // Stop polling after 5 minutes (timeout)
     const timeoutId = setTimeout(() => {

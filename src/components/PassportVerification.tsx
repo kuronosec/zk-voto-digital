@@ -22,6 +22,7 @@ const PassportVerification: React.FC = () => {
   
   const {
     verificationLink,
+    proofParamsUrl,
     isLoading: isStartingVerification,
     error: verificationError,
     userId,
@@ -57,11 +58,31 @@ const PassportVerification: React.FC = () => {
   }, [state, navigate, startVerification]);
 
   useEffect(() => {
-    if (verificationLink && verificationLink !== 'completed') {
+    if ((verificationLink || proofParamsUrl) && verificationLink !== 'completed') {
       const cleanup = startPolling();
       return cleanup;
     }
-  }, [verificationLink, startPolling]);
+  }, [verificationLink, proofParamsUrl, startPolling]);
+
+  // Auto-check verification status every 5 seconds similar to the example
+  useEffect(() => {
+    if (!userId || status === 'verified' || status === 'failed') return;
+
+    const intervalId = window.setInterval(async () => {
+      try {
+        const response = await PassportVerificationService.checkVerificationStatus(userId);
+        if (response.status === 'verified' && response.proof) {
+          setVerifiableCredential(response.proof);
+          setAuthMethod('passport');
+          navigate('/vote');
+        }
+      } catch (error) {
+        console.error('Auto-check error:', error);
+      }
+    }, 5000);
+
+    return () => window.clearInterval(intervalId);
+  }, [userId, status, setVerifiableCredential, setAuthMethod, navigate]);
 
   useEffect(() => {
     if (status === 'verified' && proof) {
@@ -88,9 +109,9 @@ const PassportVerification: React.FC = () => {
   };
 
   const handleOpenApp = () => {
-    if (verificationLink && verificationLink !== 'completed') {
+    if (proofParamsUrl) {
       setIsAttemptingAppOpen(true);
-      const deepLink = generateDeepLink(verificationLink);
+      const deepLink = generateDeepLink(proofParamsUrl);
       
       // Try to open the app
       window.location.href = deepLink;
@@ -321,7 +342,7 @@ const PassportVerification: React.FC = () => {
             </div>
 
             {/* QR Code or Deep Link */}
-            {verificationLink && verificationLink !== 'completed' && status !== 'verified' && (
+            {(verificationLink || proofParamsUrl) && verificationLink !== 'completed' && status !== 'verified' && (
               <>
                 {isMobile ? (
                   // Mobile: Deep Link Button or App Download
@@ -420,7 +441,7 @@ const PassportVerification: React.FC = () => {
                   // Desktop: QR Code
                   <div style={{ marginBottom: "24px", textAlign: "center" }}>
                     <img
-                      src={generateQRCode(verificationLink)}
+                      src={generateQRCode(proofParamsUrl || verificationLink || '')}
                       alt="Verification QR Code"
                       style={{
                         border: "1px solid #e5e7eb",
