@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Header } from '../components/Header';
 import { Footer } from '../components/Footer';
+import { useWallet } from '../context/WalletContext';
 
 const COUNTRIES = [
   { code: 'CRI', name: 'Costa Rica', flag: '🇨🇷' },
@@ -20,9 +21,17 @@ const COUNTRIES = [
 const PassportVote: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { account, isConnected } = useWallet();
   const [userId, setUserId] = useState('');
   const [selectedCountry, setSelectedCountry] = useState('CRI');
   const [selectedMethod, setSelectedMethod] = useState<'firma-digital' | 'passport'>('passport');
+
+  // Auto-fill user ID with MetaMask wallet address
+  useEffect(() => {
+    if (isConnected && account) {
+      setUserId(account);
+    }
+  }, [isConnected, account]);
 
   const handleContinue = () => {
     if (selectedMethod === 'firma-digital') {
