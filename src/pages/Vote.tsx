@@ -3,6 +3,7 @@ import { Header } from "../components/Header";
 import { Footer } from "../components/Footer";
 import { getVoteData } from '../hooks/castVote';
 import { getVoteScope } from '../hooks/getCredentialData';
+import { usePassportVote } from '../hooks/passportVote';
 import { VoteOptionsDisplay } from '../components/VoteOptionsDisplay';
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from 'react-i18next';
@@ -17,7 +18,7 @@ const Vote: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [canVote, setCanVote] = useState(false);
-  const { verifiableCredential, setVoteScope, voteScope } = useVote();
+  const { verifiableCredential, setVoteScope, voteScope, authMethod } = useVote();
   
   const { isConnected, connect, account, isChangingNetwork } = useWallet();
   const navigate = useNavigate();
@@ -84,7 +85,7 @@ const Vote: React.FC = () => {
       fetchVoteScope().then(() => {
         // Solo navegamos si el componente sigue montado
         if (isMounted.current) {
-          navigate("/request-firma");
+          navigate("/vote/passport");
         }
       });
     }
