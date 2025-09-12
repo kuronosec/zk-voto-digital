@@ -22,7 +22,6 @@ const PassportVerification: React.FC = () => {
   
   const {
     verificationLink,
-    proofParamsUrl,
     isLoading: isStartingVerification,
     error: verificationError,
     userId,
@@ -58,11 +57,11 @@ const PassportVerification: React.FC = () => {
   }, [state, navigate, startVerification]);
 
   useEffect(() => {
-    if ((verificationLink || proofParamsUrl) && verificationLink !== 'completed') {
+    if (verificationLink && verificationLink !== 'completed') {
       const cleanup = startPolling();
       return cleanup;
     }
-  }, [verificationLink, proofParamsUrl, startPolling]);
+  }, [verificationLink, startPolling]);
 
   // Auto-check verification status every 5 seconds similar to the example
   useEffect(() => {
@@ -109,9 +108,9 @@ const PassportVerification: React.FC = () => {
   };
 
   const handleOpenApp = () => {
-    if (proofParamsUrl) {
+    if (verificationLink && verificationLink !== 'completed') {
       setIsAttemptingAppOpen(true);
-      const deepLink = generateDeepLink(proofParamsUrl);
+      const deepLink = decodeURIComponent(generateDeepLink(verificationLink));
       
       // Try to open the app
       window.location.href = deepLink;
@@ -342,7 +341,7 @@ const PassportVerification: React.FC = () => {
             </div>
 
             {/* QR Code or Deep Link */}
-            {(verificationLink || proofParamsUrl) && verificationLink !== 'completed' && status !== 'verified' && (
+            {verificationLink && verificationLink !== 'completed' && status !== 'verified' && (
               <>
                 {isMobile ? (
                   // Mobile: Deep Link Button or App Download
@@ -441,7 +440,7 @@ const PassportVerification: React.FC = () => {
                   // Desktop: QR Code
                   <div style={{ marginBottom: "24px", textAlign: "center" }}>
                     <img
-                      src={generateQRCode(proofParamsUrl || verificationLink || '')}
+                      src={generateQRCode(verificationLink)}
                       alt="Verification QR Code"
                       style={{
                         border: "1px solid #e5e7eb",
