@@ -37,14 +37,8 @@ const PassportVote: React.FC = () => {
     if (selectedMethod === 'firma-digital') {
       navigate('/request-firma');
     } else {
-      // Navigate to passport verification with user data
-      navigate('/vote/passport/verify', { 
-        state: { 
-          userId, 
-          nationality: selectedCountry,
-          eventId: `vote-${Date.now()}`
-        } 
-      });
+      // Navigate to passport authentication (following RequestFirma pattern)
+      navigate('/request-passport');
     }
   };
 

@@ -63,17 +63,17 @@ const PassportVerification: React.FC = () => {
     }
   }, [verificationLink, startPolling]);
 
-  // Auto-check verification status every 5 seconds similar to the example
+  // Auto-check verification status every 5 seconds - but don't auto-navigate
   useEffect(() => {
     if (!userId || status === 'verified' || status === 'failed') return;
 
     const intervalId = window.setInterval(async () => {
       try {
         const response = await PassportVerificationService.checkVerificationStatus(userId);
-        if (response.status === 'verified' && response.proof) {
-          setVerifiableCredential(response.proof);
-          setAuthMethod('passport');
-          navigate('/vote');
+        // Just update status, don't auto-navigate - let user confirm authentication
+        if (response.status === 'verified') {
+          // Don't set verifiable credential yet - wait for OAuth flow completion
+          console.log('Verification completed, user can now confirm authentication');
         }
       } catch (error) {
         console.error('Auto-check error:', error);
@@ -81,17 +81,18 @@ const PassportVerification: React.FC = () => {
     }, 5000);
 
     return () => window.clearInterval(intervalId);
-  }, [userId, status, setVerifiableCredential, setAuthMethod, navigate]);
+  }, [userId, status]);
 
-  useEffect(() => {
-    if (status === 'verified' && proof) {
-      // Save proof as verifiable credential and set auth method
-      setVerifiableCredential(proof);
-      setAuthMethod('passport');
-      // Navigate to voting page
-      navigate('/vote');
-    }
-  }, [status, proof, navigate, setVerifiableCredential, setAuthMethod]);
+  // Remove this auto-navigation effect - we want user to manually confirm
+  // useEffect(() => {
+  //   if (status === 'verified' && proof) {
+  //     // Save proof as verifiable credential and set auth method
+  //     setVerifiableCredential(proof);
+  //     setAuthMethod('passport');
+  //     // Navigate to voting page
+  //     navigate('/vote');
+  //   }
+  // }, [status, proof, navigate, setVerifiableCredential, setAuthMethod]);
 
   const handleManualCheck = () => {
     startPolling();

@@ -85,6 +85,7 @@ const Vote: React.FC = () => {
       fetchVoteScope().then(() => {
         // Solo navegamos si el componente sigue montado
         if (isMounted.current) {
+          // Navigate to the passport selection page to choose authentication method
           navigate("/vote/passport");
         }
       });
