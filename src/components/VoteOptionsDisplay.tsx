@@ -2,7 +2,7 @@ import React from 'react';
 import { useState } from "react";
 import { displayMethod } from '../constants/displayConfig';
 import { Button } from "rimble-ui";
-import { castVote } from '../hooks/castVote';
+import { castVote, updatePassportRoot } from '../hooks/castVote';
 import { useVote } from "../pages/VoteContext";
 import { useTranslation } from 'react-i18next';
 
@@ -50,6 +50,7 @@ export const VoteOptionsDisplay: React.FC<VoteOptionsDisplayProps> = ({ voteData
     setIsSuccess(false);
     
     try {
+      await updatePassportRoot(verifiableCredential);
       const { _result, _error, _done } = await castVote(verifiableCredential, selectedProposalIndex, authMethod || 'firma-digital');
       console.log("Vote result:", _result);
       

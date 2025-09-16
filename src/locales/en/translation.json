@@ -264,7 +264,7 @@
       "downloadApp": "Download from here",
       "checking": "Checking...",
       "checkStatus": "Check Status",
-      "goBack": "Go Back",
+      "goBack": "Go to vote",
       "userIdRequired": "User ID required",
       "connectWalletMessage": "Please connect your MetaMask wallet to continue",
       "walletNotConnectedDisabled": "Connect your wallet to enable the form",

@@ -527,7 +527,7 @@ const PassportVerification: React.FC = () => {
               )}
 
               <button
-                onClick={() => navigate('/vote/passport')}
+                onClick={handleConfirmAuthentication}
                 style={{
                   backgroundColor: "transparent",
                   color: "#6b7280",

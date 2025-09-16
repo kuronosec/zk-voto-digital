@@ -42,7 +42,7 @@ const PassportVote: React.FC = () => {
         state: { 
           userId, 
           nationality: selectedCountry,
-          eventId: `vote-${Date.now()}`
+          eventId: process.env.VOTE_ID || `vote-${Date.now()}`
         } 
       });
     }

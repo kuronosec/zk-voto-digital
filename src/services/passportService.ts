@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const VERIFICATOR_BASE_URL = process.env.REACT_APP_VERIFICATOR_URL || 'https://api.app.rarime.com';
+const VERIFICATOR_BASE_URL = process.env.REACT_APP_VERIFICATOR_URL || 'https://passport.sakundi.io';
 const AUTH_SERVER_URL = process.env.REACT_APP_AUTH_SERVER_URL || 'https://app.sakundi.io';
 
 export interface VerificationRequest {

@@ -37,7 +37,7 @@ const PassportCallback: React.FC = () => {
 
         if (proof) {
           // Save proof as verifiable credential
-          setVerifiableCredential(JSON.stringify(proof));
+          setVerifiableCredential(proof);
           setAuthMethod('passport');
           
           // Navigate to voting page
