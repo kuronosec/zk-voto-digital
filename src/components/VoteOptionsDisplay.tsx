@@ -50,7 +50,9 @@ export const VoteOptionsDisplay: React.FC<VoteOptionsDisplayProps> = ({ voteData
     setIsSuccess(false);
     
     try {
-      await updatePassportRoot(verifiableCredential);
+      if (authMethod === 'passport') {
+        await updatePassportRoot(verifiableCredential);
+      }
       const { _result, _error, _done } = await castVote(verifiableCredential, selectedProposalIndex, authMethod || 'firma-digital');
       console.log("Vote result:", _result);
       

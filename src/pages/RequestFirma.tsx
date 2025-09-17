@@ -9,11 +9,12 @@ import { useVote } from "./VoteContext";
 import { useWallet } from "../context/WalletContext";
 import { useTranslation } from "react-i18next";
 import { createSmartWalletConnect, getSmartConnectButtonText } from "../utils/walletConnection";
+import { getVoteScope } from '../hooks/getCredentialData';
 
 // Secrets
 const CLIENT_ID = process.env.REACT_APP_CLIENT_ID || "hello@example.com";
 const CLIENT_SECRET = process.env.REACT_APP_CLIENT_SECRET || "password";
-const REDIRECT_URI = process.env.REACT_APP_REDIRECT_URI || "http://localhost:3000/request-firma";
+const REDIRECT_URI_FIRMA = process.env.REACT_APP_REDIRECT_URI_FIRMA || "http://localhost:3000/request-firma";
 const AUTH_SERVER_URL = process.env.REACT_APP_AUTH_SERVER_URL || "https://app.sakundi.io";
 
 // Helper function to parse JWT
@@ -42,7 +43,7 @@ const RequestFirma: React.FC = () => {
   const [authUrl, setAuthUrl] = useState<string>("");
   const [tokenData, setTokenData] = useState<Record<string, any> | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const { verifiableCredential, setVerifiableCredential, voteScope } = useVote();
+  const { verifiableCredential, setVerifiableCredential, setVoteScope, voteScope, setAuthMethod } = useVote();
   const navigate = useNavigate();
   const { isConnected, account, connect, checkWalletState, isChangingNetwork } = useWallet();
   const [isCheckingWallet, setIsCheckingWallet] = useState(true);
@@ -59,15 +60,28 @@ const RequestFirma: React.FC = () => {
     
     checkWallet();
   }, [checkWalletState]);
+
+  useEffect(() => {
+    const doGetVoteScope = async () => {
+      // Get voteScope if not asigned
+      if ( voteScope === null ) {
+        const { _voteScope, _error } = await getVoteScope();
+        setVoteScope(_voteScope);
+      }
+    };
+
+    doGetVoteScope();
+  }, [voteScope]);
   
   // Memoizar la generación de la URL de autorización para evitar recálculos innecesarios
   const generateAuthUrl = useCallback(() => {
+    setAuthMethod('firma-digital');
     if (isConnected && account && voteScope !== null && !tokenData) {
       return `${AUTH_SERVER_URL}/authorize?` + queryString.stringify({
         grant_type: "code",
         client_id: CLIENT_ID,
         user_id: account,
-        redirect_uri: REDIRECT_URI,
+        redirect_uri: REDIRECT_URI_FIRMA,
         scope: "zk-firma-digital",
         state: String(Math.floor(Math.random() * 10000)), // Convertir a string para evitar regeneración
         nullifier_seed: voteScope
@@ -92,6 +106,7 @@ const RequestFirma: React.FC = () => {
     const code = searchParams.get("code");
     if (!code || tokenData) return;
 
+    setAuthMethod('firma-digital');
     const exchangeToken = async () => {
       try {
         const response = await axios.post(
@@ -100,7 +115,7 @@ const RequestFirma: React.FC = () => {
             code: code,
             client_id: CLIENT_ID,
             client_secret: CLIENT_SECRET,
-            redirect_uri: REDIRECT_URI,
+            redirect_uri: REDIRECT_URI_FIRMA,
             scope: "zk-firma-digital",
             grant_type: "authorization_code",
           }),

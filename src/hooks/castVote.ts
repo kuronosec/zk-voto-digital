@@ -210,7 +210,7 @@ export const castVote = async (verifiableCredential: any, selectedProposalIndex:
         
         result = result_transaction;
         done = true;
-      } else {
+      } else if (authMethod === 'firma-digital') {
 
         // The order of the public data in the credential is the following
         // 0 - PublicKeyHash (Goverment public key hash)
