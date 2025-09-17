@@ -265,6 +265,7 @@
     "checking": "Verificando...",
     "checkStatus": "Verificar Estado",
     "goBack": "Volver",
+    "goToVote": "Ir a votar",
     "userIdRequired": "ID de usuario requerido",
     "connectWalletMessage": "Por favor conecte su wallet MetaMask para continuar",
     "walletNotConnectedDisabled": "Conecte su wallet para habilitar el formulario",

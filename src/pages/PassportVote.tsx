@@ -114,20 +114,22 @@ const PassportVote: React.FC = () => {
 
               {/* User ID Input */}
               <div style={{ marginBottom: "24px" }}>
-                <label 
-                  htmlFor="userId" 
-                  style={{
-                    display: "block",
-                    fontSize: "0.875rem",
-                    fontWeight: "500",
-                    color: "#374151",
-                    marginBottom: "6px"
-                  }}
-                >
-                  {t('passport.userId')}:
-                </label>
+                {isConnected && account && (
+                  <div style={{
+                    backgroundColor: "#f0fff4",
+                    color: "#38a169",
+                    border: "1px solid #c6f6d5",
+                    borderRadius: "6px",
+                    padding: "12px",
+                    marginBottom: "20px",
+                    textAlign: "center",
+                    fontSize: "14px"
+                  }}>
+                    <p style={{ margin: 0 }}>{t('common.connectedAs')}: {account}</p>
+                  </div>
+                )}
                 <input
-                  type="text"
+                  type="hidden"
                   id="userId"
                   value={userId}
                   readOnly

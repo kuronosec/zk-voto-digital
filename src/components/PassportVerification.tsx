@@ -324,7 +324,7 @@ const PassportVerification: React.FC = () => {
               <div style={{ fontSize: "2rem", marginBottom: "12px" }}>
                 {status === 'verified' ? '✅' : 
                  status === 'failed' ? '❌' : 
-                 isPolling ? '⏳' : '⏸️'}
+                 isPolling ? '⏳' : '✅'}
               </div>
               <h3 style={{
                 margin: "0 0 8px",
@@ -333,7 +333,7 @@ const PassportVerification: React.FC = () => {
               }}>
                 {status === 'verified' ? t('passport.verified') : 
                  status === 'failed' ? t('passport.failed') : 
-                 isPolling ? t('passport.verifying') : t('passport.waiting')}
+                 isPolling ? t('passport.verifying') : t('passport.verified')}
               </h3>
               {statusError && (
                 <p style={{ color: '#dc2626', margin: "0" }}>{statusError}</p>
@@ -487,30 +487,11 @@ const PassportVerification: React.FC = () => {
 
             {/* Action Buttons */}
             <div style={{ display: "flex", gap: "12px", justifyContent: "center", flexWrap: "wrap" }}>
-              {status !== 'verified' && (
-                <>
                   <button
                     onClick={handleConfirmAuthentication}
-                    disabled={isConfirming}
-                    style={{
-                      backgroundColor: "#059669",
-                      color: "white",
-                      border: "none",
-                      borderRadius: "8px",
-                      padding: "12px 24px",
-                      fontSize: "1rem",
-                      fontWeight: "600",
-                      cursor: isConfirming ? "not-allowed" : "pointer",
-                      opacity: isConfirming ? 0.6 : 1
-                    }}
-                  >
-                    {isConfirming ? t('passport.confirming') : t('passport.confirmAuth')}
-                  </button>
-                  <button
-                    onClick={handleManualCheck}
                     disabled={isPolling}
                     style={{
-                      backgroundColor: "#5856D6",
+                      backgroundColor: "#059669",
                       color: "white",
                       border: "none",
                       borderRadius: "8px",
@@ -521,25 +502,8 @@ const PassportVerification: React.FC = () => {
                       opacity: isPolling ? 0.6 : 1
                     }}
                   >
-                    {isPolling ? t('passport.checking') : t('passport.checkStatus')}
+                    {t('passport.goToVote')}
                   </button>
-                </>
-              )}
-
-              <button
-                onClick={handleConfirmAuthentication}
-                style={{
-                  backgroundColor: "transparent",
-                  color: "#6b7280",
-                  border: "1px solid #d1d5db",
-                  borderRadius: "8px",
-                  padding: "12px 24px",
-                  fontSize: "1rem",
-                  cursor: "pointer"
-                }}
-              >
-                {t('passport.goBack')}
-              </button>
             </div>
           </div>
         </div>

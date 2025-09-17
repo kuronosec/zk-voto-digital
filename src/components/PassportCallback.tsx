@@ -89,7 +89,7 @@ const PassportCallback: React.FC = () => {
                 cursor: "pointer"
               }}
             >
-              {t('passport.goBack')}
+              {t('passport.goToVote')}
             </button>
           </div>
         </main>
