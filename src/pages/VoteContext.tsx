@@ -1,6 +1,8 @@
 import React, { createContext, useState, ReactNode, useContext, useEffect } from "react";
 import { useWallet } from "../context/WalletContext";
 
+type AuthMethod = 'firma-digital' | 'passport' | null;
+
 type VoteContextType = {
   verifiableCredential: Record<string, any> | null;
   setVerifiableCredential: (vc: Record<string, any> | null) => void;
@@ -9,6 +11,10 @@ type VoteContextType = {
   hasVoted: boolean;
   setHasVoted: (voted: boolean) => void;
   isLoading: boolean;
+  authMethod: AuthMethod;
+  setAuthMethod: (method: AuthMethod) => void;
+  passportProof: any | null;
+  setPassportProof: (proof: any | null) => void;
 };
 
 const VoteContext = createContext<VoteContextType | undefined>(undefined);
@@ -18,6 +24,8 @@ export const VoteProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [voteScope, setVoteScope] = useState<number | null>(null);
   const [hasVoted, setHasVoted] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [authMethod, setAuthMethod] = useState<AuthMethod>(null);
+  const [passportProof, setPassportProof] = useState<any | null>(null);
   
   // Integrar con el contexto de wallet
   const { isConnected, account } = useWallet();
@@ -27,6 +35,8 @@ export const VoteProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     if (!isConnected || !account) {
       // Si la wallet se desconecta, reiniciamos el estado del contexto de voto
       setVerifiableCredential(null);
+      setPassportProof(null);
+      setAuthMethod(null);
       setHasVoted(false);
       setIsLoading(false);
     }
@@ -40,7 +50,11 @@ export const VoteProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setVoteScope,
     hasVoted,
     setHasVoted,
-    isLoading
+    isLoading,
+    authMethod,
+    setAuthMethod,
+    passportProof,
+    setPassportProof
   };
 
   return (

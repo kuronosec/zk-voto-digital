@@ -20,7 +20,7 @@ interface VoteOptionsDisplayProps {
 
 export const VoteOptionsDisplay: React.FC<VoteOptionsDisplayProps> = ({ voteData }) => {
   const { t } = useTranslation();
-  const { verifiableCredential } = useVote();
+  const { verifiableCredential, authMethod } = useVote();
   const [selectedProposalIndex, setSelectedProposalIndex] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -50,7 +50,7 @@ export const VoteOptionsDisplay: React.FC<VoteOptionsDisplayProps> = ({ voteData
     setIsSuccess(false);
     
     try {
-      const { _result, _error, _done } = await castVote(verifiableCredential, selectedProposalIndex);
+      const { _result, _error, _done } = await castVote(verifiableCredential, selectedProposalIndex, authMethod || 'firma-digital');
       console.log("Vote result:", _result);
       
       if (_done) {

@@ -255,7 +255,7 @@ export const Header = () => {
           <a href="/#how-it-works" style={linkStyle}>
             {t('common.howItWorks')}
           </a>
-          <Link to="/vote" style={linkStyle}>
+          <Link to="/vote/passport" style={linkStyle}>
             {t('common.digitalVote')}
           </Link>
           <Link to="/create-proposal" style={linkStyle}>
@@ -293,7 +293,7 @@ export const Header = () => {
           <Link to="/#how-it-works" style={linkStyle} onClick={closeMenu}>
             {t('common.howItWorks')}
           </Link>
-          <Link to="/vote" style={linkStyle} onClick={closeMenu}>
+          <Link to="/vote/passport" style={linkStyle} onClick={closeMenu}>
             {t('common.digitalVote')}
           </Link>
           <Link to="/create-proposal" style={linkStyle} onClick={closeMenu}>

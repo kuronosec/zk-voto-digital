@@ -12,6 +12,9 @@ import RequestFirma from "./pages/RequestFirma";
 import Results from "./pages/Results";
 import { ZkSign } from "./components/ZkSign";
 import { MobileInstructions } from "./pages/MobileInstructions";
+import PassportVote from "./pages/PassportVote";
+import PassportVerification from "./components/PassportVerification";
+import PassportCallback from "./components/PassportCallback";
 
 const App: React.FC = () => {
     return (
@@ -23,6 +26,9 @@ const App: React.FC = () => {
                         <Route path="/vote-validation" element={<VoteValidation />} />
                         <Route path="/request-firma" element={<RequestFirma />} />
                         <Route path="/vote" element={<Vote />} />
+                        <Route path="/vote/passport" element={<PassportVote />} />
+                        <Route path="/vote/passport/verify" element={<PassportVerification />} />
+                        <Route path="/vote/passport/callback" element={<PassportCallback />} />
                         <Route path="/create-proposal" element={<AdminGUI />} />
                         <Route path="/results" element={<Results />} />
                         <Route path="/try-it" element={<ZkSign />} />

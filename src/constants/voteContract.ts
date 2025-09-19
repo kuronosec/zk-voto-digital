@@ -558,6 +558,29 @@ export const voteContractABI = [
     ],
     "stateMutability": "view",
     "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "newRoot_",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "uint256",
+        "name": "transitionTimestamp_",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bytes",
+        "name": "signature_",
+        "type": "bytes"
+      }
+    ],
+    "name": "transitionRootWithSignature",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
   }
 ];
 
