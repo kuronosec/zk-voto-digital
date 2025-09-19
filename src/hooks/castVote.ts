@@ -1,6 +1,5 @@
 import { ethers } from 'ethers';
 import { voteContractAddress, voteContractABI } from '../constants/voteContract';
-import { replicatorContractAddress, replicatorContractABI } from '../constants/replicatorContract';
 import { Groth16Proof } from 'snarkjs'
 import { ZkProof } from '@rarimo/zk-passport'
 
@@ -253,90 +252,6 @@ export const castVote = async (verifiableCredential: any, selectedProposalIndex:
       }
     }
   };
-
-  await pushData();
-
-  return new Promise((resolve) => {
-    setTimeout(() => {
-        resolve({ _result: result, _error: error, _done: done });
-    }, 2000);
-  });
-}
-
-export const updatePassportRoot = async (proof: any):
-  Promise<{ _result: any; _error: string | null; _done: boolean }> => {
-  var result = "";
-  var error = "";
-  var done = false;
-
-  async function getSignedRootState(root: string) {
-    const getRootUrl = `${process.env.REACT_APP_AUTH_SERVER_URL || 'https://app.sakundi.io'}/signed-root`;
-    const res = await fetch(`${getRootUrl}/${root}`);
-    const data = await res.json();
-
-    return {
-      // Signature of root state signed by relayer private key.
-      signature: data.signature,
-      // Time when the event was caught, a.k.a state transition timestamp
-      timestamp: data.timestamp,
-    }
-  }
-
-  async function buildTreeArguments(proof: ZkProof) {
-    if (!proof.proof.piA.length || !proof.proof.piB.length || !proof.proof.piC.length) {
-      throw new Error('Invalid proof structure')
-    }
-
-    const root = BigInt(proof.pubSignals[11]).toString(16);
-
-    const { signature, timestamp } = await getSignedRootState(root);
-
-    return {
-      args: [
-        "0x"+root,
-        BigInt("0x"+timestamp),
-        "0x"+signature,
-      ] as const,
-    }
-  }
-
-  async function pushData() {
-    try {
-      const accounts = await window.ethereum.request({ method: 'eth_accounts' });
-      if (accounts.length === 0) {
-        // Prompt the user to connect MetaMask if no accounts are authorized
-        await window.ethereum.request({ method: 'eth_requestAccounts' });
-      }
-      
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      const signer = provider.getSigner();
-      const RegistrationSMTReplicator = new ethers.Contract(
-        replicatorContractAddress, replicatorContractABI, signer);
-
-      // Parse the ZK proof from verifiableCredential
-      const zkProof = JSON.parse(proof);
-
-      const { args } = await buildTreeArguments(zkProof);
-
-      const [root, timestamp, signature] = args;
-
-      console.log("Update the Root");
-      const result_transaction = await RegistrationSMTReplicator.transitionRootWithSignature
-          (root, timestamp, signature);
-      result = result_transaction;
-      done = true;
-    } catch (err: unknown) {
-      if ((err as any).code === 4001) {
-        console.error("User rejected the request.");
-        error = "User rejected the request.";
-      } else {
-        console.error("Error:", err);
-        done = false;
-        console.error(err);
-        error = "Failed to write data to the contract";
-      }
-    }
-  }
 
   await pushData();
 
