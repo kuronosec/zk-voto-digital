@@ -3,7 +3,6 @@ import { Header } from "../components/Header";
 import { Footer } from "../components/Footer";
 import { getVoteData } from '../hooks/castVote';
 import { getVoteScope } from '../hooks/getCredentialData';
-import { usePassportVote } from '../hooks/passportVote';
 import { VoteOptionsDisplay } from '../components/VoteOptionsDisplay';
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from 'react-i18next';
