@@ -68,7 +68,7 @@
       "processing": "You will be able to proceed in a second...",
       "instruction": "Please use your Firma Digital card to authenticate and vote"
     },
-    "vc": "Verifiable Credential",
+    "vc": "Select your option and vote",
     "hero": {
     "title": "Secure Anonymous Voting with Blockchain & Zero-Knowledge Proofs",
     "subtitle": "Preserve your privacy while proving your identity with Costa Rica's Firma Digital",
