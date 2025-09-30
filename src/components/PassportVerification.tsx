@@ -111,6 +111,7 @@ const PassportVerification: React.FC = () => {
     if (verificationLink && verificationLink !== 'completed') {
       setIsAttemptingAppOpen(true);
       const deepLink = decodeURIComponent(generateDeepLink(verificationLink));
+      console.log("deepLink: ", deepLink);
       
       // Try to open the app
       window.location.href = deepLink;
