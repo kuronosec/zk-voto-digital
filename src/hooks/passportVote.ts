@@ -59,7 +59,6 @@ export const usePassportVerification = () => {
       const response = await PassportVerificationService.requestVerificationLink(request);
       
       if (response.link) {
-        console.log("response.link: ", toRarimeDeepLink(response.link));
         setVerificationLink(toRarimeDeepLink(response.link));
       } else if (response.status === 'created') {
         // Verification was already completed, skip to status check
@@ -74,8 +73,6 @@ export const usePassportVerification = () => {
 
   const generateQRCode = useCallback((link: string) => {
     // Using a simple QR code generation approach
-    console.log("generateDeepLink decode: ", link);
-    console.log("generateDeepLink", encodeURIComponent(link));
     const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=256x256&data=${encodeURIComponent(link)}`;
     return qrApiUrl;
   }, []);
