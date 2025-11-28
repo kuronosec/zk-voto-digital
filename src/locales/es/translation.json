@@ -34,7 +34,7 @@
       "failedToOpenMetaMask": "No se pudo abrir MetaMask. Por favor instala MetaMask Mobile.",
       "switchToNetwork": "Cambiar a",
       "wrongNetwork": "Red Incorrecta",
-      "networkName": "BlockDAG Testnet",
+      "networkName": "{{networkName}}",
       "viewResults": "Ver Resultados",
       "switchingNetwork": "Cambiando de red..."
     },
@@ -223,7 +223,7 @@
     },
     "step5": {
       "title": "Conecta y Configura",
-      "description": "• Conecta tu wallet cuando la dApp lo solicite\n• Configura la red BlockDAG Testnet si no se configura automáticamente\n• ¡Ya puedes usar la dApp desde MetaMask Mobile! 🎉"
+      "description": "• Conecta tu wallet cuando la dApp lo solicite\n• Configura la red {{networkName}} si no se configura automáticamente\n• ¡Ya puedes usar la dApp desde MetaMask Mobile! 🎉"
     },
     "warning": {
       "title": "Importante:",

@@ -1,12 +1,28 @@
 /**
  * Network Configuration Constants
  * 
- * Contains configuration for BlockDAG Testnet and related network utilities
+ * Allows configuring the target network via environment variables with sensible defaults.
  */
 
-// BlockDAG Testnet Configuration
-export const BLOCKDAG_TESTNET_CONFIG = {
+type WalletNetworkConfig = {
+  chainId: string;
+  chainName: string;
+  nativeCurrency: {
+    name: string;
+    symbol: string;
+    decimals: number;
+  };
+  rpcUrls: string[];
+  blockExplorerUrls: string[];
+};
+
+type ResolvedNetworkConfig = WalletNetworkConfig & {
+  chainIdDecimal: number;
+};
+
+const DEFAULT_NETWORK: ResolvedNetworkConfig = {
   chainId: '0x413', // 1043 in decimal
+  chainIdDecimal: 1043,
   chainName: 'BlockDAG Testnet',
   nativeCurrency: {
     name: 'BDAG',
@@ -17,25 +33,60 @@ export const BLOCKDAG_TESTNET_CONFIG = {
   blockExplorerUrls: ['https://primordial.bdagscan.com/']
 };
 
+const parseNumber = (value?: string) => {
+  if (!value) return null;
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : null;
+};
+
+const normalizeHexChainId = (value?: string) => {
+  if (!value) return null;
+  return value.startsWith('0x') ? value : `0x${value}`;
+};
+
+const envChainIdDecimal = parseNumber(process.env.REACT_APP_NETWORK_CHAIN_ID);
+const envChainIdHex = normalizeHexChainId(process.env.REACT_APP_NETWORK_CHAIN_ID_HEX);
+const chainIdDecimal = envChainIdDecimal ?? (envChainIdHex ? parseInt(envChainIdHex, 16) : DEFAULT_NETWORK.chainIdDecimal);
+const chainIdHex = envChainIdHex ?? `0x${chainIdDecimal.toString(16)}`;
+
+const NETWORK_CONFIG: ResolvedNetworkConfig = {
+  chainId: chainIdHex,
+  chainIdDecimal,
+  chainName: process.env.REACT_APP_NETWORK_NAME || DEFAULT_NETWORK.chainName,
+  nativeCurrency: {
+    name: process.env.REACT_APP_NETWORK_CURRENCY_NAME || DEFAULT_NETWORK.nativeCurrency.name,
+    symbol: process.env.REACT_APP_NETWORK_CURRENCY_SYMBOL || DEFAULT_NETWORK.nativeCurrency.symbol,
+    decimals: parseNumber(process.env.REACT_APP_NETWORK_CURRENCY_DECIMALS) ?? DEFAULT_NETWORK.nativeCurrency.decimals
+  },
+  rpcUrls: [process.env.REACT_APP_NETWORK_RPC_URL || DEFAULT_NETWORK.rpcUrls[0]],
+  blockExplorerUrls: [process.env.REACT_APP_NETWORK_EXPLORER_URL || DEFAULT_NETWORK.blockExplorerUrls[0]]
+};
+
 // Primary chain ID for the application
-export const BLOCKDAG_CHAIN_ID = BLOCKDAG_TESTNET_CONFIG.chainId;
+export const TARGET_CHAIN_ID = NETWORK_CONFIG.chainId;
 
 // Chain ID in decimal format for comparisons
-export const BLOCKDAG_CHAIN_ID_DECIMAL = 1043;
+export const TARGET_CHAIN_ID_DECIMAL = NETWORK_CONFIG.chainIdDecimal;
 
 // Network display name
-export const NETWORK_NAME = 'BlockDAG Testnet';
+export const NETWORK_NAME = NETWORK_CONFIG.chainName;
 
 // Block explorer URL for transactions
-export const BLOCK_EXPLORER_URL = 'https://primordial.bdagscan.com';
+export const BLOCK_EXPLORER_URL = NETWORK_CONFIG.blockExplorerUrls[0];
 
 // RPC URL for direct provider connections
-export const RPC_URL = 'https://rpc.primordial.bdagscan.com/';
+export const RPC_URL = NETWORK_CONFIG.rpcUrls[0];
 
 /**
  * Gets the complete network configuration for wallet_addEthereumChain
  */
-export const getNetworkConfig = () => BLOCKDAG_TESTNET_CONFIG;
+export const getNetworkConfig = (): WalletNetworkConfig => ({
+  chainId: NETWORK_CONFIG.chainId,
+  chainName: NETWORK_CONFIG.chainName,
+  nativeCurrency: NETWORK_CONFIG.nativeCurrency,
+  rpcUrls: NETWORK_CONFIG.rpcUrls,
+  blockExplorerUrls: NETWORK_CONFIG.blockExplorerUrls
+});
 
 /**
  * Formats a transaction hash for block explorer viewing

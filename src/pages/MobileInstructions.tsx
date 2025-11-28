@@ -1,6 +1,7 @@
 import React, { useState, useEffect, CSSProperties } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useWallet } from '../context/WalletContext';
+import { NETWORK_NAME } from '../constants/networks';
 import { isMobileDevice, redirectToMetaMaskWithFallback } from '../utils/walletDetection';
 
 export const MobileInstructions = () => {
@@ -265,7 +266,7 @@ export const MobileInstructions = () => {
             {t('mobileConnect.step5.title')}
           </h3>
           <p style={stepTextStyle}>
-            {t('mobileConnect.step5.description')}
+            {t('mobileConnect.step5.description', { networkName: NETWORK_NAME })}
           </p>
         </div>
 
