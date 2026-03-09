@@ -144,8 +144,8 @@ export const hasVoted = async (
   const voteContract = new ethers.Contract(
     `0x${
       useTestZKFirmaDigital
-        ? process.env.NEXT_PUBLIC_VOTE_CONTRACT_ADDRESS_TEST
-        : process.env.NEXT_PUBLIC_VOTE_CONTRACT_ADDRESS_PROD
+        ? process.env.REACT_APP_VOTE_CONTRACT_ADDRESS_TEST
+        : process.env.REACT_APP_VOTE_CONTRACT_ADDRESS_PROD
     }`,
     voteContractABI,
     provider
