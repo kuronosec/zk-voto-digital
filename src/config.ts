@@ -1,8 +1,12 @@
 import { http, createConfig } from "wagmi";
 import { defineChain } from "viem";
 import { walletConnect } from "wagmi/connectors";
+import { BLOCK_EXPLORER_URL, NETWORK_NAME, RPC_URL, TARGET_CHAIN_ID_DECIMAL, getNetworkConfig } from "./constants/networks";
 
-const projectId = process.env.NEXT_PUBLIC_PROJECT_ID || "";
+const projectId = process.env.REACT_APP_WALLETCONNECT_PROJECT_ID
+  || process.env.REACT_APP_PROJECT_ID
+  || process.env.NEXT_PUBLIC_PROJECT_ID
+  || "";
 
 const metadata = {
   name: "ZK Voto Digital",
@@ -11,27 +15,30 @@ const metadata = {
   icons: ["https://avatars.githubusercontent.com/u/37784886"],
 };
 
-// Define BlockDAG Testnet for wagmi/viem
-export const blockdagTestnet = defineChain({
-  id: 1043,
-  name: 'BlockDAG Testnet',
-  network: 'blockdag-testnet',
-  nativeCurrency: {
-    decimals: 18,
-    name: 'BDAG',
-    symbol: 'BDAG',
-  },
+const networkSlug = (
+  process.env.REACT_APP_NETWORK_SLUG
+  || NETWORK_NAME
+).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "custom-network";
+
+const walletAddConfig = getNetworkConfig();
+
+// Define the target chain for wagmi/viem using environment-aware values
+export const configuredChain = defineChain({
+  id: TARGET_CHAIN_ID_DECIMAL,
+  name: NETWORK_NAME,
+  network: networkSlug,
+  nativeCurrency: walletAddConfig.nativeCurrency,
   rpcUrls: {
-    public: { http: ['https://rpc.primordial.bdagscan.com/'] },
-    default: { http: ['https://rpc.primordial.bdagscan.com/'] },
+    public: { http: [RPC_URL] },
+    default: { http: [RPC_URL] },
   },
   blockExplorers: {
-    default: { name: 'BlockDAG Explorer', url: 'https://primordial.bdagscan.com' },
+    default: { name: `${NETWORK_NAME} Explorer`, url: BLOCK_EXPLORER_URL },
   },
 });
 
 export const wagmiConfig = createConfig({
-  chains: [blockdagTestnet],
+  chains: [configuredChain],
   connectors: [
     walletConnect({
       projectId,
@@ -39,6 +46,6 @@ export const wagmiConfig = createConfig({
     }),
   ],
   transports: {
-    [blockdagTestnet.id]: http(),
+    [configuredChain.id]: http(RPC_URL),
   },
 });

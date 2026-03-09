@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { LanguageSelector } from '../LanguageSelector';
 import { useWallet } from '../../context/WalletContext';
 import { getWalletEnvironmentInfo } from '../../utils/walletDetection';
-import { BLOCKDAG_CHAIN_ID } from '../../constants/networks';
+import { TARGET_CHAIN_ID, NETWORK_NAME } from '../../constants/networks';
 
 export const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -93,10 +93,10 @@ export const Header = () => {
   // Get button text based on current state and environment
   const getButtonText = () => {
     if (isConnected) {
-      if (chainId === BLOCKDAG_CHAIN_ID) {
+      if (chainId === TARGET_CHAIN_ID) {
         return shortenAddress(account || '');
       } else {
-        return `${t('common.switchToNetwork')} ${t('common.networkName')}`;
+        return `${t('common.switchToNetwork')} ${t('common.networkName', { networkName: NETWORK_NAME })}`;
       }
     }
     
@@ -115,7 +115,7 @@ export const Header = () => {
   const getNetworkIndicator = () => {
     if (!isConnected) return null;
     
-    const isCorrectNetwork = chainId === BLOCKDAG_CHAIN_ID;
+    const isCorrectNetwork = chainId === TARGET_CHAIN_ID;
     
     return (
       <div style={{
@@ -131,7 +131,7 @@ export const Header = () => {
           borderRadius: '50%',
           backgroundColor: isCorrectNetwork ? '#10b981' : '#ef4444'
         }}></div>
-        {isCorrectNetwork ? t('common.networkName') : t('common.wrongNetwork')}
+        {isCorrectNetwork ? t('common.networkName', { networkName: NETWORK_NAME }) : t('common.wrongNetwork')}
       </div>
     );
   };

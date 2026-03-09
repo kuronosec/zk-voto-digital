@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { ethers } from 'ethers';
-import { BLOCKDAG_CHAIN_ID, getNetworkConfig } from '../constants/networks';
+import { TARGET_CHAIN_ID, getNetworkConfig, NETWORK_NAME } from '../constants/networks';
 import { 
   shouldRedirectToMetaMask, 
   redirectToMetaMaskWithFallback, 
@@ -49,12 +49,12 @@ export const useWalletConnection = () => {
         const signer = provider.getSigner();
         const account = await signer.getAddress();
 
-        // Check if on the correct network (BlockDAG)
-        if (chainId !== BLOCKDAG_CHAIN_ID) {
+        // Check if on the configured network
+        if (chainId !== TARGET_CHAIN_ID) {
           setState({
             isConnected: true,
             account,
-            error: "Please switch to BlockDAG Testnet",
+            error: `Please switch to ${NETWORK_NAME}`,
             chainId,
             provider,
             signer,
@@ -95,8 +95,8 @@ export const useWalletConnection = () => {
     }
   }, []);
 
-  // Function to switch to BlockDAG Testnet network
-  const switchToBlockDAG = useCallback(async (): Promise<boolean> => {
+  // Function to switch to the configured network
+  const switchToTargetNetwork = useCallback(async (): Promise<boolean> => {
     if (!isMetaMaskAvailable()) return false;
     if (isChangingNetworkRef.current) return false;
 
@@ -106,7 +106,7 @@ export const useWalletConnection = () => {
       
       await window.ethereum.request({
         method: 'wallet_switchEthereumChain',
-        params: [{ chainId: BLOCKDAG_CHAIN_ID }],
+        params: [{ chainId: TARGET_CHAIN_ID }],
       });
       
       await checkWalletState();
@@ -127,20 +127,20 @@ export const useWalletConnection = () => {
           isChangingNetworkRef.current = false;
           return true;
         } catch (addError: any) {
-          console.error('Failed to add BlockDAG Testnet:', addError);
+          console.error(`Failed to add ${NETWORK_NAME}:`, addError);
           setState(prev => ({ 
             ...prev, 
-            error: "Failed to add BlockDAG Testnet",
+            error: `Failed to add ${NETWORK_NAME}`,
             isChangingNetwork: false
           }));
           isChangingNetworkRef.current = false;
           return false;
         }
       }
-      console.error('Failed to switch to BlockDAG Testnet:', error);
+      console.error(`Failed to switch to ${NETWORK_NAME}:`, error);
       setState(prev => ({ 
         ...prev, 
-        error: "Failed to switch to BlockDAG Testnet",
+        error: `Failed to switch to ${NETWORK_NAME}`,
         isChangingNetwork: false
       }));
       isChangingNetworkRef.current = false;
@@ -189,17 +189,17 @@ export const useWalletConnection = () => {
         setState({
           isConnected: true,
           account,
-          error: chainId !== BLOCKDAG_CHAIN_ID ? "Switching to BlockDAG Testnet..." : null,
+          error: chainId !== TARGET_CHAIN_ID ? `Switching to ${NETWORK_NAME}...` : null,
           chainId,
           provider,
           signer,
-          isChangingNetwork: chainId !== BLOCKDAG_CHAIN_ID
+          isChangingNetwork: chainId !== TARGET_CHAIN_ID
         });
         
-        if (chainId !== BLOCKDAG_CHAIN_ID) {
-          console.log("Connected but on wrong network. Switching to BlockDAG Testnet...");
+        if (chainId !== TARGET_CHAIN_ID) {
+          console.log(`Connected but on wrong network. Switching to ${NETWORK_NAME}...`);
           setTimeout(async () => {
-            await switchToBlockDAG();
+            await switchToTargetNetwork();
           }, 500);
         }
       }
@@ -211,20 +211,20 @@ export const useWalletConnection = () => {
         isConnected: false
       }));
     }
-  }, [switchToBlockDAG]);
+  }, [switchToTargetNetwork]);
 
   const handleChainChanged = useCallback(async (chainId: string) => {
     console.log("Chain changed to:", chainId);
     // Simply update the state with the new chain
     await checkWalletState();
     
-    // Only try to switch to BlockDAG if user is connected and we're not already changing
-    if (chainId !== BLOCKDAG_CHAIN_ID && state.isConnected && !isChangingNetworkRef.current) {
-      console.log("Not on BlockDAG Testnet. Current chain:", chainId);
-      console.log("Attempting to switch to BlockDAG Testnet automatically");
-      await switchToBlockDAG();
+    // Only try to switch to the configured network if user is connected and we're not already changing
+    if (chainId !== TARGET_CHAIN_ID && state.isConnected && !isChangingNetworkRef.current) {
+      console.log(`Not on ${NETWORK_NAME}. Current chain:`, chainId);
+      console.log(`Attempting to switch to ${NETWORK_NAME} automatically`);
+      await switchToTargetNetwork();
     }
-  }, [state.isConnected, checkWalletState, switchToBlockDAG]);
+  }, [state.isConnected, checkWalletState, switchToTargetNetwork]);
 
   useEffect(() => {
     // Verificar el estado inicial
@@ -267,6 +267,6 @@ export const useWalletConnection = () => {
     ...state,
     connect,
     checkWalletState,
-    switchToBlockDAG
+    switchToTargetNetwork
   };
 };

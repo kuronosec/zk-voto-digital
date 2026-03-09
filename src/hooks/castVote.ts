@@ -1,5 +1,6 @@
 import { ethers } from 'ethers';
 import { voteContractAddress, voteContractABI } from '../constants/voteContract';
+import { RPC_URL } from '../constants/networks';
 import { Groth16Proof } from 'snarkjs'
 import { ZkProof } from '@rarimo/zk-passport'
 
@@ -139,7 +140,7 @@ export const hasVoted = async (
   userNullifier: string,
   useTestZKFirmaDigital: boolean
 ): Promise<boolean> => {
-  const provider = ethers.getDefaultProvider(process.env.NEXT_PUBLIC_RPC_URL);
+  const provider = ethers.getDefaultProvider(RPC_URL);
   const voteContract = new ethers.Contract(
     `0x${
       useTestZKFirmaDigital

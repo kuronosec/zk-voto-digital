@@ -1,5 +1,6 @@
 import { ethers } from "ethers";
 import votingAbi from "../public/ZKFirmaDigitalVote.json";
+import { RPC_URL } from "../constants/networks";
 
 const checkMetaMaskStatus = async () => {
   const accounts = await window.ethereum.request({ method: 'eth_accounts' });
@@ -11,7 +12,7 @@ const checkMetaMaskStatus = async () => {
   return true;
 };
 
-const providerUrl = process.env.NEXT_PUBLIC_RPC_URL;
+const providerUrl = RPC_URL;
 
 export const getTotalVotes = async (useTestZKFirmaDigital: boolean): Promise<any> => {
   const voteBreakdown = [

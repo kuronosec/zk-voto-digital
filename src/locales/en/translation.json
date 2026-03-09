@@ -34,7 +34,7 @@
       "failedToOpenMetaMask": "Failed to open MetaMask. Please install MetaMask Mobile.",
       "switchToNetwork": "Switch to",
       "wrongNetwork": "Wrong Network",
-      "networkName": "BlockDAG Testnet",
+      "networkName": "{{networkName}}",
       "viewResults": "View Results",
       "switchingNetwork": "Switching network..."
     },
@@ -223,7 +223,7 @@
       },
       "step5": {
         "title": "Connect and Configure",
-        "description": "• Connect your wallet when the dApp requests it\n• Configure the BlockDAG Testnet network if it doesn't configure automatically\n• You can now use the dApp from MetaMask Mobile! 🎉"
+        "description": "• Connect your wallet when the dApp requests it\n• Configure the {{networkName}} network if it doesn't configure automatically\n• You can now use the dApp from MetaMask Mobile! 🎉"
       },
       "warning": {
         "title": "Important:",
