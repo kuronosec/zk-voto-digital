@@ -1,4 +1,4 @@
-export const voteContractAddress = '0xeD09d9b8738b75F2FAAc789736534FB3B1F68865';
+export const voteContractAddress = '0x5716804313D56DC5Eaf1d6CDD555914D7FA9a41b';
 
 export const voteContractABI = [
   {

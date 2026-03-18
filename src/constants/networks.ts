@@ -21,16 +21,16 @@ type ResolvedNetworkConfig = WalletNetworkConfig & {
 };
 
 const DEFAULT_NETWORK: ResolvedNetworkConfig = {
-  chainId: '0x413', // 1043 in decimal
-  chainIdDecimal: 1043,
-  chainName: 'BlockDAG Testnet',
+  chainId: '0x13882', // 80002 in decimal
+  chainIdDecimal: 80002,
+  chainName: 'Polygon Amoy',
   nativeCurrency: {
-    name: 'BDAG',
-    symbol: 'BDAG',
+    name: 'POL',
+    symbol: 'POL',
     decimals: 18
   },
-  rpcUrls: ['https://rpc.primordial.bdagscan.com/'],
-  blockExplorerUrls: ['https://primordial.bdagscan.com/']
+  rpcUrls: ['https://rpc-amoy.polygon.technology/'],
+  blockExplorerUrls: ['https://amoy.polygonscan.com/']
 };
 
 const parseNumber = (value?: string) => {

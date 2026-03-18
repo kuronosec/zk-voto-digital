@@ -13,7 +13,7 @@
 2. Click → Attempts `metamask://dapp/localhost:3000`
 3. If it fails → Automatically tries universal link
 4. MetaMask opens **directly in the dApp browser** (not home)
-5. BlockDAG configures automatically
+5. Polygon Amoy configures automatically
 6. User connects wallet
 
 ## 🧪 How to Test
