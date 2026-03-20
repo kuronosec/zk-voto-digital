@@ -168,12 +168,6 @@ export const castVote = async (verifiableCredential: any, selectedProposalIndex:
       const voteContract = new ethers.Contract(voteContractAddress, voteContractABI, signer);
       
       if (authMethod === 'passport') {
-        // Handle ZK Passport voting
-        const zkPassportVoteAddress = process.env.REACT_APP_ZK_PASSPORT_VOTE_CONTRACT_ADDRESS;
-        if (!zkPassportVoteAddress) {
-          throw new Error('ZK Passport vote contract address not configured');
-        }
-
         // Parse the ZK proof from verifiableCredential
         const zkProof = JSON.parse(verifiableCredential);
 
