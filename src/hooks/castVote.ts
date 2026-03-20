@@ -140,16 +140,9 @@ export const hasVoted = async (
   userNullifier: string,
   useTestZKFirmaDigital: boolean
 ): Promise<boolean> => {
+  void useTestZKFirmaDigital;
   const provider = ethers.getDefaultProvider(RPC_URL);
-  const voteContract = new ethers.Contract(
-    `0x${
-      useTestZKFirmaDigital
-        ? process.env.REACT_APP_VOTE_CONTRACT_ADDRESS_TEST
-        : process.env.REACT_APP_VOTE_CONTRACT_ADDRESS_PROD
-    }`,
-    voteContractABI,
-    provider
-  );
+  const voteContract = new ethers.Contract(voteContractAddress, voteContractABI, provider);
 
   return await voteContract.checkVoted(userNullifier);
 };

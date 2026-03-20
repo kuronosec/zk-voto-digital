@@ -110,6 +110,19 @@ yarn start
 
 The circuit and related files are located in the folder `src/zkproof`. 
 
+### Contract configuration
+
+The frontend can read contract values from environment variables instead of relying on hardcoded addresses.
+
+Supported variables:
+
+- `REACT_APP_VOTE_CONTRACT_ADDRESS`: primary vote contract address
+- `REACT_APP_VOTE_CONTRACT_ADDRESS_TEST`: vote contract used when `REACT_APP_ENVIRONMENT` is not `PROD`/`production`
+- `REACT_APP_VOTE_CONTRACT_ADDRESS_PROD`: vote contract used when `REACT_APP_ENVIRONMENT` is `PROD`/`production`
+- `REACT_APP_ISSUER_CONTRACT_ADDRESS`: issuer contract address
+
+If these variables are not set, the app falls back to the current built-in values in `src/constants/voteContract.ts` and `src/constants/issuerContract.ts`.
+
 ## See it working
 When you generate a Zk credential from your Firma Digital, which is a JSON file, you can test it by authenticating in this PoC website:
 
@@ -118,6 +131,4 @@ When you generate a Zk credential from your Firma Digital, which is a JSON file,
 You can find the source code here: https://github.com/kuronosec/zk-firma-web
 
 Also you can find an example of the built verifiable credential here: https://github.com/kuronosec/zk-firma-digital/blob/main/src/examples/residence-credential.json
-
-
 

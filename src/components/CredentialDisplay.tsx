@@ -6,8 +6,6 @@ interface CredentialDisplayProps {
     address: string;
     type: string;
     issuanceDate: string;
-    IssuerDID: string;
-    RecipientDID: string;
   };
 }
 
@@ -52,10 +50,6 @@ export const CredentialDisplay: React.FC<CredentialDisplayProps> = ({ data }) =>
       <div style={descriptionStyle}>{data.type}</div>
       <div>Issuance Date:</div>
       <div style={descriptionStyle}>{data.issuanceDate}</div>
-      <div>Issuer DID:</div>
-      <div style={descriptionStyle}>{data.IssuerDID}</div>
-      <div>Recipient DID:</div>
-      <div style={descriptionStyle}>{data.RecipientDID}</div>
     </div>
   );
 };

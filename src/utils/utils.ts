@@ -1,6 +1,7 @@
 import { ethers } from "ethers";
 import votingAbi from "../public/ZKFirmaDigitalVote.json";
 import { RPC_URL } from "../constants/networks";
+import { voteContractAddress } from "../constants/voteContract";
 
 const checkMetaMaskStatus = async () => {
   const accounts = await window.ethereum.request({ method: 'eth_accounts' });
@@ -15,6 +16,7 @@ const checkMetaMaskStatus = async () => {
 const providerUrl = RPC_URL;
 
 export const getTotalVotes = async (useTestZKFirmaDigital: boolean): Promise<any> => {
+  void useTestZKFirmaDigital;
   const voteBreakdown = [
     { rating: 0, percentage: 0 },
     { rating: 1, percentage: 0 },
@@ -25,15 +27,7 @@ export const getTotalVotes = async (useTestZKFirmaDigital: boolean): Promise<any
   ];
 
   const provider = ethers.getDefaultProvider(providerUrl);
-  const voteContract = new ethers.Contract(
-    `0x${
-      useTestZKFirmaDigital
-        ? process.env.REACT_APP_VOTE_CONTRACT_ADDRESS_TEST
-        : process.env.REACT_APP_VOTE_CONTRACT_ADDRESS_PROD
-    }`,
-    votingAbi.abi,
-    provider
-  );
+  const voteContract = new ethers.Contract(voteContractAddress, votingAbi.abi, provider);
 
   const proposalCount = await voteContract.getProposalCount();
 
@@ -63,16 +57,9 @@ export const hasVoted = async (
   userNullifier: string,
   useTestZKFirmaDigital: boolean
 ): Promise<boolean> => {
+  void useTestZKFirmaDigital;
   const provider = ethers.getDefaultProvider(providerUrl);
-  const voteContract = new ethers.Contract(
-    `0x${
-      useTestZKFirmaDigital
-        ? process.env.REACT_APP_VOTE_CONTRACT_ADDRESS_TEST
-        : process.env.REACT_APP_VOTE_CONTRACT_ADDRESS_PROD
-    }`,
-    votingAbi.abi,
-    provider
-  );
+  const voteContract = new ethers.Contract(voteContractAddress, votingAbi.abi, provider);
 
   return await voteContract.checkVoted(userNullifier);
 };

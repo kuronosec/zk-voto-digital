@@ -5,7 +5,6 @@ import { BLOCK_EXPLORER_URL, NETWORK_NAME, RPC_URL, TARGET_CHAIN_ID_DECIMAL, get
 
 const projectId = process.env.REACT_APP_WALLETCONNECT_PROJECT_ID
   || process.env.REACT_APP_PROJECT_ID
-  || process.env.NEXT_PUBLIC_PROJECT_ID
   || "";
 
 const metadata = {

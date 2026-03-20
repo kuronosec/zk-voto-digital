@@ -30,7 +30,7 @@ export class PassportVerificationService {
       redirect_uri: process.env.REACT_APP_REDIRECT_URI || `${window.location.origin}/vote/passport/callback`,
       scope: "zk-passport",
       state: String(Math.floor(Math.random() * 10000)),
-      nullifier_seed: 1000,
+      nullifier_seed: request.eventId,
       data: encodeURIComponent(
         JSON.stringify({
           "id": request.userId,

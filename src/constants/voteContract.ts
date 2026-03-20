@@ -1,4 +1,19 @@
-export const voteContractAddress = '0x5716804313D56DC5Eaf1d6CDD555914D7FA9a41b';
+const DEFAULT_VOTE_CONTRACT_ADDRESS = '0x11eE0dD78F07B550D32759A380C3E4215c0b63c8';
+
+const appEnvironment = (
+  process.env.REACT_APP_ENVIRONMENT
+  || process.env.NODE_ENV
+  || 'development'
+).toLowerCase();
+
+const isProductionEnvironment = appEnvironment === 'prod' || appEnvironment === 'production';
+
+export const voteContractAddress =
+  process.env.REACT_APP_VOTE_CONTRACT_ADDRESS
+  || (isProductionEnvironment
+    ? process.env.REACT_APP_VOTE_CONTRACT_ADDRESS_PROD
+    : process.env.REACT_APP_VOTE_CONTRACT_ADDRESS_TEST)
+  || DEFAULT_VOTE_CONTRACT_ADDRESS;
 
 export const voteContractABI = [
   {

@@ -1,5 +1,5 @@
 import { ethers } from 'ethers';
-import { issuerContractAddress, issuerContractABI, issuerDID, userIdDID } from '../constants/issuerContract';
+import { issuerContractAddress, issuerContractABI } from '../constants/issuerContract';
 import { voteContractAddress, voteContractABI } from '../constants/voteContract';
 import { formatTimestamp } from '../utils/formatters';
 
@@ -45,8 +45,6 @@ export const getCredentialData = async ():
           address: userId,
           type: credentialData._type.toString(),
           issuanceDate: formatTimestamp(credentialData.issuanceDate.toString()),
-          IssuerDID: issuerDID,
-          RecipientDID: userIdDID,
           context: credentialData.context[0].toString()
         };
 
