@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
 import axios from "axios";
 import queryString from "query-string";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Header } from "../components/Header";
 import { Footer } from "../components/Footer";
 import { useVote } from "./VoteContext";
@@ -40,6 +40,7 @@ function parseJwt(token: string): Record<string, any> | null {
 const RequestFirma: React.FC = () => {
   const { t } = useTranslation();
   const [searchParams] = useSearchParams();
+  const location = useLocation();
   const [authUrl, setAuthUrl] = useState<string>("");
   const [tokenData, setTokenData] = useState<Record<string, any> | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -93,18 +94,26 @@ const RequestFirma: React.FC = () => {
   // Actualizar authUrl solo cuando cambien las dependencias relevantes
   useEffect(() => {
     const code = searchParams.get("code");
+    const scope = searchParams.get("scope");
+
+    if (code && scope === "zk-passport") {
+      navigate(`/vote/passport/callback${location.search}`, { replace: true });
+      return;
+    }
+
     if (!code) {
       const url = generateAuthUrl();
       if (url) {
         setAuthUrl(url);
       }
     }
-  }, [generateAuthUrl, searchParams]);
+  }, [generateAuthUrl, searchParams, navigate, location.search]);
 
   // Manejar el intercambio de código por token solo cuando sea necesario
   useEffect(() => {
     const code = searchParams.get("code");
-    if (!code || tokenData) return;
+    const scope = searchParams.get("scope");
+    if (!code || tokenData || scope === "zk-passport") return;
 
     setAuthMethod('firma-digital');
     const exchangeToken = async () => {
@@ -143,7 +152,7 @@ const RequestFirma: React.FC = () => {
     };
 
     exchangeToken();
-  }, [searchParams, setVerifiableCredential, tokenData]);
+  }, [searchParams, setVerifiableCredential, tokenData, setAuthMethod]);
 
   // Navegar a la página de votación cuando tengamos credenciales verificables
   useEffect(() => {

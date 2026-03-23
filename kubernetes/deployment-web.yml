@@ -14,7 +14,8 @@ spec:
     spec:
       containers:
         - name: web-voto
-          image: registry.gitlab.com/sakundi/zk-voto-digital
+          image: registry.gitlab.com/sakundi/zk-voto-digital:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 3000
           envFrom:
