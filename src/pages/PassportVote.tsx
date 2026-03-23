@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Header } from '../components/Header';
 import { Footer } from '../components/Footer';
 import { useWallet } from '../context/WalletContext';
+import { useVote } from './VoteContext';
 
 const COUNTRIES = [
   { code: 'CRI', name: 'Costa Rica', flag: '🇨🇷' },
@@ -120,6 +121,7 @@ const PassportVote: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { account, isConnected } = useWallet();
+  const { setAuthMethod } = useVote();
   const [userId, setUserId] = useState('');
   const [selectedCountry, setSelectedCountry] = useState('CRI');
   const [selectedMethod, setSelectedMethod] = useState<'firma-digital' | 'passport'>('passport');
@@ -132,6 +134,8 @@ const PassportVote: React.FC = () => {
   }, [isConnected, account]);
 
   const handleContinue = () => {
+    setAuthMethod(selectedMethod);
+
     if (selectedMethod === 'firma-digital') {
       navigate('/request-firma');
     } else {

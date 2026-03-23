@@ -79,16 +79,20 @@ const Vote: React.FC = () => {
     }
     
     if (verifiableCredential === null && voteScope === null) {
-      // No queremos actualizar estados cuando el componente está en proceso de navegación
-      // así que primero verificamos el voteScope y luego navegamos
-      fetchVoteScope().then(() => {
-        // Solo navegamos si el componente sigue montado
-        if (isMounted.current) {
-          navigate("/vote/passport");
+      fetchVoteScope().finally(() => {
+        if (!isMounted.current) {
+          return;
         }
+
+        if (authMethod === 'firma-digital') {
+          navigate("/request-firma");
+          return;
+        }
+
+        navigate("/vote/passport");
       });
     }
-  }, [isConnected, account, verifiableCredential, voteScope, navigate, fetchVoteScope]);
+  }, [isConnected, account, verifiableCredential, voteScope, navigate, fetchVoteScope, authMethod]);
 
   // Get vote data - memoizado para evitar recreación
   const fetchVoteData = useCallback(async () => {
